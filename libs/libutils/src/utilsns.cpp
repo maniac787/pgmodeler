@@ -21,10 +21,47 @@
 
 #include "utilsns.h"
 #include "exception.h"
+#include "globalattributes.h"
 #include <QFile>
 #include <QRegularExpression>
+#include <cstdlib>
+
+#ifndef Q_OS_WIN
+	#include "execinfo.h"
+	#include <cxxabi.h>
+#else
+	#include <windows.h>
+	#include <dbghelp.h>
+#endif
+
+#ifndef Q_OS_WIN
+namespace {
+	QString demangleStackSymbol(const char *raw_symbol)
+	{
+		QString symbol = QString::fromUtf8(raw_symbol);
+		int open_paren = symbol.indexOf('('),
+			plus_sign = symbol.indexOf('+', open_paren);
+
+		if(open_paren < 0 || plus_sign < 0 || plus_sign <= open_paren + 1)
+			return symbol;
+
+		QByteArray mangled_name = symbol.mid(open_paren + 1, plus_sign - open_paren - 1).toUtf8();
+		int demangle_status = -1;
+		char *demangled_name = abi::__cxa_demangle(mangled_name.constData(), nullptr, nullptr, &demangle_status);
+
+		if(demangle_status == 0 && demangled_name)
+			symbol.replace(open_paren + 1, plus_sign - open_paren - 1, QString::fromUtf8(demangled_name));
+
+		if(demangled_name)
+			free(demangled_name);
+
+		return symbol;
+	}
+}
+#endif
 
 namespace UtilsNs {
+
 	void saveFile(const QString &filename, const QByteArray &buffer)
 	{
 		QFile output;
@@ -92,9 +129,9 @@ namespace UtilsNs {
 		return getStringHash(string.toUtf8(), algorithm);
 	}
 
-	QString getStringHash(const QByteArray &buf, QCryptographicHash::Algorithm algorithm)
+	QString getStringHash(const QByteArray &string, QCryptographicHash::Algorithm algorithm)
 	{
-		return QCryptographicHash::hash(buf, algorithm).toHex();
+		return QCryptographicHash::hash(string, algorithm).toHex();
 	}
 
 	QString formatMessage(const QString &msg)
@@ -132,5 +169,77 @@ namespace UtilsNs {
 		fmt_msg.replace("\n", "<br/>");
 
 		return fmt_msg;
+	}
+
+	QString generateStackTrace(int signal)
+	{
+		#ifndef Q_OS_WIN
+			void *stack[30];
+			size_t stack_size;
+			char **symbols=nullptr;
+			stack_size = backtrace(stack, 30);
+			symbols = backtrace_symbols(stack, stack_size);
+		#else
+			void *stack[30];
+			USHORT stack_size = CaptureStackBackTrace(0, 30, stack, nullptr);
+			HANDLE process = GetCurrentProcess();
+			DWORD64 displacement = 0;
+			SYMBOL_INFO *symbol_info = nullptr;
+
+			SymSetOptions(SYMOPT_LOAD_LINES | SYMOPT_UNDNAME);
+
+			if(SymInitialize(process, nullptr, TRUE))
+			{
+				symbol_info = reinterpret_cast<SYMBOL_INFO *>(calloc(1, sizeof(SYMBOL_INFO) + 256));
+
+				if(symbol_info)
+				{
+					symbol_info->SizeOfStruct = sizeof(SYMBOL_INFO);
+					symbol_info->MaxNameLen = 255;
+				}
+			}
+		#endif
+
+		QStringList s_trace;
+
+		s_trace.append(QString("** pgModeler crashed after receive signal: %1 **\n\nDate/Time: %2 \nVersion: %3 \nBuild: %4 \n")
+									 .arg(signal)
+									 .arg(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"),
+												GlobalAttributes::PgModelerVersion,
+												GlobalAttributes::PgModelerBuildNumber));
+
+		s_trace.append(QString("Compilation Qt version: %1\nRunning Qt version: %2\n")
+									 .arg(QT_VERSION_STR)
+									 .arg(qVersion()));
+
+		#ifndef Q_OS_WIN
+			for(size_t i = 0; i < stack_size; i++)
+				s_trace.append(QString("[%1] ").arg(stack_size-1-i) + demangleStackSymbol(symbols[i]));
+
+			free(symbols);
+		#else
+			if(symbol_info)
+			{
+				for(USHORT i = 0; i < stack_size; i++)
+				{
+					if(SymFromAddr(process, reinterpret_cast<DWORD64>(stack[i]), &displacement, symbol_info))
+						s_trace.append(QString("[%1] %2 + 0x%3")
+									 .arg(stack_size - 1 - i)
+									 .arg(symbol_info->Name)
+									 .arg(displacement, 0, 16));
+					else
+						s_trace.append(QString("[%1] 0x%2")
+									 .arg(stack_size - 1 - i)
+									 .arg(reinterpret_cast<quintptr>(stack[i]), 0, 16));
+				}
+
+				free(symbol_info);
+				SymCleanup(process);
+			}
+			else
+				s_trace.append("** Stack trace unavailable on Windows system **");
+		#endif
+
+		return s_trace.join('\n');
 	}
 }

@@ -21,9 +21,22 @@
 
 #include <QTranslator>
 #include "pgmodelercliapp.h"
+#include "utilsns.h"
+#include <signal.h>
+
+namespace {
+	void dumpStackTrace(int signal)
+	{
+		qFatal() << UtilsNs::generateStackTrace(signal);
+	}
+}
 
 int main(int argc, char **argv)
 {
+	//Install a signal handler to dump stacktrace when SIGSEGV or SIGABRT is emitted
+	signal(SIGSEGV, dumpStackTrace);
+	signal(SIGABRT, dumpStackTrace);
+
 	QTextStream out(stdout);
 
 #ifdef DEMO_VERSION

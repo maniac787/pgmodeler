@@ -80,9 +80,11 @@ namespace UtilsNs {
 	__libutils QString getStringHash(const QByteArray &string,
 																					QCryptographicHash::Algorithm algorithm = QCryptographicHash::Md5);
 
-
 	//! \brief Replaces the sequence of chars [`'] by html tags <strong></strong> and [()] by <em></em>
 	__libutils QString formatMessage(const QString &msg);
+
+	//! \brief This function dumps a stack trace based on the OS signal receveid
+	__libutils QString generateStackTrace(int signal);
 }
 
 #endif

@@ -15,4 +15,8 @@ pgm_add_library(utils
     src/utilsglobal.h
     src/utilsns.cpp src/utilsns.h)
 
+if(WIN32)
+	target_link_libraries(${PGM_TARGET} PRIVATE Dbghelp)
+endif()
+
 pgm_install_library(${PGM_TARGET})
