@@ -48,8 +48,8 @@ namespace {
 		}
 		catch(Exception &e)
 		{
-			qFatal() << "** Failed to save stacktrace file! Crash handler aborted.";
-			qFatal() << e.getExceptionsText();
+			qDebug().noquote() << "** Failed to save stacktrace file! Crash handler aborted.";
+			qDebug().noquote() << e.getExceptionsText();
 		}
 	}
 }

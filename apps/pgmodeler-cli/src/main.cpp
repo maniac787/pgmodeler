@@ -27,7 +27,10 @@
 namespace {
 	void dumpStackTrace(int signal)
 	{
-		qFatal() << UtilsNs::generateStackTrace(signal);
+		qDebug().noquote() << "**";
+		qDebug().noquote() << UtilsNs::generateStackTrace(signal);
+		qDebug().noquote() << "**";
+		exit(1);
 	}
 }
 

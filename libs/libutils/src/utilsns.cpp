@@ -29,9 +29,6 @@
 #ifndef Q_OS_WIN
 	#include "execinfo.h"
 	#include <cxxabi.h>
-#else
-	#include <windows.h>
-	#include <dbghelp.h>
 #endif
 
 #ifndef Q_OS_WIN
@@ -179,25 +176,6 @@ namespace UtilsNs {
 			char **symbols=nullptr;
 			stack_size = backtrace(stack, 30);
 			symbols = backtrace_symbols(stack, stack_size);
-		#else
-			void *stack[30];
-			USHORT stack_size = CaptureStackBackTrace(0, 30, stack, nullptr);
-			HANDLE process = GetCurrentProcess();
-			DWORD64 displacement = 0;
-			SYMBOL_INFO *symbol_info = nullptr;
-
-			SymSetOptions(SYMOPT_LOAD_LINES | SYMOPT_UNDNAME);
-
-			if(SymInitialize(process, nullptr, TRUE))
-			{
-				symbol_info = reinterpret_cast<SYMBOL_INFO *>(calloc(1, sizeof(SYMBOL_INFO) + 256));
-
-				if(symbol_info)
-				{
-					symbol_info->SizeOfStruct = sizeof(SYMBOL_INFO);
-					symbol_info->MaxNameLen = 255;
-				}
-			}
 		#endif
 
 		QStringList s_trace;
@@ -218,26 +196,7 @@ namespace UtilsNs {
 
 			free(symbols);
 		#else
-			if(symbol_info)
-			{
-				for(USHORT i = 0; i < stack_size; i++)
-				{
-					if(SymFromAddr(process, reinterpret_cast<DWORD64>(stack[i]), &displacement, symbol_info))
-						s_trace.append(QString("[%1] %2 + 0x%3")
-									 .arg(stack_size - 1 - i)
-									 .arg(symbol_info->Name)
-									 .arg(displacement, 0, 16));
-					else
-						s_trace.append(QString("[%1] 0x%2")
-									 .arg(stack_size - 1 - i)
-									 .arg(reinterpret_cast<quintptr>(stack[i]), 0, 16));
-				}
-
-				free(symbol_info);
-				SymCleanup(process);
-			}
-			else
-				s_trace.append("** Stack trace unavailable on Windows system **");
+			s_trace.append("** Stack trace unavailable on Windows system **");
 		#endif
 
 		return s_trace.join('\n');
