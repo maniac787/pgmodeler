@@ -2703,6 +2703,28 @@ void MainWindow::installPluginWidgets()
 	QWidget *wgt = nullptr;
 	int wgt_idx = -1;
 
+	/* This lambda slot unchecks the plugin buttons when
+	 * objects_btn or operations_btn are checked */
+	auto uncheck_btns_in_group_lmb = [this](bool checked){
+		if(checked &&
+			 side_widgets_stw->currentIndex() > 0)
+		{
+			QPushButton *btn = nullptr;
+
+			for(int idx = 0; idx < vert_wgts_btns_layout->count(); idx++)
+			{
+				btn = qobject_cast<QPushButton *>(vert_wgts_btns_layout->itemAt(idx)->widget());
+
+				if(btn && btn != objects_btn && btn != operations_btn)
+					btn->setChecked(false);
+			}
+
+			// Show the default page (Model objects / Operations list)
+			side_widgets_stw->setCurrentIndex(0);
+			showRightWidgetsBar();
+		}
+	};
+
 	/* Check a plugin button and displays the page
 	 * of the related widget in side_widgets_stw */
 	auto check_btn_in_group_lmb = [this](bool checked) {
@@ -2712,34 +2734,25 @@ void MainWindow::installPluginWidgets()
 			return;
 		}
 
-		QPushButton *btn = qobject_cast<QPushButton *>(sender());
-		int wgt_idx = 	btn->property(Attributes::Index.toStdString().c_str()).toInt();
+		QPushButton *btn = nullptr, *sender_btn = qobject_cast<QPushButton *>(sender());
+		int wgt_idx = 	sender_btn->property(Attributes::Index.toStdString().c_str()).toInt();
 		side_widgets_stw->setCurrentIndex(wgt_idx);
 
-		/* We force unchecking the objects_btn and operations_btn
-		 * since these two buttons a muttually exclusive with the
-		 * plugin buttons */
-		objects_btn->setChecked(false);
-		operations_btn->setChecked(false);
-		showRightWidgetsBar();
-	};
-
-	/* This lambda slot unchecks the plugin buttons when
-	 * objects_btn or operations_btn are checked */
-	auto uncheck_btns_in_group_lmb = [this](bool checked){
-		if(checked &&
-			 side_widgets_stw->currentIndex() > 0)
+		for(int idx = 0; idx < vert_wgts_btns_layout->count(); idx++)
 		{
-			for(auto &btn : vert_wgts_btns_layout->findChildren<QAbstractButton *>())
-			{
-				if(btn != objects_btn && btn != operations_btn)
-					btn->setChecked(false);
-			}
+			btn = qobject_cast<QPushButton *>(vert_wgts_btns_layout->itemAt(idx)->widget());
 
-			// Show the default page (Model objects / Operations list)
-			side_widgets_stw->setCurrentIndex(0);
-			showRightWidgetsBar();
+			if(btn && btn != sender_btn && btn->isChecked())
+			{
+				btn->blockSignals(true);
+				btn->setChecked(false);
+				btn->blockSignals(false);
+			}
 		}
+
+		model_objs_parent->setVisible(false);
+		oper_list_parent->setVisible(false);
+		showRightWidgetsBar();
 	};
 
 	connect(objects_btn, &QPushButton::toggled, this, uncheck_btns_in_group_lmb);
