@@ -32,7 +32,7 @@
    <string>pgModeler - PostgreSQL Database Modeler</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../../../priv-plugins/res/logoicons.qrc">
+   <iconset resource="../../../priv-core/res/logoicons.qrc">
     <normaloff>:/icons/icons/pgmodeler_logo.png</normaloff>:/icons/icons/pgmodeler_logo.png</iconset>
   </property>
   <property name="statusTip">
@@ -117,7 +117,7 @@
         <property name="spacing">
          <number>5</number>
         </property>
-        <item row="0" column="0">
+        <item row="1" column="0">
          <layout class="QVBoxLayout" name="verticalLayout">
           <property name="spacing">
            <number>0</number>
@@ -314,50 +314,77 @@
                <number>0</number>
               </property>
               <item row="0" column="0">
-               <widget class="QSplitter" name="v_splitter_oprs_objs">
-                <property name="autoFillBackground">
-                 <bool>true</bool>
+               <widget class="QStackedWidget" name="side_widgets_stw">
+                <property name="currentIndex">
+                 <number>0</number>
                 </property>
-                <property name="orientation">
-                 <enum>Qt::Orientation::Vertical</enum>
-                </property>
-                <property name="handleWidth">
-                 <number>4</number>
-                </property>
-                <property name="childrenCollapsible">
-                 <bool>false</bool>
-                </property>
-                <widget class="QWidget" name="model_objs_parent" native="true">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="minimumSize">
-                  <size>
-                   <width>270</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="autoFillBackground">
-                  <bool>false</bool>
-                 </property>
+                <widget class="QWidget" name="modelobjs_oplist_pg">
+                 <layout class="QVBoxLayout" name="verticalLayout_2">
+                  <property name="spacing">
+                   <number>5</number>
+                  </property>
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>0</number>
+                  </property>
+                  <item>
+                   <widget class="QSplitter" name="v_splitter_oprs_objs">
+                    <property name="autoFillBackground">
+                     <bool>true</bool>
+                    </property>
+                    <property name="orientation">
+                     <enum>Qt::Orientation::Vertical</enum>
+                    </property>
+                    <property name="handleWidth">
+                     <number>4</number>
+                    </property>
+                    <property name="childrenCollapsible">
+                     <bool>false</bool>
+                    </property>
+                    <widget class="QWidget" name="model_objs_parent" native="true">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="minimumSize">
+                      <size>
+                       <width>270</width>
+                       <height>0</height>
+                      </size>
+                     </property>
+                     <property name="autoFillBackground">
+                      <bool>false</bool>
+                     </property>
+                    </widget>
+                    <widget class="QWidget" name="oper_list_parent" native="true">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="minimumSize">
+                      <size>
+                       <width>270</width>
+                       <height>0</height>
+                      </size>
+                     </property>
+                    </widget>
+                   </widget>
+                  </item>
+                 </layout>
                 </widget>
-                <widget class="QWidget" name="oper_list_parent" native="true">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="minimumSize">
-                  <size>
-                   <width>270</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                </widget>
+                <widget class="QWidget" name="page_4"/>
                </widget>
               </item>
              </layout>
@@ -386,10 +413,10 @@
               <number>0</number>
              </property>
              <property name="rightMargin">
-              <number>0</number>
+              <number>2</number>
              </property>
              <property name="bottomMargin">
-              <number>0</number>
+              <number>2</number>
              </property>
              <property name="spacing">
               <number>0</number>
@@ -640,6 +667,16 @@
                   <bool>true</bool>
                  </property>
                 </widget>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="plugin_btns_lt">
+                 <property name="spacing">
+                  <number>5</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>0</number>
+                 </property>
+                </layout>
                </item>
               </layout>
              </item>
@@ -1625,8 +1662,17 @@
   <tabstop>models_tbw</tabstop>
  </tabstops>
  <resources>
+  <include location="../../../priv-core/res/logoicons.qrc"/>
   <include location="../res/resources.qrc"/>
-  <include location="../../../priv-plugins/res/logoicons.qrc"/>
+  <include location="../../../priv-core/res/logoicons.qrc"/>
+  <include location="../../../priv-core/res/logoicons.qrc"/>
+  <include location="../../../priv-core/res/logoicons.qrc"/>
+  <include location="../../../priv-core/res/logoicons.qrc"/>
+  <include location="../../../priv-core/res/logoicons.qrc"/>
+  <include location="../../../priv-core/res/logoicons.qrc"/>
+  <include location="../../../priv-core/res/logoicons.qrc"/>
+  <include location="../../../priv-core/res/logoicons.qrc"/>
+  <include location="../../../priv-core/res/logoicons.qrc"/>
  </resources>
  <connections/>
 </ui>
