@@ -125,13 +125,17 @@ QList<QToolButton *> PgModelerGuiPlugin::getPluginsToolButtons()
 	return buttons;
 }
 
-QList<PgModelerGuiPlugin::PluginWidgets> PgModelerGuiPlugin::getPluginsWidgets(QWidget *parent)
+QList<PgModelerGuiPlugin::PluginWidgets> PgModelerGuiPlugin::getPluginsWidgets(QWidget *parent, PgModelerGuiPlugin::WidgetDockMode parent_id)
 {
 	QList<PluginWidgets> widgets;
 	PluginWidgets p_wgt;
 
 	for(auto &plug : reg_plugins)
 	{
+		if(plug->getWidgetDockMode() == NoDock ||
+			 plug->getWidgetDockMode() != parent_id)
+			continue;
+
 		p_wgt = plug->createWidgets(parent);
 
 		if(!p_wgt.button && !p_wgt.widget)
@@ -174,6 +178,11 @@ void PgModelerGuiPlugin::configurePluginInfo(const QString &title, const QString
 void PgModelerGuiPlugin::showPluginInfo()
 {
 	plugin_info_frm->show();
+}
+
+PgModelerGuiPlugin::WidgetDockMode PgModelerGuiPlugin::getWidgetDockMode()
+{
+	return NoDock;
 }
 
 QString PgModelerGuiPlugin::getPluginIconPath(const QString &icon_name)

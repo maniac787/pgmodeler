@@ -249,6 +249,9 @@ class __libgui MainWindow: public QMainWindow, public Ui::MainWindow {
 		template <class WgtClass>
 		WgtClass *createViewWidget(MWViewsId view_id, const QString &view_name);
 
+		//! \brief Install plugins widgets in the main window dock area
+		void installPluginWidgets();
+
 	public:
 		MainWindow(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::Widget);
 

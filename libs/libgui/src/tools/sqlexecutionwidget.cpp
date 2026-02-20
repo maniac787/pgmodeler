@@ -212,9 +212,7 @@ SQLExecutionWidget::SQLExecutionWidget(QWidget * parent) : QWidget(parent)
 	connect(&sql_exec_hlp, &SQLExecutionHelper::s_executionAborted, this, &SQLExecutionWidget::handleExecutionAborted);
 	connect(stop_tb, &QToolButton::clicked, &sql_exec_hlp, &SQLExecutionHelper::cancelCommand, Qt::DirectConnection);
 
-	// After completing the SQLExecutionWidget construction we install the plugins features
-	for(auto &p_wgt : PgModelerGuiPlugin::getPluginsWidgets(this))
-		installPluginWidgets(p_wgt.button, p_wgt.widget);
+	installPluginWidgets();
 }
 
 SQLExecutionWidget::~SQLExecutionWidget()
@@ -276,30 +274,41 @@ void SQLExecutionWidget::reloadHighlightConfigs()
 	}
 }
 
-void SQLExecutionWidget::installPluginWidgets(QToolButton *btn, QWidget *wgt)
+void SQLExecutionWidget::installPluginWidgets()
 {
-	if(!btn)
-		return;
+	QToolButton *btn = nullptr;
+	QWidget *wgt = nullptr;
+	int wgt_idx = -1;
 
-	plugins_btns_lt->addWidget(btn);
+	// After completing the SQLExecutionWidget construction we install the plugins features
+	for(auto &p_wgt : PgModelerGuiPlugin::getPluginsWidgets(this, PgModelerGuiPlugin::DockOnSqlExecWgt))
+	{
+		btn = qobject_cast<QToolButton *>(p_wgt.button);
+		wgt = p_wgt.widget;
 
-	/* Forcing the button to have the same features of all other buttons in the
-	 * top area when they lie */
-	btn->setIconSize(run_sql_tb->iconSize());
-	btn->setFont(run_sql_tb->font());
-	btn->setSizePolicy(run_sql_tb->sizePolicy());
-	btn->setToolButtonStyle(run_sql_tb->toolButtonStyle());
-	btn->setAutoRaise(run_sql_tb->autoRaise());
-	btn->setParent(this);
+		if(!btn)
+			continue;
 
-	connect(btn, &QToolButton::toggled, this, &SQLExecutionWidget::togglePluginButton);
+		plugins_btns_lt->addWidget(btn);
 
-	int idx = -1;
+		/* Forcing the button to have the same features of all other buttons in the
+		 * top area when they lie */
+		btn->setIconSize(run_sql_tb->iconSize());
+		btn->setFont(run_sql_tb->font());
+		btn->setSizePolicy(run_sql_tb->sizePolicy());
+		btn->setToolButtonStyle(run_sql_tb->toolButtonStyle());
+		btn->setAutoRaise(run_sql_tb->autoRaise());
+		btn->setParent(this);
 
-	if(wgt)
-		idx = plugins_wgts_stw->addWidget(wgt);
+		connect(btn, &QToolButton::toggled, this, &SQLExecutionWidget::togglePluginButton);
 
-	btn->setProperty(Attributes::Index.toStdString().c_str(), idx);
+		wgt_idx = -1;
+
+		if(wgt)
+			wgt_idx = plugins_wgts_stw->addWidget(wgt);
+
+		btn->setProperty(Attributes::Index.toStdString().c_str(), wgt_idx);
+	}
 }
 
 void SQLExecutionWidget::togglePluginButton(bool checked)

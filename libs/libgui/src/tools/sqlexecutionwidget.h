@@ -105,9 +105,9 @@ class __libgui SQLExecutionWidget: public QWidget, public Ui::SQLExecutionWidget
 		void showEvent(QShowEvent *) override;
 		void resizeEvent(QResizeEvent *) override;
 		bool eventFilter(QObject *object, QEvent *event) override;
-		void reloadHighlightConfigs();
 
-		void installPluginWidgets(QToolButton *btn, QWidget *wgt);
+		void reloadHighlightConfigs();
+		void installPluginWidgets();
 
 	public:
 		static const QString ColumnNullValue;

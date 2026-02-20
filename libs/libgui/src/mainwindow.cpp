@@ -22,12 +22,12 @@
 #include "mainwindow.h"
 #include "guiutilsns.h"
 #include "tools/bugreportform.h"
-#include "tools/metadatahandlingwidget.h"
 #include "tools/sqlexecutionwidget.h"
 #include "tools/modelfixwidget.h"
 #include "tools/modelexportwidget.h"
 #include <QMimeData>
 #include <QDesktopServices>
+#include <QButtonGroup>
 
 int MainWindow::ToolsActionsCount {0};
 bool MainWindow::confirm_validation {true};
@@ -113,9 +113,10 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags) : QMainWindow(par
 	if(!GeneralConfigWidget::restoreWidgetGeometry(this))
 		this->setWindowState(Qt::WindowMaximized);
 
-	// Post initilize plug-ins	
+	// Post initilize plug-ins and installs their widget in main window (if needed)
 	PluginsConfigWidget *plugins_conf_wgt = configuration_wgt->getConfigurationWidget<PluginsConfigWidget>();
 	plugins_conf_wgt->postInitPlugins();
+	installPluginWidgets();
 
 	// Updating drop shadows settings to match the current UI theme
 	GuiUtilsNs::updateDropShadows(qApp->allWidgets());
@@ -2694,4 +2695,80 @@ void MainWindow::registerRecentModelIcon(const QString &suffix, const QIcon &fil
 
 	if(!recent_models_icons.contains(fmt_suffix))
 		recent_models_icons[fmt_suffix] = file_type_icon;
+}
+
+void MainWindow::installPluginWidgets()
+{
+	QPushButton *btn = nullptr;
+	QWidget *wgt = nullptr;
+	int wgt_idx = -1;
+
+	/* Check a plugin button and displays the page
+	 * of the related widget in side_widgets_stw */
+	auto check_btn_in_group_lmb = [this](bool checked) {
+		if(!checked)
+		{
+			showRightWidgetsBar();
+			return;
+		}
+
+		QPushButton *btn = qobject_cast<QPushButton *>(sender());
+		int wgt_idx = 	btn->property(Attributes::Index.toStdString().c_str()).toInt();
+		side_widgets_stw->setCurrentIndex(wgt_idx);
+
+		/* We force unchecking the objects_btn and operations_btn
+		 * since these two buttons a muttually exclusive with the
+		 * plugin buttons */
+		objects_btn->setChecked(false);
+		operations_btn->setChecked(false);
+		showRightWidgetsBar();
+	};
+
+	/* This lambda slot unchecks the plugin buttons when
+	 * objects_btn or operations_btn are checked */
+	auto uncheck_btns_in_group_lmb = [this](bool checked){
+		if(checked &&
+			 side_widgets_stw->currentIndex() > 0)
+		{
+			for(auto &btn : vert_wgts_btns_layout->findChildren<QAbstractButton *>())
+			{
+				if(btn != objects_btn && btn != operations_btn)
+					btn->setChecked(false);
+			}
+
+			// Show the default page (Model objects / Operations list)
+			side_widgets_stw->setCurrentIndex(0);
+			showRightWidgetsBar();
+		}
+	};
+
+	connect(objects_btn, &QPushButton::toggled, this, uncheck_btns_in_group_lmb);
+	connect(operations_btn, &QPushButton::toggled, this, uncheck_btns_in_group_lmb);
+
+	for(auto &p_wgt : PgModelerGuiPlugin::getPluginsWidgets(this, PgModelerGuiPlugin::DockOnMainWnd))
+	{
+		btn = qobject_cast<QPushButton *>(p_wgt.button);
+		wgt = p_wgt.widget;
+
+		if(!btn)
+			continue;
+
+		/* Forcing the button to have the same features of all other buttons in the
+		 * top area when they lie */
+		btn->setIconSize(objects_btn->iconSize());
+		btn->setFont(objects_btn->font());
+		btn->setSizePolicy(objects_btn->sizePolicy());
+		btn->setParent(this);
+
+		vert_wgts_btns_layout->addWidget(btn);
+
+		wgt_idx = -1;
+
+		if(wgt)
+			wgt_idx = side_widgets_stw->addWidget(wgt);
+
+		btn->setProperty(Attributes::Index.toStdString().c_str(), wgt_idx);
+
+		connect(btn, &QPushButton::toggled, this, check_btn_in_group_lmb);
+	}
 }

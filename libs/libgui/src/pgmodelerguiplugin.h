@@ -104,10 +104,10 @@ class __libgui PgModelerGuiPlugin: public PgModelerPlugin {
 
 	public:
 		struct PluginWidgets {
-			QToolButton *button;
+			QAbstractButton *button;
 			QWidget *widget;
 
-			PluginWidgets(QToolButton *btn, QWidget *wgt)
+			PluginWidgets(QAbstractButton *btn, QWidget *wgt)
 			{
 				button = btn;
 				widget = wgt;
@@ -147,6 +147,21 @@ class __libgui PgModelerGuiPlugin: public PgModelerPlugin {
 			BottomSection
 		};
 
+		/*! \brief This enum controls where the plugin widgets are docked (installed).
+		 *  Currently, there are two areas: at MainWindow::side_widgets_stw and
+		 *  SQLExecutionWidget::plugins_wgts_stw. */
+		enum WidgetDockMode: unsigned {
+			//! \brief The widgets are installed/docked in the MainWindow::side_widgets_stw
+			DockOnMainWnd,
+
+			//! \brief The widgets are installed/docked in the SQLExecutionWidget::plugins_wgts_stw
+			DockOnSqlExecWgt,
+
+			/*! \brief The widgets are not docked at all. Basically, plugins widget will be
+			 *  installed nowhere. This must be avoided since can lead to memory leaks */
+			NoDock
+		};
+
 		PgModelerGuiPlugin();
 
 		virtual ~PgModelerGuiPlugin();
@@ -175,6 +190,9 @@ class __libgui PgModelerGuiPlugin: public PgModelerPlugin {
 
 		//! \brief Returns the tool button inserted in database explorer instances
 		virtual QToolButton *getToolButton() = 0;
+
+		//! \brief Returns the parent class id in which the plugin's widgets are installed
+		virtual WidgetDockMode getWidgetDockMode();
 
 		//! \brief Returns the path to a plugin icon in the plugin's qrc file
 		QString getPluginIconPath(const QString &icon_name);
@@ -206,7 +224,7 @@ class __libgui PgModelerGuiPlugin: public PgModelerPlugin {
 		static QList<QToolButton *> getPluginsToolButtons();
 
 		//! \brief Returns the list of custom widgets of all registered plugins
-		static QList<PluginWidgets> getPluginsWidgets(QWidget *parent);
+		static QList<PluginWidgets> getPluginsWidgets(QWidget *parent, WidgetDockMode parent_id);
 
 		friend class PluginsConfigWidget;
 };

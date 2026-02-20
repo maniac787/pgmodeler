@@ -384,7 +384,6 @@
                   </item>
                  </layout>
                 </widget>
-                <widget class="QWidget" name="page_4"/>
                </widget>
               </item>
              </layout>
@@ -668,16 +667,6 @@
                  </property>
                 </widget>
                </item>
-               <item>
-                <layout class="QHBoxLayout" name="plugin_btns_lt">
-                 <property name="spacing">
-                  <number>5</number>
-                 </property>
-                 <property name="rightMargin">
-                  <number>0</number>
-                 </property>
-                </layout>
-               </item>
               </layout>
              </item>
              <item row="0" column="9">
@@ -792,7 +781,7 @@
      <x>0</x>
      <y>0</y>
      <width>1120</width>
-     <height>27</height>
+     <height>25</height>
     </rect>
    </property>
    <property name="autoFillBackground">
@@ -1664,6 +1653,7 @@
  <resources>
   <include location="../../../priv-core/res/logoicons.qrc"/>
   <include location="../res/resources.qrc"/>
+  <include location="../../../priv-core/res/logoicons.qrc"/>
   <include location="../../../priv-core/res/logoicons.qrc"/>
   <include location="../../../priv-core/res/logoicons.qrc"/>
   <include location="../../../priv-core/res/logoicons.qrc"/>
