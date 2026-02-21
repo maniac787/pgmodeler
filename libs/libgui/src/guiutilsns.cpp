@@ -956,25 +956,6 @@ namespace GuiUtilsNs {
 								 event->globalPosition().y() - (widget->height() - (event_wgt->height() / 2)));
 	}
 
- /*	void configureWidgetBuddy(QCheckBox *buddy_chkbox, QWidget *widget)
-	{
-		if(!buddy_chkbox || !widget)
-			return;
-
-		buddy_chkbox->setProperty(FontAdjustedProp, true);
-		configureWidgetFont(buddy_chkbox, SmallFontFactor, true);
-	}
-
-	void configureWidgetBuddy(QLabel *buddy_label, QWidget *widget)
-	{
-		if(!buddy_label || !widget)
-			return;
-
-		buddy_label->setBuddy(widget);
-		buddy_label->setProperty(FontAdjustedProp, true);
-		configureWidgetFont(buddy_label, SmallFontFactor, true);
-	} */
-
 	void configureBuddyWidgets(QWidget *widget)
 	{
 		if(!widget)

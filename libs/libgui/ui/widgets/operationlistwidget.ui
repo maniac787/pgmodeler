@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>457</width>
+    <width>344</width>
     <height>335</height>
    </rect>
   </property>
@@ -35,7 +35,7 @@
    <string>Executed Operations</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../../../../priv-plugins/res/logoicons.qrc">
+   <iconset resource="../../../../priv-core/res/logoicons.qrc">
     <normaloff>:/icons/icons/pgmodeler_logo.png</normaloff>:/icons/icons/pgmodeler_logo.png</iconset>
   </property>
   <property name="styleSheet">
@@ -453,8 +453,8 @@
   <tabstop>hide_tb</tabstop>
  </tabstops>
  <resources>
+  <include location="../../../../priv-core/res/logoicons.qrc"/>
   <include location="../../res/resources.qrc"/>
-  <include location="../../../../priv-plugins/res/logoicons.qrc"/>
  </resources>
  <connections/>
 </ui>

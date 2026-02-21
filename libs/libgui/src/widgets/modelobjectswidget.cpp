@@ -33,15 +33,12 @@ ModelObjectsWidget::ModelObjectsWidget(bool simplified_view, QWidget *parent) : 
 
 	GuiUtilsNs::configureBuddyWidgets(filter_wgt);
 	CustomUiStyle::setStyleHint(CustomUiStyle::AltDefaultFrmHint, content_frm);
+	GuiUtilsNs::configureWidgetFont(title_lbl, GuiUtilsNs::SmallFontFactor, true);
 
 	obj_types_wgt = nullptr;
 	model_wgt=nullptr;
 	db_model=nullptr;
 	setModel(db_model);
-
-	QFont fnt = title_lbl->font();
-	fnt.setPointSizeF(fnt.pointSizeF() * 0.85);
-	title_lbl->setFont(fnt);
 
 	title_wgt->setVisible(!simplified_view);
 	this->simplified_view = simplified_view;
