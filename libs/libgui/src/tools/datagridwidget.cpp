@@ -1180,6 +1180,7 @@ void DataGridWidget::clearChangedRows()
 
 	undo_enabled = false;
 	save_enabled = false;
+	updateRowOperationsInfo();
 
 	emit s_saveEnabled(false);
 	emit s_undoEnabled(false);
