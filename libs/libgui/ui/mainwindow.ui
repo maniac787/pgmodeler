@@ -576,20 +576,23 @@
                </item>
               </layout>
              </item>
-             <item row="0" column="4">
-              <spacer name="horizontalSpacer">
-               <property name="orientation">
-                <enum>Qt::Orientation::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
+             <item row="0" column="6">
+              <widget class="QWidget" name="scene_info_parent" native="true">
+               <property name="minimumSize">
                 <size>
-                 <width>40</width>
-                 <height>20</height>
+                 <width>20</width>
+                 <height>0</height>
                 </size>
                </property>
-              </spacer>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+              </widget>
              </item>
-             <item row="0" column="13">
+             <item row="0" column="15">
               <layout class="QHBoxLayout" name="vert_wgts_btns_layout">
                <property name="spacing">
                 <number>5</number>
@@ -669,7 +672,33 @@
                </item>
               </layout>
              </item>
-             <item row="0" column="9">
+             <item row="0" column="4">
+              <spacer name="horizontalSpacer">
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item row="0" column="12">
+              <spacer name="horizontalSpacer_2">
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item row="0" column="11">
               <widget class="QWidget" name="bg_saving_wgt" native="true">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -726,34 +755,18 @@
                </layout>
               </widget>
              </item>
-             <item row="0" column="10">
-              <spacer name="horizontalSpacer_2">
-               <property name="orientation">
-                <enum>Qt::Orientation::Horizontal</enum>
+             <item row="0" column="5">
+              <layout class="QHBoxLayout" name="plugins_info_wgts_lt">
+               <property name="leftMargin">
+                <number>5</number>
                </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
+               <property name="topMargin">
+                <number>5</number>
                </property>
-              </spacer>
-             </item>
-             <item row="0" column="6">
-              <widget class="QWidget" name="scene_info_parent" native="true">
-               <property name="minimumSize">
-                <size>
-                 <width>20</width>
-                 <height>0</height>
-                </size>
+               <property name="rightMargin">
+                <number>5</number>
                </property>
-               <property name="maximumSize">
-                <size>
-                 <width>16777215</width>
-                 <height>16777215</height>
-                </size>
-               </property>
-              </widget>
+              </layout>
              </item>
             </layout>
            </widget>

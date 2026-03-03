@@ -283,8 +283,8 @@ void SQLExecutionWidget::installPluginWidgets()
 	// After completing the SQLExecutionWidget construction we install the plugins features
 	for(auto &p_wgt : PgModelerGuiPlugin::getPluginsWidgets(this, PgModelerGuiPlugin::DockOnSqlExecWgt))
 	{
-		btn = qobject_cast<QToolButton *>(p_wgt.button);
-		wgt = p_wgt.widget;
+		btn = qobject_cast<QToolButton *>(p_wgt.action_btn);
+		wgt = p_wgt.main_wgt;
 
 		if(!btn)
 			continue;

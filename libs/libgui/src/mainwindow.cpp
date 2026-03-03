@@ -2699,10 +2699,6 @@ void MainWindow::registerRecentModelIcon(const QString &suffix, const QIcon &fil
 
 void MainWindow::installPluginWidgets()
 {
-	QPushButton *btn = nullptr;
-	QWidget *wgt = nullptr;
-	int wgt_idx = -1;
-
 	/* This lambda slot unchecks the plugin buttons when
 	 * objects_btn or operations_btn are checked */
 	auto uncheck_btns_in_group_lmb = [this](bool checked){
@@ -2758,30 +2754,38 @@ void MainWindow::installPluginWidgets()
 	connect(objects_btn, &QPushButton::toggled, this, uncheck_btns_in_group_lmb);
 	connect(operations_btn, &QPushButton::toggled, this, uncheck_btns_in_group_lmb);
 
+	QPushButton *act_btn = nullptr;
+	QWidget *m_wgt = nullptr, *x_wgt = nullptr;
+	int wgt_idx = -1;
+
 	for(auto &p_wgt : PgModelerGuiPlugin::getPluginsWidgets(this, PgModelerGuiPlugin::DockOnMainWnd))
 	{
-		btn = qobject_cast<QPushButton *>(p_wgt.button);
-		wgt = p_wgt.widget;
+		act_btn = qobject_cast<QPushButton *>(p_wgt.action_btn);
+		m_wgt = p_wgt.main_wgt;
+		x_wgt = p_wgt.extra_wgt;
 
-		if(!btn)
+		if(!act_btn)
 			continue;
 
 		/* Forcing the button to have the same features of all other buttons in the
 		 * top area when they lie */
-		btn->setIconSize(objects_btn->iconSize());
-		btn->setFont(objects_btn->font());
-		btn->setSizePolicy(objects_btn->sizePolicy());
-		btn->setParent(this);
+		act_btn->setIconSize(objects_btn->iconSize());
+		act_btn->setFont(objects_btn->font());
+		act_btn->setSizePolicy(objects_btn->sizePolicy());
+		act_btn->setParent(this);
 
-		vert_wgts_btns_layout->addWidget(btn);
+		vert_wgts_btns_layout->addWidget(act_btn);
 
 		wgt_idx = -1;
 
-		if(wgt)
-			wgt_idx = side_widgets_stw->addWidget(wgt);
+		if(m_wgt)
+			wgt_idx = side_widgets_stw->addWidget(m_wgt);
 
-		btn->setProperty(Attributes::Index.toStdString().c_str(), wgt_idx);
+		if(x_wgt)
+			plugins_info_wgts_lt->addWidget(x_wgt);
 
-		connect(btn, &QPushButton::toggled, this, check_btn_in_group_lmb);
+		act_btn->setProperty(Attributes::Index.toStdString().c_str(), wgt_idx);
+
+		connect(act_btn, &QPushButton::toggled, this, check_btn_in_group_lmb);
 	}
 }

@@ -104,16 +104,25 @@ class __libgui PgModelerGuiPlugin: public PgModelerPlugin {
 
 	public:
 		struct PluginWidgets {
-			QAbstractButton *button;
-			QWidget *widget;
+			//! \brief The action button that somehow toggles the plugin's main widget
+			QAbstractButton *action_btn;
 
-			PluginWidgets(QAbstractButton *btn, QWidget *wgt)
+			//! \brief The widget that reunites the majority of features of the plugin
+			QWidget *main_wgt,
+
+			/*! \brief An option, general purpose, widget. By convention this widget
+			 * must be as minimal as possible, for example, an informational widget,
+			 * or something that executes small tasks */
+			*extra_wgt;
+
+			PluginWidgets(QAbstractButton *act_btn, QWidget *m_wgt, QWidget *x_wgt)
 			{
-				button = btn;
-				widget = wgt;
+				action_btn = act_btn;
+				main_wgt = m_wgt;
+				extra_wgt = x_wgt;
 			}
 
-			PluginWidgets() : PluginWidgets(nullptr, nullptr) {}
+			PluginWidgets() : PluginWidgets(nullptr, nullptr, nullptr) {}
 		};
 
 		enum ActionId: unsigned {
