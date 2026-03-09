@@ -39,8 +39,14 @@ namespace UtilsNs {
 	EntityQuot("&quot;"),
 	EntityApos("&apos;"),
 
-	//! \brief Default char for data/value separator for special usage
-	DataSeparator("•"),
+	/*! \brief Default char for data/value separator for special usage.
+	 * Uses middle dot (·, U+00B7) instead of bullet (•, U+2022) to ensure compatibility
+	 * with non-UTF8 database encodings such as LATIN1/ISO-8859-1. The middle dot exists
+	 * in LATIN1 (0xB7) while bullet does not, preventing encoding conversion errors when
+	 * connecting to databases with different character encodings.
+	 * \warning This change may break compatibility with models created in previous versions
+	 * that used bullet (•) as the data separator. */
+	DataSeparator("·"),
 
 	//! \brief Indicates the wildcard filtering mode in the object listing
 	FilterWildcard("wildcard"),
