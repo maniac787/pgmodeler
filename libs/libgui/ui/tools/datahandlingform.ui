@@ -26,7 +26,7 @@
    <string>Data handling</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../../../../priv-plugins/res/logoicons.qrc">
+   <iconset resource="../../../../priv-core/res/logoicons.qrc">
     <normaloff>:/icons/icons/pgmodeler_logo.png</normaloff>:/icons/icons/pgmodeler_logo.png</iconset>
   </property>
   <property name="modal">
@@ -881,15 +881,24 @@
           <item>
            <widget class="QFrame" name="db_info_frm">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>0</height>
+             </size>
+            </property>
             <property name="frameShape">
              <enum>QFrame::Shape::StyledPanel</enum>
             </property>
-            <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <property name="frameShadow">
+             <enum>QFrame::Shadow::Plain</enum>
+            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_7">
              <property name="spacing">
               <number>5</number>
              </property>
@@ -1020,6 +1029,161 @@
                </property>
                <property name="toolTip">
                 <string>Current working database/host</string>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="indent">
+                <number>0</number>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="Line" name="separator_ln2">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>1</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="autoFillBackground">
+                <bool>false</bool>
+               </property>
+               <property name="frameShadow">
+                <enum>QFrame::Shadow::Plain</enum>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Orientation::Vertical</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="encoding_ico_lbl">
+               <property name="minimumSize">
+                <size>
+                 <width>25</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>25</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="pixmap">
+                <pixmap resource="../../res/resources.qrc">:/icons/icons/encoding.png</pixmap>
+               </property>
+               <property name="scaledContents">
+                <bool>true</bool>
+               </property>
+               <property name="indent">
+                <number>-1</number>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="encoding_lbl">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="font">
+                <font>
+                 <italic>true</italic>
+                </font>
+               </property>
+               <property name="toolTip">
+                <string>Server encoding</string>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="indent">
+                <number>0</number>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="Line" name="separator_ln3">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>1</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="autoFillBackground">
+                <bool>false</bool>
+               </property>
+               <property name="frameShadow">
+                <enum>QFrame::Shadow::Plain</enum>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Orientation::Vertical</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="server_ico_lbl">
+               <property name="minimumSize">
+                <size>
+                 <width>25</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>25</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="pixmap">
+                <pixmap resource="../../res/resources.qrc">:/icons/icons/typeother.png</pixmap>
+               </property>
+               <property name="scaledContents">
+                <bool>true</bool>
+               </property>
+               <property name="indent">
+                <number>-1</number>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="server_ver_lbl">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="font">
+                <font>
+                 <italic>true</italic>
+                 <bold>true</bold>
+                </font>
+               </property>
+               <property name="toolTip">
+                <string>PostgreSQL server version</string>
                </property>
                <property name="text">
                 <string/>
@@ -1177,8 +1341,18 @@
   <tabstop>close_btn</tabstop>
  </tabstops>
  <resources>
+  <include location="../../../../priv-core/res/logoicons.qrc"/>
   <include location="../../res/resources.qrc"/>
-  <include location="../../../../priv-plugins/res/logoicons.qrc"/>
+  <include location="../../../../priv-core/res/logoicons.qrc"/>
+  <include location="../../../../priv-core/res/logoicons.qrc"/>
+  <include location="../../../../priv-core/res/logoicons.qrc"/>
+  <include location="../../../../priv-core/res/logoicons.qrc"/>
+  <include location="../../../../priv-core/res/logoicons.qrc"/>
+  <include location="../../../../priv-core/res/logoicons.qrc"/>
+  <include location="../../../../priv-core/res/logoicons.qrc"/>
+  <include location="../../../../priv-core/res/logoicons.qrc"/>
+  <include location="../../../../priv-core/res/logoicons.qrc"/>
+  <include location="../../../../priv-core/res/logoicons.qrc"/>
  </resources>
  <connections/>
 </ui>

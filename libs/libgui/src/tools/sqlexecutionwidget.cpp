@@ -45,7 +45,7 @@ SQLExecutionWidget::SQLExecutionWidget(QWidget * parent) : QWidget(parent)
 	sql_cmd_splitter->setSizes({800, 200});
 
 	CustomUiStyle::setStyleHint(CustomUiStyle::DefaultFrmHint,
-															{ db_info_frm, separator_ln });
+															{ db_info_frm, separator_ln, separator_ln2, separator_ln3 });
 
 	sql_cmd_txt=GuiUtilsNs::createNumberedTextEditor(sql_cmd_wgt);
 	sql_cmd_txt->setObjectName("sql_cmd_txt");
@@ -342,8 +342,23 @@ void SQLExecutionWidget::setConnection(Connection conn)
 {
 	sql_exec_hlp.setConnection(conn);
 	sql_cmd_conn = conn;
+
 	db_name_lbl->setText(conn.getConnectionId(true, true, true));
 	username_lbl->setText(conn.getConnectionParam(Connection::ParamUser));
+
+	try
+	{
+		Connection aux_conn = conn;
+		attribs_map srv_info;
+
+		aux_conn.connect();
+		srv_info = aux_conn.getServerInfo();
+		encoding_lbl->setText(srv_info[Connection::ServerEncoding]);
+		server_ver_lbl->setText(srv_info[Connection::ServerVersion]);
+		aux_conn.close();
+	}
+	catch(Exception &e){}
+
 	code_compl_wgt->setConnection(conn);
 }
 

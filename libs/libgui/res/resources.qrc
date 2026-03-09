@@ -289,6 +289,7 @@
         <file>icons/browsedata1.png</file>
         <file>icons/duplicategrid.png</file>
         <file>icons/associations.png</file>
+        <file>icons/encoding.png</file>
     </qresource>
     <qresource prefix="/images">
         <file>images/brazil_flag.png</file>

@@ -464,10 +464,11 @@ void ConnectionsConfigWidget::testConnection()
 		conn.connect();
 		srv_info = conn.getServerInfo();
 
-		Messagebox::success(UtilsNs::formatMessage(tr("Connection successfully established!\n\nServer details:\n\nPID: `%1'\nProtocol: `%2'\nVersion: `%3'"))
-										 .arg(srv_info[Connection::ServerPid])
-										 .arg(srv_info[Connection::ServerProtocol])
-										 .arg(srv_info[Connection::ServerVersion]));
+		Messagebox::success(UtilsNs::formatMessage(tr("Connection successfully established!\n\nServer details:\n\nPID: `%1'\nProtocol: `%2'\nVersion: `%3'\nEncoding: `%4'"))
+										 .arg(srv_info[Connection::ServerPid],
+													srv_info[Connection::ServerProtocol],
+													srv_info[Connection::ServerVersion],
+													srv_info[Connection::ServerEncoding]));
 	}
 	catch(Exception &e)
 	{

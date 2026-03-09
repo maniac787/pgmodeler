@@ -59,6 +59,7 @@ const QString	Connection::SslFullVerify {"verify-full"};
 const QString	Connection::ServerVersion {"server-version"};
 const QString	Connection::ServerProtocol {"server-protocol"};
 const QString	Connection::ServerPid {"server-pid"};
+const QString	Connection::ServerEncoding { "server_encoding" };
 
 Connection::Connection()
 {
@@ -331,11 +332,12 @@ attribs_map Connection::getServerInfo()
 	attribs_map info;
 
 	if(!connection)
-		throw Exception(ErrorCode::OprNotAllocatedConnection,PGM_FUNC,PGM_FILE,PGM_LINE);
+		throw Exception(ErrorCode::OprNotAllocatedConnection, PGM_FUNC, PGM_FILE, PGM_LINE);
 
-	info[ServerPid]=QString::number(PQbackendPID(connection));
-	info[ServerVersion]=getPgSQLVersion();
-	info[ServerProtocol]=QString::number(PQprotocolVersion(connection));
+	info[ServerPid] = QString::number(PQbackendPID(connection));
+	info[ServerVersion] = getPgSQLVersion();
+	info[ServerProtocol] = QString::number(PQprotocolVersion(connection));
+	info[ServerEncoding] = PQparameterStatus(connection, ServerEncoding.toStdString().c_str());
 
 	return info;
 }

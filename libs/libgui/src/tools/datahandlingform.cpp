@@ -32,7 +32,8 @@ DataHandlingForm::DataHandlingForm(QWidget * parent, Qt::WindowFlags f): QDialog
 	setWindowFlags(Qt::Dialog | Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint);
 
 	CustomUiStyle::setStyleHint(CustomUiStyle::DefaultFrmHint,
-															{ db_info_frm, separator_ln_2 });
+															{ db_info_frm, separator_ln_2,
+																separator_ln2, separator_ln3});
 
 	curr_grid_wgt = nullptr;
 
@@ -107,8 +108,19 @@ void DataHandlingForm::setAttributes(const attribs_map &conn_params, const QStri
 
 		connection_id = conn.getConnectionId(true, true, false);
 		tmpl_conn_params = conn_params;
+
 		db_name_lbl->setText(conn.getConnectionId(true, true, true));
 		username_lbl->setText(conn.getConnectionParam(Connection::ParamUser));
+
+		try
+		{
+			conn.connect();
+			attribs_map srv_info = conn.getServerInfo();
+			encoding_lbl->setText(srv_info[Connection::ServerEncoding]);
+			server_ver_lbl->setText(srv_info[Connection::ServerVersion]);
+			conn.close();
+		}
+		catch (Exception &e) {}
 
 		schema_cmb->clear();
 		listObjects(schema_cmb, { ObjectType::Schema });
