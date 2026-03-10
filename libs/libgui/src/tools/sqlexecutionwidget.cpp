@@ -357,7 +357,12 @@ void SQLExecutionWidget::setConnection(Connection conn)
 		server_ver_lbl->setText(srv_info[Connection::ServerVersion]);
 		aux_conn.close();
 	}
-	catch(Exception &e){}
+	catch(Exception &)
+	{
+		encoding_lbl->setText("-");
+		server_ver_lbl->setText("-");
+		qDebug() << tr("** Failed to retrieve server info.");
+	}
 
 	code_compl_wgt->setConnection(conn);
 }

@@ -79,10 +79,7 @@ void ConnectionsConfigWidget::hideEvent(QHideEvent *event)
 void ConnectionsConfigWidget::showEvent(QShowEvent *event)
 {
 	if(!event->spontaneous())
-	{
-		updateConnectionsCombo();
-		newConnection();
-	}
+		resetForm();
 }
 
 void ConnectionsConfigWidget::updateConnectionsCombo()
@@ -497,6 +494,12 @@ void ConnectionsConfigWidget::restoreDefaults()
 	{
 		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
+}
+
+void ConnectionsConfigWidget::resetForm()
+{
+	updateConnectionsCombo();
+	newConnection();
 }
 
 void ConnectionsConfigWidget::saveConfiguration()

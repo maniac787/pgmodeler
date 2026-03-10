@@ -120,7 +120,12 @@ void DataHandlingForm::setAttributes(const attribs_map &conn_params, const QStri
 			server_ver_lbl->setText(srv_info[Connection::ServerVersion]);
 			conn.close();
 		}
-		catch (Exception &e) {}
+		catch (Exception &)
+		{
+			encoding_lbl->setText("-");
+			server_ver_lbl->setText("-");
+			qDebug() << tr("** Failed to retrieve server info.");
+		}
 
 		schema_cmb->clear();
 		listObjects(schema_cmb, { ObjectType::Schema });

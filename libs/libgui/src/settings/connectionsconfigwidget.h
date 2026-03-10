@@ -113,6 +113,7 @@ class __libgui ConnectionsConfigWidget: public BaseConfigWidget, public Ui::Conn
 		void restoreDefaults() override;
 
 	private slots:
+		void resetForm();
 		void newConnection();
 		void duplicateConnection();
 		void handleConnection();
