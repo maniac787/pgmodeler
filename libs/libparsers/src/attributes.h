@@ -424,6 +424,7 @@ extern __libparsers const QString
 	Line,
 	LineHighlightColor,
 	LineNumbersBgColor,
+	LineNumbersHlColor,
 	LineNumbersColor,
 	Link,
 	LinkMode,

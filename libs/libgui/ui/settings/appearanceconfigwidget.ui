@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>871</width>
+    <width>968</width>
     <height>919</height>
    </rect>
   </property>
@@ -498,6 +498,9 @@
                </item>
                <item>
                 <layout class="QHBoxLayout" name="code_wgt_colors_lt">
+                 <property name="spacing">
+                  <number>10</number>
+                 </property>
                  <item>
                   <spacer name="horizontalSpacer_2">
                    <property name="orientation">

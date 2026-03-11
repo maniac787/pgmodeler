@@ -80,11 +80,7 @@ class __libgui AppearanceConfigWidget: public BaseConfigWidget, public Ui::Appea
 					
 		ColorPickerWidget *elem_color_cp,
 
-		*line_numbers_cp,
-
-		*line_numbers_bg_cp,
-
-		*line_highlight_cp,
+		*line_num_colors_cp,
 
 		*grid_color_cp,
 

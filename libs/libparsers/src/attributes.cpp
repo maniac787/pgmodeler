@@ -411,6 +411,7 @@ namespace Attributes {
 	Line("line"),
 	LineHighlightColor("line-highlight-color"),
 	LineNumbersBgColor("line-numbers-bg-color"),
+	LineNumbersHlColor("line-numbers-hl-color"),
 	LineNumbersColor("line-numbers-color"),
 	Link("link"),
 	LinkMode("link-mode"),

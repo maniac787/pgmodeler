@@ -28,6 +28,7 @@
 
 QColor LineNumbersWidget::font_color { Qt::lightGray };
 QColor LineNumbersWidget::bg_color { Qt::black };
+QColor LineNumbersWidget::hl_color { Qt::lightGray };
 
 LineNumbersWidget::LineNumbersWidget(QPlainTextEdit * parent) : QWidget(parent)
 {
@@ -53,10 +54,11 @@ void LineNumbersWidget::drawLineNumbers(int first_line, int line_count, int dy, 
 	this->update();
 }
 
-void LineNumbersWidget::setColors(const QColor &font_color, const QColor &bg_color)
+void LineNumbersWidget::setColors(const QColor &font_color, const QColor &bg_color, const QColor &hl_color)
 {
-	LineNumbersWidget::font_color=font_color;
-	LineNumbersWidget::bg_color=bg_color;
+	LineNumbersWidget::font_color = font_color;
+	LineNumbersWidget::bg_color = bg_color;
+	LineNumbersWidget::hl_color = hl_color;
 }
 
 void LineNumbersWidget::paintEvent(QPaintEvent *event)
@@ -110,7 +112,7 @@ void LineNumbersWidget::paintEvent(QPaintEvent *event)
 				painter.setBrush(bg_color.darker(150));
 				painter.setPen(Qt::transparent);
 				painter.drawRect(QRect(-1, y - 1, width + 1, block_height + padding));
-				painter.setPen(font_color.lighter(180));
+				painter.setPen(hl_color);
 			}
 			else
 				painter.setPen(font_color);

@@ -175,18 +175,13 @@ AppearanceConfigWidget::AppearanceConfigWidget(QWidget *parent) : BaseConfigWidg
 
 	objects_grid->addWidget(viewp, 2, 0, 1, 0);
 
-	line_numbers_cp = new ColorPickerWidget(1, this);
-	line_numbers_cp->setButtonToolTip(0, tr("Line numbers' font color"));
+	line_num_colors_cp = new ColorPickerWidget(4, this);
+	line_num_colors_cp->setButtonToolTip(0, tr("Line numbers' font color"));
+	line_num_colors_cp->setButtonToolTip(1, tr("Line numbers' background color"));
+	line_num_colors_cp->setButtonToolTip(2, tr("Line numbers' highlight font color"));
+	line_num_colors_cp->setButtonToolTip(3, tr("Highlighted line color"));
 
-	line_numbers_bg_cp = new ColorPickerWidget(1, this);
-	line_numbers_bg_cp->setButtonToolTip(0, tr("Line numbers' background color"));
-
-	line_highlight_cp = new ColorPickerWidget(1, this);
-	line_highlight_cp->setButtonToolTip(0, tr("Highlighted line color"));
-
-	code_wgt_colors_lt->insertWidget(0, line_numbers_cp);
-	code_wgt_colors_lt->insertWidget(0, line_numbers_bg_cp);
-	code_wgt_colors_lt->insertWidget(0, line_highlight_cp);
+	code_wgt_colors_lt->insertWidget(0, line_num_colors_cp);
 
 	font_preview_txt = new NumberedTextEditor(this);
 	font_preview_txt->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -233,12 +228,8 @@ CREATE TABLE public.table_b (\n \
 
 	connect(code_font_size_spb, &QDoubleSpinBox::textChanged, this, &AppearanceConfigWidget::previewCodeFontStyle);
 	connect(code_font_cmb, &QFontComboBox::currentFontChanged, this, &AppearanceConfigWidget::previewCodeFontStyle);
-	connect(line_numbers_cp, &ColorPickerWidget::s_colorChanged, this, &AppearanceConfigWidget::previewCodeFontStyle);
-	connect(line_numbers_cp, &ColorPickerWidget::s_colorsChanged, this, &AppearanceConfigWidget::previewCodeFontStyle);
-	connect(line_numbers_bg_cp, &ColorPickerWidget::s_colorChanged, this, &AppearanceConfigWidget::previewCodeFontStyle);
-	connect(line_numbers_bg_cp, &ColorPickerWidget::s_colorsChanged, this, &AppearanceConfigWidget::previewCodeFontStyle);
-	connect(line_highlight_cp, &ColorPickerWidget::s_colorChanged, this, &AppearanceConfigWidget::previewCodeFontStyle);
-	connect(line_highlight_cp, &ColorPickerWidget::s_colorsChanged, this, &AppearanceConfigWidget::previewCodeFontStyle);
+	connect(line_num_colors_cp, &ColorPickerWidget::s_colorChanged, this, &AppearanceConfigWidget::previewCodeFontStyle);
+	connect(line_num_colors_cp, &ColorPickerWidget::s_colorsChanged, this, &AppearanceConfigWidget::previewCodeFontStyle);
 	connect(disp_line_numbers_chk, &QCheckBox::toggled, this, &AppearanceConfigWidget::previewCodeFontStyle);
 	connect(hightlight_lines_chk, &QCheckBox::toggled, this, &AppearanceConfigWidget::previewCodeFontStyle);
 	connect(tab_width_spb, &QSpinBox::textChanged, this, &AppearanceConfigWidget::previewCodeFontStyle);
@@ -664,9 +655,17 @@ void AppearanceConfigWidget::applyDesignCodeStyle()
 	code_font_size_spb->setValue(config_params[Attributes::Code][Attributes::FontSize].toDouble());
 	disp_line_numbers_chk->setChecked(config_params[Attributes::Code][Attributes::DisplayLineNumbers] == Attributes::True);
 	hightlight_lines_chk->setChecked(config_params[Attributes::Code][Attributes::HighlightLines] == Attributes::True);
-	line_numbers_cp->setColor(0, config_params[Attributes::Code][Attributes::LineNumbersColor]);
-	line_numbers_bg_cp->setColor(0, config_params[Attributes::Code][Attributes::LineNumbersBgColor]);
-	line_highlight_cp->setColor(0, config_params[Attributes::Code][Attributes::LineHighlightColor]);
+
+	line_num_colors_cp->setColor(0, config_params[Attributes::Code][Attributes::LineNumbersColor]);
+	line_num_colors_cp->setColor(1, config_params[Attributes::Code][Attributes::LineNumbersBgColor]);
+	line_num_colors_cp->setColor(2, config_params[Attributes::Code][Attributes::LineNumbersHlColor]);
+	line_num_colors_cp->setColor(3, config_params[Attributes::Code][Attributes::LineHighlightColor]);
+
+	/* Backward compatibility setting. If there's no LineNumbersHlColor
+	 * defined in the settings, we use LineNumbersColor instead because in previous
+	 * versions there was no specific color for highlighted line number color */
+	if(config_params[Attributes::Code][Attributes::LineNumbersHlColor].isEmpty())
+		line_num_colors_cp->setColor(2, config_params[Attributes::Code][Attributes::LineNumbersColor]);
 
 	int tab_width = (config_params[Attributes::Code][Attributes::TabWidth]).toInt();
 	tab_width_chk->setChecked(tab_width > 0);
@@ -772,9 +771,11 @@ void AppearanceConfigWidget::saveConfiguration()
 		attribs[Attributes::FontSize] = QString::number(code_font_size_spb->value());
 		attribs[Attributes::DisplayLineNumbers] = (disp_line_numbers_chk->isChecked() ? Attributes::True : "");
 		attribs[Attributes::HighlightLines] = (hightlight_lines_chk->isChecked() ? Attributes::True : "");
-		attribs[Attributes::LineNumbersColor] = line_numbers_cp->getColor(0).name();
-		attribs[Attributes::LineNumbersBgColor] = line_numbers_bg_cp->getColor(0).name();
-		attribs[Attributes::LineHighlightColor] = line_highlight_cp->getColor(0).name();
+		attribs[Attributes::LineNumbersColor] = line_num_colors_cp->getColor(0).name();
+		attribs[Attributes::LineNumbersBgColor] = line_num_colors_cp->getColor(1).name();
+		attribs[Attributes::LineNumbersHlColor] = line_num_colors_cp->getColor(2).name();
+		attribs[Attributes::LineHighlightColor] = line_num_colors_cp->getColor(3).name();
+
 		attribs[Attributes::TabWidth] = QString::number(tab_width_chk->isChecked() ? tab_width_spb->value() : 0);
 
 		config_params[Attributes::Code] = attribs;
@@ -1010,10 +1011,12 @@ void AppearanceConfigWidget::previewCodeFontStyle()
 	SyntaxHighlighter::setDefaultFont(fnt);
 	NumberedTextEditor::setDefaultFont(fnt);
 	NumberedTextEditor::setLineNumbersVisible(disp_line_numbers_chk->isChecked());
-	NumberedTextEditor::setLineHighlightColor(line_highlight_cp->getColor(0));
 	NumberedTextEditor::setHighlightLines(hightlight_lines_chk->isChecked());
 	NumberedTextEditor::setTabDistance(tab_width_chk->isChecked() ? tab_width_spb->value() : 0);
-	LineNumbersWidget::setColors(line_numbers_cp->getColor(0), line_numbers_bg_cp->getColor(0));
+	NumberedTextEditor::setLineHighlightColor(line_num_colors_cp->getColor(3));
+	LineNumbersWidget::setColors(line_num_colors_cp->getColor(0),
+															 line_num_colors_cp->getColor(1),
+															 line_num_colors_cp->getColor(2));
 
 	font_preview_txt->setReadOnly(false);
 	font_preview_txt->resizeWidgets();

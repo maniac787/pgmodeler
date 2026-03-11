@@ -26,6 +26,7 @@
 <!ATTLIST code highlight-lines (false|true) "true">
 <!ATTLIST code line-numbers-color CDATA #IMPLIED>
 <!ATTLIST code line-numbers-bg-color CDATA #IMPLIED>
+<!ATTLIST code line-numbers-hl-color CDATA #IMPLIED>
 <!ATTLIST code line-highlight-color CDATA #IMPLIED>
 
 <!ELEMENT objects (global, font+, object+)>

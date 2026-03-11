@@ -39,6 +39,7 @@
 \s highlight-lines=" %if {highlight-lines} %then true %else false %end "
 \s line-numbers-color="{line-numbers-color}" \n
 {spc} line-numbers-bg-color="{line-numbers-bg-color}"
+\s line-numbers-hl-color="{line-numbers-hl-color}"
 \s line-highlight-color="{line-highlight-color}"
 [/>] \n
 
