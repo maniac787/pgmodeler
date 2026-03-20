@@ -266,6 +266,10 @@ class __libutils CustomUiStyle : public QProxyStyle {
 
 		QPixmap createGrayMaskedPixmap(const QPixmap &original) const;
 
+		/*! \brief Adjusted the color for both dark UI and light UI
+		 *  A negative value either in dark_ui_factor and light_ui_factor
+		 *  generates a darker color (calling QColor::darker), on the other hand,
+		 *  a positive value generates a lighter color (calling QColor::lighter) */
 		static QColor getAdjustedColor(const QColor &color, int dark_ui_factor, int light_ui_factor);
 
 		void drawComplexControl(ComplexControl control, const QStyleOptionComplex *option,
