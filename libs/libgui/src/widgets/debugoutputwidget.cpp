@@ -23,7 +23,7 @@
 #include "customuistyle.h"
 #include "guiutilsns.h"
 #include "application.h"
-#include "settings/appearanceconfigwidget.h"
+#include <QScrollBar>
 
 DebugOutputWidget::DebugOutputWidget(QWidget *parent) : QWidget(parent)
 {
@@ -57,7 +57,7 @@ void DebugOutputWidget::showActionButtons(bool show)
 	dbg_output_txt->showActionButtons(show);
 }
 
-void DebugOutputWidget::logMessage(const QString &msg, const QColor &fg_color)
+void DebugOutputWidget::logMessage(const QString &msg, const QColor &fg_color, bool ensure_ln_start)
 {
 	QTextCursor tc = dbg_output_txt->textCursor();
 	int ini_pos = tc.position();
@@ -79,6 +79,12 @@ void DebugOutputWidget::logMessage(const QString &msg, const QColor &fg_color)
 
 		tc.mergeCharFormat(fmt);
 	}
+
+	/* Appending an empty line moves the cursor to the start of
+	 * a new line, which resets the horizontal scrollbar position
+	 * to show the beginning of log messages */
+	 if(ensure_ln_start)
+		dbg_output_txt->appendPlainText("");
 }
 
 void DebugOutputWidget::logMessage(QtMsgType type, const QMessageLogContext &, const QString &msg)
@@ -92,5 +98,5 @@ void DebugOutputWidget::logMessage(QtMsgType type, const QMessageLogContext &, c
 	};
 
 	logMessage(msg, msg_colors.count(type) ?
-							 msg_colors[type] : Qt::transparent);
+						 msg_colors[type] : Qt::transparent);
 }
