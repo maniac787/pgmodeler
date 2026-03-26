@@ -179,11 +179,24 @@ void CustomTableWidget::adjustColumnToContents(int col)
 	table_tbw->resizeRowsToContents();
 }
 
-void CustomTableWidget::setVerticalHeaderVisible(bool value)
+void CustomTableWidget::setHeaderVisible(Qt::Orientation orientation, bool value)
 {
-	table_tbw->verticalHeader()->setVisible(value);
-	table_tbw->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
+	QHeaderView *header_vw = orientation == Qt::Vertical ?
+													 table_tbw->verticalHeader() :
+													 table_tbw->horizontalHeader();
+
+	header_vw->setVisible(value);
 }
+
+/* void CustomTableWidget::setVerticalHeaderVisible(bool value)
+{
+	setHeaderVisible(Qt::Vertical, value);
+}
+
+void CustomTableWidget::setHorizontalHeaderVisible(bool value)
+{
+	setHeaderVisible(Qt::Horizontal, value);
+} */
 
 void CustomTableWidget::setSortingEnabled(bool value)
 {
@@ -277,6 +290,14 @@ void CustomTableWidget::setCellFlags(Qt::ItemFlags flags, unsigned int row_idx, 
 	getItem(row_idx, col_idx)->setFlags(flags);
 }
 
+void CustomTableWidget::setCellColors(int row_idx, int col_idx, const QColor &fg_color, const QColor &bg_color)
+{
+	QTableWidgetItem *item = getItem(row_idx, col_idx);
+
+	item->setForeground(fg_color);
+	item->setBackground(bg_color);
+}
+
 void CustomTableWidget::clearCellText(unsigned row_idx, unsigned col_idx)
 {
 	try
@@ -305,19 +326,10 @@ void CustomTableWidget::setRowColors(int row_idx, const QColor &fg_color, const 
 	if(row_idx >= table_tbw->rowCount())
 		throw Exception(ErrorCode::RefRowObjectTabInvalidIndex,PGM_FUNC,PGM_FILE,PGM_LINE);
 
-	QTableWidgetItem *item=nullptr;
 	int col_count = table_tbw->columnCount();
 
 	for(int col = 0; col < col_count; col++)
-	{
-		item = table_tbw->item(row_idx, col);
-
-		if(!item)
-			continue;
-
-		item->setForeground(fg_color);
-		item->setBackground(bg_color);
-	}
+		setCellColors(row_idx, col, fg_color, bg_color);
 }
 
 void CustomTableWidget::setRowData(const QVariant &data, unsigned row_idx)

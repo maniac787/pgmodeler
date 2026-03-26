@@ -129,6 +129,9 @@ class __libgui CustomTableWidget: public QWidget, public Ui::CustomTableWidget {
 		//! \brief Sets the flags of the specified cell
 		void setCellFlags(Qt::ItemFlags flags, unsigned row_idx, unsigned col_idx);
 
+		//! \brief Sets an individual foreground/background configuration for the specified cell
+		void setCellColors(int row_idx, int col_idx, const QColor &fg_color, const QColor &bg_color = Qt::transparent);
+
 		//! \brief Sets the data which the specified row stores
 		void setRowData(const QVariant &data, unsigned row_idx);
 
@@ -197,7 +200,7 @@ class __libgui CustomTableWidget: public QWidget, public Ui::CustomTableWidget {
 
 		void adjustColumnToContents(int col);
 
-		void setVerticalHeaderVisible(bool value);
+		void setHeaderVisible(Qt::Orientation orientation, bool value);
 
 		void setSortingEnabled(bool value);
 

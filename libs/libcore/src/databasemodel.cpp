@@ -806,9 +806,9 @@ void DatabaseModel::destroyObjects()
 	BaseObject::setClearDepsInDtor(false);
 	BaseGraphicObject::setUpdatesEnabled(false);
 
-	for(unsigned i=0; i < 5; i++)
+	for(auto &g_obj_type : graph_types)
 	{
-		for(auto &object : *this->getObjectList(graph_types[i]))
+		for(auto &object : *this->getObjectList(g_obj_type))
 		{
 			graph_obj = dynamic_cast<BaseGraphicObject *>(object);
 
