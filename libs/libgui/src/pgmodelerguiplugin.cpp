@@ -180,22 +180,22 @@ void PgModelerGuiPlugin::showPluginInfo()
 	plugin_info_frm->show();
 }
 
-PgModelerGuiPlugin::WidgetDockMode PgModelerGuiPlugin::getWidgetDockMode()
+PgModelerGuiPlugin::WidgetDockMode PgModelerGuiPlugin::getWidgetDockMode() const
 {
 	return NoDock;
 }
 
-QString PgModelerGuiPlugin::getPluginIconPath(const QString &icon_name)
+QString PgModelerGuiPlugin::getPluginIconPath(const QString &icon_name) const
 {
 	return QString(":/%1/%2.png").arg(getPluginName(), icon_name);
 }
 
-QIcon PgModelerGuiPlugin::getPluginIcon(const QString &icon_name)
+QIcon PgModelerGuiPlugin::getPluginIcon(const QString &icon_name) const
 {
 	return { QIcon(getPluginIconPath(icon_name)) };
 }
 
-QPixmap PgModelerGuiPlugin::getPluginPixmap(const QString &icon_name)
+QPixmap PgModelerGuiPlugin::getPluginPixmap(const QString &icon_name) const
 {
 	return { QPixmap(getPluginIconPath(icon_name)) };
 }

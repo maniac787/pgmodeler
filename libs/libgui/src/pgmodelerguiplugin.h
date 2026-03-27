@@ -176,16 +176,16 @@ class __libgui PgModelerGuiPlugin: public PgModelerPlugin {
 		virtual ~PgModelerGuiPlugin();
 
 		//! \brief Returns the plugin's title, this same text is used as action's text on plugins toolbar.
-		virtual QString getPluginTitle() = 0;
+		virtual QString getPluginTitle() const = 0;
 
 		//! \brief Returns the plugin's author
-		virtual QString getPluginAuthor() = 0;
+		virtual QString getPluginAuthor() const = 0;
 
 		//! \brief Returns the plugin's version
-		virtual QString getPluginVersion() = 0;
+		virtual QString getPluginVersion() const = 0;
 
 		//! \brief Returns the plugin's complete description
-		virtual QString getPluginDescription() = 0;
+		virtual QString getPluginDescription() const = 0;
 
 		//! \brief Shows the plugin's information dialog
 		virtual void showPluginInfo();
@@ -195,22 +195,22 @@ class __libgui PgModelerGuiPlugin: public PgModelerPlugin {
 
 		/*! \brief Returns the menu section id where the ModelAction should be placed in
 		 *  the model widget popup menu. */
-		virtual MenuSectionId getMenuSection() = 0;
+		virtual MenuSectionId getMenuSection() const = 0;
 
 		//! \brief Returns the tool button inserted in database explorer instances
 		virtual QToolButton *getToolButton() = 0;
 
 		//! \brief Returns the parent class id in which the plugin's widgets are installed
-		virtual WidgetDockMode getWidgetDockMode();
+		virtual WidgetDockMode getWidgetDockMode() const;
 
 		//! \brief Returns the path to a plugin icon in the plugin's qrc file
-		QString getPluginIconPath(const QString &icon_name);
+		QString getPluginIconPath(const QString &icon_name) const;
 
 		//! \brief Returns an QIcon instance with the plugin icon in the plugin's qrc file
-		QIcon getPluginIcon(const QString &icon_name);
+		QIcon getPluginIcon(const QString &icon_name) const;
 
 		//! \brief Returns an QPixmap instance with the plugin icon in the plugin's qrc file
-		QPixmap getPluginPixmap(const QString &icon_name);
+		QPixmap getPluginPixmap(const QString &icon_name) const;
 
 		/*! \brief Returns an struct containing a toolbutton and a widget
 		 *  that are installed in the areas in SQLExecutionWidget reserved for plugin
