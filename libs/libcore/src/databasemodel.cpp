@@ -3421,7 +3421,7 @@ void DatabaseModel::loadModel(const QString &filename)
 
 		//Loads the root DTD
 		xmlparser.setDTDFile(dtd_file + GlobalAttributes::RootDTD +
-														 GlobalAttributes::ObjectDTDExt,
+												 GlobalAttributes::ObjectDTDExt,
 												 GlobalAttributes::RootDTD);
 
 		//Loads the file validating it against the root DTD

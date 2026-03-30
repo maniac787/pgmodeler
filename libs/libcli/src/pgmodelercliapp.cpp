@@ -1432,8 +1432,9 @@ void PgModelerCliApp::extractObjectXML()
 		}
 
 		/*  Special case for empty tags like <language />, they will be converted to
-		<language></language> in order to be correctly extracted further. Currently only language has this
-		behaviour, so additional object may be added in the future. */
+		 *  <language></language> in order to be correctly extracted further.
+		 *  Currently only language has this behaviour, so additional object may
+		 *  be added in the future. */
 		if(lin.contains(QString("<%1").arg(BaseObject::getSchemaName(ObjectType::Language))))
 		{
 			lin=lin.simplified();
@@ -1442,8 +1443,8 @@ void PgModelerCliApp::extractObjectXML()
 				lin.replace("/>", QString("></%1>").arg(BaseObject::getSchemaName(ObjectType::Language)));
 		}
 		/* Special case for function signatures. In previous releases, the function's signature was wrongly
-	 including OUT parameters and according to docs they are not part of the signature, so it is needed
-	 to remove them if the current line contains a valid signature with parameters. */
+		 * including OUT parameters and according to docs they are not part of the signature, so it is needed
+		 * to remove them if the current line contains a valid signature with parameters. */
 		else if(lin.contains(func_signature))
 			lin.remove(out_param);
 
@@ -1470,8 +1471,8 @@ void PgModelerCliApp::extractObjectXML()
 					end_tag+=">";
 
 				/* Checking if the line start a relationship. Relationships are treated
-		a little different because they can be empty <relationship attribs /> or
-		contain open and close tags <relationship attribs></relationship> */
+				 * a little different because they can be empty <relationship attribs /> or
+				 * contain open and close tags <relationship attribs></relationship> */
 				is_rel=lin.contains(Attributes::Relationship);
 
 				if(is_rel)
@@ -1513,6 +1514,17 @@ void PgModelerCliApp::extractObjectXML()
 			//Pushes the extracted definition to the list (only if not empty)
 			if(def_xml!="\n")
 			{
+				/* Until 2.0.0-alpha1 the UtilsNs::DataSeparator char was
+				 * the bullet character (•, U+2022). With the introduction
+				 * of client_encoding via connection parameters to connect
+				 * to non-utf8 databases, we had to change the data separator
+				 * from an UTF8 char to a Latin1 one, thus, the middle dot
+				 * character was adopted (·, U+00B7). This way, we have to
+				 * convert the privious bullet char to middle dot to avoid
+				 * breaking the model */
+				if(model_version < "2.0.0-beta")
+					def_xml.replace("•", UtilsNs::DataSeparator);
+
 				objs_xml.push_back(def_xml);
 				buffer_size += def_xml.size();
 			}
