@@ -213,17 +213,22 @@ void CustomTableWidget::setAddRowOnTabPress(bool value)
 		disconnect(table_tbw, &QTableWidget::currentCellChanged, this, &CustomTableWidget::addRowOnTabPress);
 }
 
-void CustomTableWidget::addCustomButton(QToolButton *btn)
+QToolButton *CustomTableWidget::addCustomButton(const QIcon &icon, const QKeySequence &shortcut,
+																								const QString &tooltip, const QString &btn_name)
 {
-	if(!btn)
-		throw Exception(ErrorCode::OprNotAllocatedObject, PGM_FUNC, PGM_FILE, PGM_LINE);
+	QToolButton *btn = new QToolButton(this);
 
 	buttons_lt->addWidget(btn);
+	btn->setObjectName(btn_name);
+	btn->setToolTip(tooltip);
+	btn->setIcon(icon);
+	btn->setShortcut(shortcut);
 	btn->setIconSize(add_tb->iconSize());
 	btn->setToolButtonStyle(add_tb->toolButtonStyle());
 	btn->setSizePolicy(add_tb->sizePolicy());
 	btn->setMaximumSize(add_tb->maximumSize());
-	btn->setParent(this);
+
+	return btn;
 }
 
 void CustomTableWidget::setColumnCount(unsigned col_count)

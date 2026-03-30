@@ -209,8 +209,10 @@ class __libgui CustomTableWidget: public QWidget, public Ui::CustomTableWidget {
 		void setAddRowOnTabPress(bool value);
 
 		/*! \brief Adds a custom tool button to the end of buttons' list.
-		 *  The parent of the button is changed to the custom table itself */
-		void addCustomButton(QToolButton *btn);
+		 * The button is returned for extra personalization and
+		 * signal/slot connections */
+		QToolButton *addCustomButton(const QIcon &icon = {}, const QKeySequence &shortcut = {},
+																 const QString &tooltip = {}, const QString &btn_name = {});
 
 		void setItemContextMenu(QMenu *menu);
 
