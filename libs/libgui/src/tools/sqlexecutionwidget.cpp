@@ -528,7 +528,7 @@ void SQLExecutionWidget::handleExecutionAborted(Exception e)
 
 	msgoutput_lst->setVisible(true);
 	results_parent->setVisible(false);
-	results_tb->setEnabled(false);
+	//results_tb->setEnabled(false);
 
 	addToSQLHistory(sql_exec_hlp.getCommand(), 0, e.getErrorMessage());
 	qApp->alert(this);
@@ -575,7 +575,7 @@ void SQLExecutionWidget::finishExecution(int rows_affected)
 		empty = (!res_model || res_model->rowCount() == 0);
 		output_tbw->setTabEnabled(0, !empty);
 		results_parent->setVisible(!empty);
-		results_tb->setEnabled(!empty);
+		//results_tb->setEnabled(!empty);
 
 		if(!empty)
 		{
@@ -729,7 +729,9 @@ void SQLExecutionWidget::switchToExecutionMode(bool value)
 	stop_tb->setVisible(value);
 	file_tb->setEnabled(!value);
 	code_tb->setEnabled(!value);
-	results_tb->setEnabled(!value);
+	results_tb->setEnabled(!value ?
+												 results_tbw->model() &&
+												 results_tbw->model()->rowCount() > 0 : false);
 	output_tb->setEnabled(!value);
 	sql_cmd_txt->setEnabled(!value);
 	cmd_history_parent->setEnabled(!value);
