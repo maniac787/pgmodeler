@@ -188,16 +188,6 @@ void CustomTableWidget::setHeaderVisible(Qt::Orientation orientation, bool value
 	header_vw->setVisible(value);
 }
 
-/* void CustomTableWidget::setVerticalHeaderVisible(bool value)
-{
-	setHeaderVisible(Qt::Vertical, value);
-}
-
-void CustomTableWidget::setHorizontalHeaderVisible(bool value)
-{
-	setHeaderVisible(Qt::Horizontal, value);
-} */
-
 void CustomTableWidget::setSortingEnabled(bool value)
 {
 	table_tbw->setSortingEnabled(value);
