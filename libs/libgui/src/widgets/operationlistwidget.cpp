@@ -27,7 +27,7 @@ OperationListWidget::OperationListWidget(QWidget *parent) : QWidget(parent)
 {
 	setupUi(this);
 
-	CustomUiStyle::setStyleHint(CustomUiStyle::AltDefaultFrmHint, content_frm);
+	CustomUiStyle::setStyleHint(CustomUiStyle::GroupBoxFrmHint, content_frm);
 	GuiUtilsNs::configureWidgetFont(title_lbl, GuiUtilsNs::SmallFontFactor, true);
 
 	setModel(nullptr);

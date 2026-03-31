@@ -126,6 +126,9 @@ class __libgui CustomTableWidget: public QWidget, public Ui::CustomTableWidget {
 		//! \brief Sets the text of the specified cell
 		void setCellText(const QString &text, unsigned row_idx, unsigned col_idx);
 
+		//! \brief Sets the text aligment of the specified cell
+		void setCellTextAlignment(int row_idx, int col_idx, Qt::Alignment align);
+
 		//! \brief Sets the flags of the specified cell
 		void setCellFlags(Qt::ItemFlags flags, unsigned row_idx, unsigned col_idx);
 

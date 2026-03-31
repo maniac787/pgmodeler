@@ -29,7 +29,7 @@ OperatorWidget::OperatorWidget(QWidget *parent): BaseObjectWidget(parent, Object
 	unsigned i, i1;
 
 	Ui_OperatorWidget::setupUi(this);
-	CustomUiStyle::setStyleHint(CustomUiStyle::AltDefaultFrmHint, option_frm);
+	CustomUiStyle::setStyleHint(CustomUiStyle::GroupBoxFrmHint, option_frm);
 
 	arg_types[0] = new PgSQLTypeWidget(arguments_tab, tr("Left argument type"));
 	arg_types[1] = new PgSQLTypeWidget(arguments_tab, tr("Right argument type"));

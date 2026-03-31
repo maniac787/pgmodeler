@@ -280,6 +280,11 @@ void CustomTableWidget::setCellText(const QString &text, unsigned row_idx, unsig
 	getItem(row_idx, col_idx)->setText(text);
 }
 
+void CustomTableWidget::setCellTextAlignment(int row_idx, int col_idx, Qt::Alignment align)
+{
+	getItem(row_idx, col_idx)->setTextAlignment(align);
+}
+
 void CustomTableWidget::setCellFlags(Qt::ItemFlags flags, unsigned int row_idx, unsigned int col_idx)
 {
 	getItem(row_idx, col_idx)->setFlags(flags);

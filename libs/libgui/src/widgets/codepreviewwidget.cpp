@@ -56,7 +56,7 @@ CodePreviewWidget::CodePreviewWidget(QWidget *parent): QWidget(parent)
 
 	GuiUtilsNs::configureBuddyWidgets(this);
 
-	CustomUiStyle::setStyleHint(CustomUiStyle::DefaultFrmHint,
+	CustomUiStyle::setStyleHint(CustomUiStyle::TabBarFrmHint,
 															{ obj_name_frm, separator_ln,
 																separator2_ln, code_opts_frm });
 

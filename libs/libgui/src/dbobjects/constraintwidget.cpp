@@ -31,7 +31,7 @@ ConstraintWidget::ConstraintWidget(QWidget *parent): BaseObjectWidget(parent, Ob
 
 	Ui_ConstraintWidget::setupUi(this);
 
-	CustomUiStyle::setStyleHint(CustomUiStyle::AltDefaultFrmHint, options_frm);
+	CustomUiStyle::setStyleHint(CustomUiStyle::GroupBoxFrmHint, options_frm);
 
 	excl_elems_tab = GuiUtilsNs::createWidgetInParent<ElementsTableWidget>(GuiUtilsNs::LtMargin, excl_elems_pg);
 
