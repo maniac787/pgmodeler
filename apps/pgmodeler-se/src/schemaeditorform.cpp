@@ -274,15 +274,14 @@ void SchemaEditorForm::applySyntaxConfig(bool from_temp_file)
 	{
 		tmp_file.setAutoRemove(false);
 		tmp_file.setFileTemplate(GlobalAttributes::getTemporaryFilePath(QString("temp_XXXXXX%1").arg(GlobalAttributes::ConfigurationExt)));
-		tmp_file.open();
-		filename = tmp_file.fileName();
 
-		if(!tmp_file.isOpen())
+		if(!tmp_file.open())
 		{
-			throw Exception(Exception::getErrorMessage(ErrorCode::FileDirectoryNotAccessed).arg(filename),
+			throw Exception(Exception::getErrorMessage(ErrorCode::FileDirectoryNotAccessed).arg(tmp_file.fileName()),
 											ErrorCode::FileDirectoryNotAccessed, PGM_FUNC, PGM_FILE, PGM_LINE);
 		}
 
+		filename = tmp_file.fileName();
 		tmp_file.write(syntax_txt->toPlainText().toUtf8());
 		tmp_file.close();
 	}

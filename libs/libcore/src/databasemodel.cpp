@@ -9133,11 +9133,11 @@ void DatabaseModel::saveObjectsMetadata(const QString &filename, MetaAttrOptions
 	save_objs_z_value=(MetaObjsZStackValue & options) == MetaObjsZStackValue;
 	save_objs_layers_cfg=(MetaObjsLayersConfig & options) == MetaObjsLayersConfig;
 
-	output.open(QFile::WriteOnly);
-
-	if(!output.isOpen())
+	if(!output.open(QFile::WriteOnly))
+	{
 		throw Exception(Exception::getErrorMessage(ErrorCode::FileDirectoryNotWritten).arg(filename),
 										ErrorCode::FileDirectoryNotWritten,PGM_FUNC,PGM_FILE,PGM_LINE);
+	}
 
 	try
 	{

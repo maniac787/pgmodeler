@@ -52,11 +52,10 @@ CrashHandlerForm::CrashHandlerForm(bool analysis_mode, QWidget *parent, Qt::Wind
 
 	//Open for reading the stack trace file generated on the last crash
 	input.setFileName(GlobalAttributes::getTemporaryFilePath(GlobalAttributes::StacktraceFile));
-	input.open(QFile::ReadOnly);
 
-	if(input.isOpen())
+	if(input.open(QFile::ReadOnly))
 	{
-		buf=input.readAll();
+		buf = input.readAll();
 		input.close();
 
 		//Removes the stack trace file
@@ -125,10 +124,9 @@ void CrashHandlerForm::loadReport(QString filename)
 
 	fi.setFile(filename);
 	input.setFileName(filename);
-	input.open(QFile::ReadOnly);
 
 	//Raises an error if the file could not be opened
-	if(!input.isOpen())
+	if(!input.open(QFile::ReadOnly))
 	{
 		Messagebox::error(Exception::getErrorMessage(ErrorCode::FileDirectoryNotAccessed).arg(filename),
 											ErrorCode::FileDirectoryNotAccessed, PGM_FUNC, PGM_FILE, PGM_LINE);
@@ -141,7 +139,7 @@ void CrashHandlerForm::loadReport(QString filename)
 		QPlainTextEdit *txt_widgets[]={ details_txt, model_txt , stack_txt};
 
 		//Creates a text buffer
-		buf=new char[fi.size()];
+		buf = new char[fi.size()];
 
 		//Reads the file storing it on the buffer
 		input.read(buf, fi.size());

@@ -666,10 +666,10 @@ void DatabaseImportHelper::importDatabase()
 																												.arg(QDateTime::currentDateTime().toString("yyyy-MM-dd_hhmmss")));
 
 				import_log.setFileName(log_name);
-				import_log.open(QFile::WriteOnly);
+				bool imp_log_open = import_log.open(QFile::WriteOnly);
 
-				for(unsigned i=0; i < errors.size() && import_log.isOpen(); i++)
-					import_log.write(errors[i].getExceptionsText().toStdString().c_str());
+				for(unsigned i = 0; i < errors.size() && imp_log_open; i++)
+					import_log.write(errors[i].getExceptionsText().toUtf8());
 
 				import_log.close();
 

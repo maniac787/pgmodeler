@@ -73,7 +73,6 @@
 #include "styledtextboxview.h"
 #include "tableview.h"
 #include "pgmodelerguiplugin.h"
-#include <QTemporaryFile>
 #include <QScrollBar>
 
 QList<const PgModelerGuiPlugin *> ModelWidget::plugins;
@@ -117,13 +116,8 @@ ModelWidget::ModelWidget(QWidget *parent) : QWidget(parent)
 	new_obj_type = ObjectType::BaseObject;
 
 	//Generating a temporary file name for the model
-	QTemporaryFile tmp_file;
-
-	//Configuring the template mask which includes the full path to temporary dir
-	tmp_file.setFileTemplate(GlobalAttributes::getTemporaryFilePath("model_XXXXXX" + GlobalAttributes::DbModelExt));
-	tmp_file.open();
-	tmp_filename=tmp_file.fileName();
-	tmp_file.close();
+	tmp_filename = UtilsNs::getTemporaryFilePath(
+									 GlobalAttributes::getTemporaryFilePath("model_XXXXXX" + GlobalAttributes::DbModelExt));
 
 	protected_model_frm = new QFrame(this);
 	protected_model_frm->setObjectName("protected_model_frm");
@@ -1622,7 +1616,7 @@ void ModelWidget::convertRelationshipNN()
 					{
 						aux_constr = new Constraint;
 
-						for(QString pk_col : pk_cols)
+						for(auto &pk_col : pk_cols)
 							aux_constr->addColumn(tab->getColumn(pk_col), Constraint::SourceCols);
 
 						aux_constr->setName(CoreUtilsNs::generateUniqueName(tab, *tab->getObjectList(ObjectType::Constraint), false, "_pk"));
@@ -2092,22 +2086,17 @@ void ModelWidget::saveModel(const QString &filename)
 		 * data loss so we can recover it in case of saving failures */
 		if(fi.exists())
 		{
-			QTemporaryFile tmpfile;
-
-			// Generate a temporary backup filename
-			tmpfile.setFileTemplate(fi.absolutePath() +
-															GlobalAttributes::DirSeparator +
-															QString("%1_XXXXXX%2").arg(db_model->getName(), GlobalAttributes::DbModelBkpExt));
-			tmpfile.open();
-			bkpfile = tmpfile.fileName();
-			tmpfile.close();
-			tmpfile.remove();
+			bkpfile = UtilsNs::getTemporaryFilePath(fi.absolutePath() +
+																							GlobalAttributes::DirSeparator +
+																							QString("%1_XXXXXX%2").arg(db_model->getName(), GlobalAttributes::DbModelBkpExt));
 
 			/* Trying to rename the original model to the backup filename so
 			 * we can write the new one in its place */
 			if(!QFile::rename(filename, bkpfile))
+			{
 				throw Exception(Exception::getErrorMessage(ErrorCode::FileDirectoryNotWritten).arg(bkpfile),
 												ErrorCode::FileDirectoryNotWritten,PGM_FUNC,PGM_FILE,PGM_LINE);
+			}
 
 			has_bkp_file = true;
 		}

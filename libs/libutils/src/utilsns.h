@@ -77,6 +77,8 @@ namespace UtilsNs {
 	 * of the file. */
 	__libutils QByteArray loadFile(const QString &filename, qint64 max_len = 0);
 
+	__libutils QString getTemporaryFilePath(const QString &abs_filepath_tmpl);
+
 	//! \brief Converts any chars (operators) < > " to the respective XML entities.
 	__libutils QString convertToXmlEntities(const QString value);
 

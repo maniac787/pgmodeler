@@ -23,7 +23,6 @@
 #include "customuistyle.h"
 #include "databaseimportwidget.h"
 #include "guiutilsns.h"
-#include <QTemporaryFile>
 #include "utilsns.h"
 #include "pgsqlversions.h"
 #include <QButtonGroup>
@@ -803,7 +802,6 @@ void DiffToolWidget::loadDiffInSQLTool()
 		QString database = compared_sel_wgt->getSelectedDatabase(), filename;
 		QFile out_tmp_file;
 		Connection conn = compared_sel_wgt->getSelectedConnection();
-		QTemporaryFile tmp_sql_file;
 
 		cancelOperation(true);
 
@@ -811,12 +809,8 @@ void DiffToolWidget::loadDiffInSQLTool()
 				filename = file_sel->getSelectedFile();
 		else
 		{
-			tmp_sql_file.setFileTemplate(GlobalAttributes::getTemporaryFilePath(QString("diff_%1_XXXXXX.sql").arg(database)));
-
-			tmp_sql_file.open();
-			filename = tmp_sql_file.fileName();
-			tmp_sql_file.close();
-
+			filename = UtilsNs::getTemporaryFilePath(
+									 GlobalAttributes::getTemporaryFilePath(QString("diff_%1_XXXXXX.sql").arg(database)));
 			UtilsNs::saveFile(filename, sqlcode_txt->toPlainText().toUtf8());
 		}
 

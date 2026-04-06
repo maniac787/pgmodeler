@@ -25,6 +25,7 @@
 #include <QFile>
 #include <QRegularExpression>
 #include <cstdlib>
+#include <QTemporaryFile>
 
 #ifndef Q_OS_WIN
 	#include "execinfo.h"
@@ -64,9 +65,8 @@ namespace UtilsNs {
 		QFile output;
 
 		output.setFileName(filename);
-		output.open(QFile::WriteOnly);
 
-		if(!output.isOpen())
+		if(!output.open(QFile::WriteOnly))
 		{
 			throw Exception(Exception::getErrorMessage(ErrorCode::FileDirectoryNotWritten).arg(output.fileName()),
 											ErrorCode::FileDirectoryNotWritten,PGM_FUNC,PGM_FILE,PGM_LINE,
@@ -82,9 +82,8 @@ namespace UtilsNs {
 		QFile input;
 
 		input.setFileName(filename);
-		input.open(QFile::ReadOnly);
 
-		if(!input.isOpen())
+		if(!input.open(QFile::ReadOnly))
 		{
 			throw Exception(Exception::getErrorMessage(ErrorCode::FileDirectoryNotAccessed).arg(input.fileName()),
 											ErrorCode::FileDirectoryNotAccessed,PGM_FUNC,PGM_FILE,PGM_LINE,
@@ -200,5 +199,18 @@ namespace UtilsNs {
 		#endif
 
 		return s_trace.join('\n');
+	}
+
+	QString getTemporaryFilePath(const QString &abs_filepath_tmpl)
+	{
+		QTemporaryFile temp(abs_filepath_tmpl);
+
+		if(!temp.open())
+			return "";
+
+		QString temp_file = temp.fileName();
+		temp.close();
+
+		return temp_file;
 	}
 }

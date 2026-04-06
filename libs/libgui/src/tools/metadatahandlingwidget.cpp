@@ -24,7 +24,6 @@
 #include "guiutilsns.h"
 #include "utilsns.h"
 #include "settings/generalconfigwidget.h"
-#include <QTemporaryFile>
 
 MetadataHandlingWidget::MetadataHandlingWidget(QWidget *parent) : QWidget(parent)
 {
@@ -175,7 +174,6 @@ void MetadataHandlingWidget::handleObjectsMetada()
 		}
 	}
 
-	QTemporaryFile tmp_file;
 	QString metadata_file;
 	DatabaseModel::MetaAttrOptions options = DatabaseModel::MetaNoOpts;
 	DatabaseModel *extract_model = nullptr, *apply_model = nullptr;
@@ -221,13 +219,10 @@ void MetadataHandlingWidget::handleObjectsMetada()
 			else
 			{
 				//Configuring the temporary metadata file
-				tmp_file.setFileTemplate(GlobalAttributes::getTemporaryFilePath(
-																	 QString("%1_metadata_XXXXXX%2")
-																	 .arg(extract_model->getName(), GlobalAttributes::ObjMetadataExt)));
-
-				tmp_file.open();
-				metadata_file=tmp_file.fileName();
-				tmp_file.close();
+				metadata_file = UtilsNs::getTemporaryFilePath(GlobalAttributes::getTemporaryFilePath(
+																												QString("%1_metadata_XXXXXX%2")
+																												.arg(extract_model->getName(),
+																														 GlobalAttributes::ObjMetadataExt)));
 			}
 
 			root_item = GuiUtilsNs::createOutputTreeItem(output_trw,

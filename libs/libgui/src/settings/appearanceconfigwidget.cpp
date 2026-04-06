@@ -1148,9 +1148,7 @@ void AppearanceConfigWidget::applyUiStyleSheet()
 	QFile ui_style(GlobalAttributes::getTmplConfigurationFilePath("",
 					GlobalAttributes::UiStyleConf + GlobalAttributes::ConfigurationExt));
 
-	ui_style.open(QFile::ReadOnly);
-
-	if(!ui_style.isOpen())
+	if(!ui_style.open(QFile::ReadOnly))
 	{
 		Messagebox::error(Exception::getErrorMessage(ErrorCode::FileDirectoryNotAccessed).arg(ui_style.fileName()),
 						ErrorCode::FileDirectoryNotAccessed, PGM_FUNC, PGM_FILE, PGM_LINE);
@@ -1191,9 +1189,8 @@ void AppearanceConfigWidget::applyUiStyleSheet()
 		if(!ico_style_conf.isEmpty())
 		{
 			QFile ico_style(ico_style_conf);
-			ico_style.open(QFile::ReadOnly);
 
-			if(!ico_style.isOpen())
+			if(!ico_style.open(QFile::ReadOnly))
 			{
 				Messagebox::error(Exception::getErrorMessage(ErrorCode::FileDirectoryNotAccessed).arg(ico_style_conf),
 								ErrorCode::FileDirectoryNotAccessed, PGM_FUNC, PGM_FILE, PGM_LINE);

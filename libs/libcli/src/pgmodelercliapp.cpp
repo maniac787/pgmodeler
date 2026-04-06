@@ -1682,10 +1682,11 @@ void PgModelerCliApp::recreateObjects()
 				// Store the error in the log file as well as the XML code of the failed object
 				QFile fix_log;
 				fix_log.setFileName(GlobalAttributes::getTemporaryFilePath(ModelFixLog));
-				fix_log.open(QFile::Append);
-				fix_log.write(error.toUtf8());
-				fix_log.close();
 
+				if(fix_log.open(QFile::Append))
+					fix_log.write(error.toUtf8());
+
+				fix_log.close();
 				has_fix_log = true;
 			}
 			else
@@ -2753,25 +2754,25 @@ void PgModelerCliApp::handleLinuxMimeDatabase(bool uninstall, bool system_wide, 
 		out.setFileName(mimeapps);
 
 		//If the file mimeapps.list doesn't exists (generally in Ubuntu) creates a new one
-		if(!uninstall && !QFileInfo::exists(mimeapps))
+		if(!uninstall && !QFileInfo::exists(mimeapps) &&
+			 out.open(QFile::WriteOnly))
 		{
-			out.open(QFile::WriteOnly);
 			out.write(QByteArray("[Added Associations]\napplication/dbm=pgModeler.desktop;\n"));
 			out.write(QByteArray("\n[Default Applications]\napplication/dbm=pgModeler.desktop;\n"));
 			out.write(QByteArray("\n[Added Associations]\napplication/sch=pgModelerStxEditor.desktop;\n"));
-			out.write(QByteArray("\n[Default Applications]\napplication/sch=pgModelerStxEditor.desktop;\n"));
+			out.write(QByteArray("\n[Default Applications]\napplication/sch=pgModelerStxEditor.desktop;\n"));			
 			out.close();
 		}
 		else
 		{
-			out.open(QFile::ReadOnly);
-
-			if(!out.isOpen())
+			if(!out.open(QFile::ReadOnly))
+			{
 				throw Exception(Exception::getErrorMessage(ErrorCode::FileDirectoryNotWritten).arg(mimeapps),
 												ErrorCode::FileDirectoryNotWritten,PGM_FUNC,PGM_FILE,PGM_LINE);
+			}
 
 			//Opens the mimeapps.list to add a entry linking pgModeler to .dbm files
-			buf=out.readAll();
+			buf = out.readAll();
 			out.close();
 
 			QTextStream ts(&buf);
@@ -2800,9 +2801,11 @@ void PgModelerCliApp::handleLinuxMimeDatabase(bool uninstall, bool system_wide, 
 			}
 
 			//Write a new copy of the mimeapps.list file
-			out.open(QFile::Truncate | QFile::WriteOnly);
-			out.write(buf_aux.data(), buf_aux.size());
-			out.close();
+			if(out.open(QFile::Truncate | QFile::WriteOnly))
+			{
+				out.write(buf_aux.data(), buf_aux.size());
+				out.close();
+			}
 		}
 
 		//Update the mime database

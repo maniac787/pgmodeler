@@ -23,7 +23,6 @@
 #include <QTextBlock>
 #include <QScrollBar>
 #include <QFileDialog>
-#include <QTemporaryFile>
 #include "customuistyle.h"
 #include "guiutilsns.h"
 #include <QMenu>
@@ -540,20 +539,16 @@ void NumberedTextEditor::editSource()
 	QStringList args;
 
 	if(tmp_src_file.isEmpty())
-	{
-		QTemporaryFile tmp_file;
-		tmp_file.setFileTemplate(GlobalAttributes::getTemporaryFilePath("source_XXXXXX.sql"));
-		tmp_file.open();
-		tmp_src_file = tmp_file.fileName();
-		tmp_file.close();
-	}
+		tmp_src_file = UtilsNs::getTemporaryFilePath(GlobalAttributes::getTemporaryFilePath("source_XXXXXX.sql"));
 
 	input.setFileName(tmp_src_file);
 
 	if(!input.open(QFile::WriteOnly | QFile::Truncate))
+	{
 		throw Exception(Exception::getErrorMessage(ErrorCode::FileDirectoryNotAccessed)
 										.arg(tmp_src_file),
 										ErrorCode::FileDirectoryNotAccessed ,PGM_FUNC,PGM_FILE,PGM_LINE);
+	}
 
 	buffer.append(this->toPlainText().toUtf8());
 	input.write(buffer);
