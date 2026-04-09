@@ -201,6 +201,9 @@ class __libgui CustomTableWidget: public QWidget, public Ui::CustomTableWidget {
 
 		void setSelectionMode(QTableWidget::SelectionMode sel_mode);
 
+		/*! \brief Adjusts the column (col) width to its contents length
+		 *  This method also adjusts the rows height to avoid letting
+		 *  rows bigger then they need to be after resizing the column */
 		void adjustColumnToContents(int col);
 
 		void setHeaderVisible(Qt::Orientation orientation, bool value);
@@ -272,7 +275,9 @@ class __libgui CustomTableWidget: public QWidget, public Ui::CustomTableWidget {
 		//! \brief Toggle the edition of individual cells
 		void setCellsEditable(bool value);
 
-		//! \brief Resize equally the rows and columns to their contents
+		/*! \brief Resize equally the rows and columns to their contents and
+		 *  stretches the last column to avoid gaps between the contents and
+		 *  the border of the grid */
 		void resizeContents();
 
 	signals:

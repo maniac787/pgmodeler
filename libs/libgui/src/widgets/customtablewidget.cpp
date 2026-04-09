@@ -514,7 +514,6 @@ int CustomTableWidget::addRow()
 {
 	this->addRow(table_tbw->rowCount());
 	setButtonsEnabled();
-	table_tbw->resizeRowsToContents();
 
 	emit s_rowAdded(table_tbw->rowCount() - 1);
 	emit s_rowCountChanged(table_tbw->rowCount());
