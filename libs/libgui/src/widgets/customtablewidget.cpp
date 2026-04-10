@@ -94,6 +94,11 @@ CustomTableWidget::CustomTableWidget(ButtonConf button_conf, bool conf_exclusion
 	move_down_tb->setToolTip(move_down_tb->toolTip() + QString(" (%1)").arg(move_down_tb->shortcut().toString()));
 }
 
+void CustomTableWidget::setAutoScroll(bool value)
+{
+	table_tbw->setAutoScroll(value);
+}
+
 void CustomTableWidget::setTableItemColor(TableItemColor color_idx, const QColor color)
 {
 	if(color_idx > RelAddedItemAltFgColor)

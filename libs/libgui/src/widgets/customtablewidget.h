@@ -108,6 +108,12 @@ class __libgui CustomTableWidget: public QWidget, public Ui::CustomTableWidget {
 
 		CustomTableWidget(ButtonConf button_conf, bool conf_exclusion, QWidget * parent = nullptr);
 
+		/*! \brief Sets the auto scroll feature of the internal table widget.
+		 *  When enabled, when a cell is selected and is not fully visible, Qt
+		 *  tries to adjust the scrollbars so the item is fully visible to the
+		 *  user. */
+		void setAutoScroll(bool value);
+
 		//! \brief Sets the table's column count
 		void setColumnCount(unsigned col_count);
 
