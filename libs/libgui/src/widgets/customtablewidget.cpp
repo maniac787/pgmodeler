@@ -215,7 +215,9 @@ QToolButton *CustomTableWidget::addCustomButton(const QIcon &icon, const QKeySeq
 
 	buttons_lt->addWidget(btn);
 	btn->setObjectName(btn_name);
-	btn->setToolTip(tooltip);
+	btn->setToolTip(tooltip +
+									(!shortcut.isEmpty() ?
+										QString(" (%1)").arg(shortcut.toString()) : ""));
 	btn->setIcon(icon);
 	btn->setShortcut(shortcut);
 	btn->setIconSize(add_tb->iconSize());

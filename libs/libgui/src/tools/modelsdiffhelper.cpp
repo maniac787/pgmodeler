@@ -403,7 +403,6 @@ void ModelsDiffHelper::diffTables(PhysicalTable *src_table, PhysicalTable *imp_t
 					//If there are some differences on the XML code of the objects
 					if(tab_obj->isCodeDiffersFrom(aux_obj, TableObjsIgnoredAttribs))
 						generateDiffInfo(ObjectsDiffInfo::AlterObject, tab_obj, aux_obj);
-
 				}
 				/*	If the object does not exists it will generate a drop info and the original
 						one (tab_obj) was not included by generalization or partitioning (to avoid drop inherited/copied columns) */
@@ -580,7 +579,7 @@ void ModelsDiffHelper::diffModels(ObjectsDiffInfo::DiffType diff_type)
 									diffTables(tab, aux_tab, ObjectsDiffInfo::CreateObject);
 								}
 
-								/* bjs_differs = */ xml_differs = false;
+								xml_differs = false;
 							}
 						}
 						else if(!aux_object)
