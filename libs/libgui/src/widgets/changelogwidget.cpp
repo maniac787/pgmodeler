@@ -45,8 +45,11 @@ ChangelogWidget::ChangelogWidget(QWidget *parent) : QWidget(parent)
 	connect(hide_tb, &QToolButton::clicked, this, &ChangelogWidget::s_visibilityChanged);
 	connect(clear_btn, &QPushButton::clicked, this, &ChangelogWidget::clearChangelog);
 	connect(persisted_chk, &QCheckBox::toggled, this, [this](bool checked){
+		bool is_persisted = model->getDatabaseModel()->isPersistedChangelog();
 		model->getDatabaseModel()->setPersistedChangelog(checked);
-		model->setModified(true);
+
+		if(is_persisted != checked)
+			model->setModified(true);
 	});
 }
 
