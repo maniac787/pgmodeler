@@ -67,8 +67,9 @@ namespace UtilsNs {
 	FilterSeparator = ':';
 
 	/*! \brief Writes the provided buffer to the file specified by its filename
+	 * When mk_path is true, the function tries to create the base path until the filename
 	 * Raises an exception in case of the file couldn,t be open */
-	__libutils void saveFile(const QString &filename, const QByteArray &buffer);
+	__libutils void saveFile(const QString &filename, const QByteArray &buffer, bool mk_path = false);
 
 	/*! \brief Read the contents of the file specified by its filename returning its contents.
 	 * Raises an exception in case of the file couldn't be open.

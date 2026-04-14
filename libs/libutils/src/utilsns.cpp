@@ -26,6 +26,7 @@
 #include <QRegularExpression>
 #include <cstdlib>
 #include <QTemporaryFile>
+#include <QDir>
 
 #ifndef Q_OS_WIN
 	#include "execinfo.h"
@@ -60,9 +61,19 @@ namespace {
 
 namespace UtilsNs {
 
-	void saveFile(const QString &filename, const QByteArray &buffer)
+	void saveFile(const QString &filename, const QByteArray &buffer, bool mk_path)
 	{
 		QFile output;
+
+		// Trying to create the full path to the file
+		if(mk_path)
+		{
+			QFileInfo fi(filename);
+			QDir dir = fi.absoluteDir();
+
+			if(!dir.exists())
+				dir.mkpath(fi.absolutePath());
+		}
 
 		output.setFileName(filename);
 

@@ -1093,7 +1093,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 		storeDockWidgetsSettings();
 
 		conf_wgt->saveConfiguration();
-		restoration_form->removeTemporaryFiles();
+		restoration_form->removeTemporaryFiles(true);
 
 		SQLExecutionWidget::saveSQLHistory();
 		qApp->quit();
@@ -1268,7 +1268,7 @@ void MainWindow::loadModelFromAction()
 		{
 			//qApp->restoreOverrideCursor();
 
-			if(QFileInfo(filename).exists())
+			if(QFileInfo::exists(filename))
 				showFixMessage(e, filename);
 			else
 				Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
