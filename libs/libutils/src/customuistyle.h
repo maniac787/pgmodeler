@@ -251,6 +251,7 @@ class __libutils CustomUiStyle : public QProxyStyle {
 			NoHint,
 			DefaultFrmHint, // Default frame
 			GroupBoxFrmHint, // Alternate default frame (colors similar to QGroup)
+			MenuBoxFrmHint, // Similar to GroupBoxFrmHint but with no round cornes
 			TabBarFrmHint, // Alternate default frame (colors similar to QTabBar)
 			InfoFrmHint, // Blueish border (informational)
 			ConfirmFrmHint, // Green border (confirmation)
