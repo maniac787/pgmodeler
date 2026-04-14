@@ -2135,7 +2135,7 @@ void ModelWidget::saveModel(const QString &filename)
 			QFile::remove(filename);
 			QFile::copy(bkpfile, filename);
 
-			throw Exception(Exception::getErrorMessage(ErrorCode::ModelFileSaveFailure).arg(filename).arg(bkpfile),
+			throw Exception(Exception::getErrorMessage(ErrorCode::ModelFileSaveFailure).arg(filename, bkpfile),
 											ErrorCode::ModelFileSaveFailure,PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 		}
 
@@ -2628,8 +2628,7 @@ void ModelWidget::changeOwner()
 			{
 				if(obj->isSystemObject())
 					throw Exception(Exception::getErrorMessage(ErrorCode::OprReservedObject)
-									.arg(obj->getName())
-									.arg(obj->getTypeName()),
+									.arg(obj->getName(), obj->getTypeName()),
 									ErrorCode::OprReservedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 				//Register an operation only if the object is not the database itself
@@ -2812,7 +2811,7 @@ void ModelWidget::protectObject()
 					if(tab_obj->isAddedByRelationship())
 					{
 						throw Exception(Exception::getErrorMessage(ErrorCode::OprRelationshipAddedObject)
-										.arg(object->getName()).arg(object->getTypeName()),
+										.arg(object->getName(), object->getTypeName()),
 										ErrorCode::OprRelationshipAddedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 					}
 				}
@@ -2902,7 +2901,7 @@ void ModelWidget::copyObjects(bool duplicate_mode, bool copy_deps)
 		if(selected_objects[0]->isSystemObject())
 		{
 			throw Exception(Exception::getErrorMessage(ErrorCode::OprReservedObject)
-											.arg(selected_objects[0]->getName()).arg(selected_objects[0]->getTypeName()),
+											.arg(selected_objects[0]->getName(), selected_objects[0]->getTypeName()),
 											ErrorCode::OprReservedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 		}
 	}
@@ -3021,8 +3020,7 @@ void ModelWidget::pasteObjects(bool duplicate_mode)
 		itr++;
 		pos++;
 		task_prog_wgt.updateProgress((pos/static_cast<double>(copied_objects.size()))*100,
-									 tr("Validating object: `%1' (%2)").arg(object->getName())
-									 .arg(object->getTypeName()),
+									 tr("Validating object: `%1' (%2)").arg(object->getName(), object->getTypeName()),
 									 enum_t(object->getObjectType()));
 
 		if(!tab_obj || ((sel_table || sel_view) && tab_obj))
@@ -3155,8 +3153,8 @@ void ModelWidget::pasteObjects(bool duplicate_mode)
 
 		pos++;
 		task_prog_wgt.updateProgress((pos/static_cast<double>(copied_objects.size()))*100,
-									 tr("Generating XML for: `%1' (%2)").arg(object->getName())
-									 .arg(object->getTypeName()),
+									 tr("Generating XML for: `%1' (%2)")
+									 .arg(object->getName(), object->getTypeName()),
 									 enum_t(object->getObjectType()));
 
 		if(!tab_obj)
@@ -3257,8 +3255,8 @@ void ModelWidget::pasteObjects(bool duplicate_mode)
 			{
 				pos++;
 				task_prog_wgt.updateProgress((pos/static_cast<double>(copied_objects.size()))*100,
-											 tr("Pasting object: `%1' (%2)").arg(object->getName())
-											 .arg(object->getTypeName()),
+											 tr("Pasting object: `%1' (%2)")
+											 .arg(object->getName(), object->getTypeName()),
 											 enum_t(object->getObjectType()));
 
 				//Creates the object from the XML
@@ -3671,15 +3669,14 @@ void ModelWidget::removeObjects(bool cascade)
 					//Raises an error if the user try to remove a reserved object
 					if(object->isSystemObject())
 						throw Exception(Exception::getErrorMessage(ErrorCode::OprReservedObject)
-														.arg(object->getName()).arg(object->getTypeName()),
+														.arg(object->getName(), object->getTypeName()),
 														ErrorCode::OprReservedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 					//Raises an error if the user try to remove a protected object
 					if(object->isProtected())
 					{
 						throw Exception(Exception::getErrorMessage(ErrorCode::RemProtectedObject)
-														.arg(object->getName(true))
-														.arg(object->getTypeName()),
+														.arg(object->getName(true), object->getTypeName()),
 														ErrorCode::RemProtectedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 					}
 
@@ -3690,8 +3687,7 @@ void ModelWidget::removeObjects(bool cascade)
 						if(tab_obj->isAddedByRelationship())
 						{
 							throw Exception(Exception::getErrorMessage(ErrorCode::RemProtectedObject)
-															.arg(tab_obj->getName(true))
-															.arg(tab_obj->getTypeName()),
+															.arg(tab_obj->getName(true), tab_obj->getTypeName()),
 															ErrorCode::RemProtectedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 						}
 

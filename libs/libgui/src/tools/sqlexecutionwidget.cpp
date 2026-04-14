@@ -528,7 +528,6 @@ void SQLExecutionWidget::handleExecutionAborted(Exception e)
 
 	msgoutput_lst->setVisible(true);
 	results_parent->setVisible(false);
-	//results_tb->setEnabled(false);
 
 	addToSQLHistory(sql_exec_hlp.getCommand(), 0, e.getErrorMessage());
 	qApp->alert(this);
@@ -543,7 +542,7 @@ void SQLExecutionWidget::finishExecution(int rows_affected)
 		bool empty = false;
 		ResultSetModel *res_model = sql_exec_hlp.getResultSetModel();
 
-		end_exec=QDateTime::currentDateTime().toMSecsSinceEpoch();
+		end_exec=QDateTime::currentMSecsSinceEpoch();
 		total_exec = end_exec - start_exec;
 
 		results_tbw->setSortingEnabled(false);
@@ -575,7 +574,6 @@ void SQLExecutionWidget::finishExecution(int rows_affected)
 		empty = (!res_model || res_model->rowCount() == 0);
 		output_tbw->setTabEnabled(0, !empty);
 		results_parent->setVisible(!empty);
-		//results_tb->setEnabled(!empty);
 
 		if(!empty)
 		{
@@ -590,18 +588,18 @@ void SQLExecutionWidget::finishExecution(int rows_affected)
 
 		msgoutput_lst->clear();
 
-		for(QString notice : sql_exec_hlp.getNotices())
+		for(auto &notice : sql_exec_hlp.getNotices())
 		{
 			GuiUtilsNs::createOutputListItem(msgoutput_lst,
-																					QString("[%1]: %2").arg(QTime::currentTime().toString("hh:mm:ss.zzz")).arg(notice.trimmed()),
-																					GuiUtilsNs::getPixmap("alert"), false);
+																			 QString("[%1]: %2").arg(QTime::currentTime().toString("hh:mm:ss.zzz"), notice.trimmed()),
+																			 GuiUtilsNs::getPixmap("alert"), false);
 		}
 
 		GuiUtilsNs::createOutputListItem(msgoutput_lst,
 																				UtilsNs::formatMessage(tr("[%1]: SQL command successfully executed in <em><strong>%2</strong></em>. <em>%3 <strong>%4</strong></em>")
-																																		 .arg(QTime::currentTime().toString("hh:mm:ss.zzz"))
-																																		 .arg(total_exec >= 1000 ? QString("%1 s").arg(total_exec/1000.0) : QString("%1 ms").arg(total_exec))
-																																		 .arg(!res_model ? tr("Rows affected") :  tr("Rows retrieved"))
+																																		 .arg(QTime::currentTime().toString("hh:mm:ss.zzz"),
+																																					total_exec >= 1000 ? QString("%1 s").arg(total_exec/1000.0) : QString("%1 ms").arg(total_exec),
+																																					!res_model ? tr("Rows affected") :  tr("Rows retrieved"))
 																																		 .arg(rows_affected)),
 																				GuiUtilsNs::getPixmap("info"));
 
@@ -674,8 +672,8 @@ void SQLExecutionWidget::addToSQLHistory(const QString &cmd, unsigned rows, cons
 			fmt_cmd += "\n";
 
 		fmt_cmd += QString("-- %1 [%2] -- \n")
-							 .arg(tr("Executed at"))
-							 .arg(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.zzz"));
+							 .arg(tr("Executed at"),
+										QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.zzz"));
 		fmt_cmd += cmd;
 		fmt_cmd += QChar('\n');
 
@@ -758,7 +756,7 @@ void SQLExecutionWidget::destroyResultModel()
 		ResultSetModel *result_model = dynamic_cast<ResultSetModel *>(results_tbw->model());
 		results_tbw->blockSignals(true);
 		results_tbw->setModel(nullptr);
-		delete result_model;
+		result_model->deleteLater();
 		results_tbw->blockSignals(false);
 	}
 }
@@ -773,7 +771,7 @@ void SQLExecutionWidget::runSQLCommand(const QString &cmd)
 	output_tb->setChecked(true);
 	msgoutput_lst->clear();
 	sql_exec_hlp.setCommand(cmd);
-	start_exec = QDateTime::currentDateTime().toMSecsSinceEpoch();
+	start_exec = QDateTime::currentMSecsSinceEpoch();
 	sql_exec_thread.start();
 
 	switchToExecutionMode(true);
@@ -1116,7 +1114,7 @@ void SQLExecutionWidget::saveSQLHistory()
 		attribs_map attribs;
 		QString commands;
 
-		for(auto hist : cmd_history)
+		for(auto &hist : cmd_history)
 		{
 			attribs[Attributes::Connection] = hist.first;
 			attribs[Attributes::Commands] = hist.second;
