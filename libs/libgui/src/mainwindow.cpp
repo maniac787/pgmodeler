@@ -1369,8 +1369,7 @@ void MainWindow::addModel(const QString &filename, int model_idx)
 			}
 		}
 
-		#warning "Add a new method ModelNavigation::insertModel(model, index)"
-		model_nav_wgt->addModel(model_tab);
+		model_nav_wgt->insertModel(model_tab, model_idx);
 
 		models_tbw->setUpdatesEnabled(true);
 		models_tbw->setVisible(true);
@@ -1780,7 +1779,7 @@ void MainWindow::reloadModel(int model_id, const QString &filename)
 {
 	try
 	{
-		if(!closeModel(model_id, true))
+		if(model_id < 0 || !closeModel(model_id, true))
 			return;
 
 		/* Check if the filename exists before trying to load
@@ -1789,7 +1788,10 @@ void MainWindow::reloadModel(int model_id, const QString &filename)
 	}
 	catch(Exception &e)
 	{
-		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
+		models_tbw->removeTab(model_id);
+		model_nav_wgt->removeModel(model_id);
+		setCurrentModel();
+		throw Exception(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 }
 

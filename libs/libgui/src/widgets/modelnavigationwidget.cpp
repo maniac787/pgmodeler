@@ -68,6 +68,11 @@ QList<ModelWidget *> ModelNavigationWidget::getModelWidgets()
 
 void ModelNavigationWidget::addModel(ModelWidget *model)
 {
+	insertModel(model, -1);
+}
+
+void ModelNavigationWidget::insertModel(ModelWidget *model, int idx)
+{
 	if(!model)
 		return;
 
@@ -75,14 +80,18 @@ void ModelNavigationWidget::addModel(ModelWidget *model)
 
 	setEnabled(true);
 	models_cmb->blockSignals(true);
-
 	tooltip = model->getFilename();
 
 	if(tooltip.isEmpty())
-		tooltip=tr("(Model not saved yet)");
+		tooltip = tr("(Model not saved yet)");
 
-	models_cmb->addItem(model->getDatabaseModel()->getName(), tooltip);
-	models_cmb->setCurrentIndex(models_cmb->count()-1);
+	if(models_cmb->count() == 0)
+		idx = 0;
+	else if(idx < 0 || idx > models_cmb->count())
+		idx = models_cmb->count() - 1;
+
+	models_cmb->insertItem(idx, model->getDatabaseModel()->getName(), tooltip);
+	models_cmb->setCurrentIndex(idx);
 	models_cmb->setToolTip(tooltip);
 
 	models_cmb->blockSignals(false);
