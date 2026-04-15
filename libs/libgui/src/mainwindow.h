@@ -280,14 +280,23 @@ class __libgui MainWindow: public QMainWindow, public Ui::MainWindow {
 	public slots:
 		/*! \brief Creates a new empty model inside the main window. If the parameter 'filename' is specified,
 		creates the model loading it from a file */
-		void addModel(const QString &filename="");
+		void addModel(const QString &filename = "", int model_idx = -1);
 
 		/*! \brief Creates a new model inside the main window using the specified model widget. The method will raise
 		an error is the widget isn't allocated or already has a parent */
 		void addModel(ModelWidget *model_wgt);
 
-		//! \brief Closes the currently focused model. If the 'model_id' is specified the model at given index is closed
-		void closeModel(int model_id=-1);
+		/*! \brief Closes the currently focused model.
+		 * If the 'model_id' is specified the model at given index is closed.
+		 * If keep_tab is true than the parent tab of the model close is not
+		 * removed from the tab widget, allowing the insertion of a new model widget
+		 * at that index (see reloadModel()).
+		 * This method returns a bool value indicating the model closing */
+		bool closeModel(int model_id = -1, bool keep_tab = false);
+
+		/*! \brief Closes/destroys the model in the specified index 'model_id',
+		 *  load a new one and assign it to the parent tab of the closed model */
+		void reloadModel(int model_id, const QString &filename);
 
 		//! \brief Returns the currently loaded model count.
 		int getModelCount();
