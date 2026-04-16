@@ -45,7 +45,7 @@ ModelFixWidget::ModelFixWidget(QWidget *parent) : QWidget(parent)
 	input_file_sel = new FileSelectorWidget(this);
 	input_file_sel->setObjectName("input_file_sel");
 	input_file_sel->setFileMustExist(true);
-	input_file_sel->setNameFilters({tr("Database model (*%1)").arg(GlobalAttributes::DbModelExt), tr("All files (*.*)")});
+	input_file_sel->setNameFilters({ tr("Database model (*%1)").arg(GlobalAttributes::DbModelExt) });
 	input_file_sel->setAcceptMode(QFileDialog::AcceptOpen);
 	input_file_sel->setAllowFilenameInput(true);
 	input_file_sel->setFileIsMandatory(true);
@@ -54,7 +54,7 @@ ModelFixWidget::ModelFixWidget(QWidget *parent) : QWidget(parent)
 
 	output_file_sel = new FileSelectorWidget(this);
 	output_file_sel->setObjectName("output_file_sel");
-	output_file_sel->setNameFilters({tr("Database model (*%1)").arg(GlobalAttributes::DbModelExt), tr("All files (*.*)")});
+	output_file_sel->setNameFilters({ tr("Database model (*%1)").arg(GlobalAttributes::DbModelExt) });
 	output_file_sel->setDefaultSuffix(GlobalAttributes::DbModelExt);
 	output_file_sel->setAcceptMode(QFileDialog::AcceptSave);
 	output_file_sel->setAllowFilenameInput(true);

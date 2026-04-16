@@ -460,7 +460,7 @@ namespace GuiUtilsNs {
 		{
 			QList<QTableWidgetSelectionRange> sel_ranges=results_tbw->selectedRanges();
 
-			for(auto range : sel_ranges)
+			for(auto &range : sel_ranges)
 			{
 				for(int row = range.topRow(); row <= range.bottomRow(); row++)
 				{
@@ -603,6 +603,35 @@ namespace GuiUtilsNs {
 		file_dlg.setFileMode(file_mode);
 		file_dlg.setAcceptMode(accept_mode);
 		file_dlg.setModal(true);
+
+		/* If we have more than one name filter
+		 * we configure */
+		if(name_filters.count() > 1)
+		{
+			static const QRegularExpression ext_re("\\*\\.([^\\)]+)");
+			QMap<QString, QString> filter_exts;
+			QRegularExpressionMatch match;
+
+			/* Extracts each extensions from name filters
+			 * storing them in a map to dynamically switch
+			 * the default extension */
+			for(auto &filter : name_filters)
+			{
+				match = ext_re.match(filter);
+
+				if(match.hasMatch())
+					filter_exts[filter] = match.captured(1);
+				else
+					filter_exts[filter] = default_suffix;
+			}
+
+			QObject::connect(&file_dlg, &QFileDialog::filterSelected, [&file_dlg, filter_exts](const QString &filter){
+				/* Forcing the default suffix to the current name filter's extesion.
+				 * This is not done by default by Qt, so we have to work with this
+				 * workaround */
+				file_dlg.setDefaultSuffix(filter_exts[filter]);
+			});
+		}
 
 		GuiUtilsNs::restoreFileDialogState(&file_dlg);
 		file_dlg.exec();

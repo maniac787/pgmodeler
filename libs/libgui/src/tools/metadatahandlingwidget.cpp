@@ -38,7 +38,7 @@ MetadataHandlingWidget::MetadataHandlingWidget(QWidget *parent) : QWidget(parent
 	output_trw->setItemDelegateForColumn(0, new HtmlItemDelegate(this));
 
 	backup_file_sel = new FileSelectorWidget(this);
-	backup_file_sel->setNameFilters({tr("Objects metadata file (*%1)").arg(GlobalAttributes::ObjMetadataExt), tr("All files (*.*)")});
+	backup_file_sel->setNameFilters({ tr("Objects metadata file (*%1)").arg(GlobalAttributes::ObjMetadataExt) });
 	backup_file_sel->setWindowTitle(tr("Select backup file"));
 	settings_grid->addWidget(backup_file_sel, 3, 1);
 

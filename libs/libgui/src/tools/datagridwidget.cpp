@@ -1589,7 +1589,7 @@ void DataGridWidget::saveSelectedItems(bool csv_format)
 		GuiUtilsNs::selectAndSaveFile(buffer,
 																	 tr("Save file"),
 																	 QFileDialog::AnyFile,
-																	 { csv_format ? tr("CSV file (*.csv)") :tr("Text file (*.txt)"),	tr("All files (*.*)") },
+																	 { csv_format ? tr("CSV file (*.csv)") : tr("Text file (*.txt)") },
 																	 {}, csv_format ? "csv" : "txt");
 	}
 	catch(Exception &e)

@@ -850,10 +850,10 @@ void SQLExecutionWidget::exportResults(QTableView *results_tbw, bool csv_format)
 	try
 	{
 		QStringList sel_files = GuiUtilsNs::selectFiles(
-				tr("Save file"),
-				QFileDialog::AnyFile,	QFileDialog::AcceptSave,
-				{ csv_format ? tr("CSV file (*.csv)") : tr("Text file (*.txt"),
-					tr("All files (*.*)") }, {}, csv_format ? "csv" : "txt");
+														tr("Save file"),
+														QFileDialog::AnyFile,	QFileDialog::AcceptSave,
+														{ csv_format ? tr("CSV file (*.csv)") : tr("Text file (*.txt") },
+														{}, csv_format ? "csv" : "txt");
 
 		if(!sel_files.isEmpty())
 		{

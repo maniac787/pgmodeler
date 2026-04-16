@@ -1319,7 +1319,6 @@ void MainWindow::addModel(const QString &filename, int model_idx)
 			model_idx = models_tbw->addTab(model_tab, obj_name);
 		else
 		{
-			#warning "Insert the model at specified position in tab widget"
 			/* Check if the current tab has a child model, if that's
 			 * the case, raise an error */
 			model_idx = models_tbw->insertTab(model_idx, model_tab, obj_name);
@@ -1929,9 +1928,8 @@ void MainWindow::saveModel(ModelWidget *model)
 					QStringList sel_files = GuiUtilsNs::selectFiles(
 																		tr("Save '%1' as...").arg(model->db_model->getName()),
 																		QFileDialog::AnyFile,	QFileDialog::AcceptSave,
-																		{ tr("Database model (*%1)").arg(GlobalAttributes::DbModelExt),
-																			tr("All files (*.*)") }, {},
-																		GlobalAttributes::DbModelExt);
+																		{ tr("Database model (*%1)").arg(GlobalAttributes::DbModelExt) },
+																		{},	GlobalAttributes::DbModelExt);
 
 					if(!sel_files.isEmpty())
 					{
