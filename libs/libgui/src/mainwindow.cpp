@@ -1695,7 +1695,7 @@ void MainWindow::removeModelActions()
 	}
 }
 
-bool MainWindow::closeModel(int model_id, bool keep_tab)
+bool MainWindow::closeModel(int model_id, bool keep_tab, bool confirm)
 {
 	QWidget *tab = nullptr;
 
@@ -1723,7 +1723,7 @@ bool MainWindow::closeModel(int model_id, bool keep_tab)
 
 #ifndef DEMO_VERSION
 	//Ask the user to save the model if its modified
-	if(model->isModified())
+	if(confirm && model->isModified())
 	{
 		msg_res = Messagebox::confirm(tr("Save model"),
 																	tr("The model <strong>%1</strong> was modified! Do you really want to close without saving it?")
