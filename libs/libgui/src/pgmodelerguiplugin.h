@@ -103,6 +103,22 @@ class __libgui PgModelerGuiPlugin: public PgModelerPlugin {
 		void configurePluginInfo(const QString &title, const QString &version, const QString &author, const QString &description);
 
 	public:
+		/*! \brief This enum references the ids (positions) of the tool buttons
+		 *  at WelcomeWidget. They are used to indicate the position where a custom
+		 *  button of the plugin (when available) must be inserted */
+		enum WelcomeWgtBtnId: int {
+			NewModelBtn, // "New model" button
+			LoadModelBtn, // "Load model" button
+			SampleModelsBtn, // "Sample models" button
+			RecentModelsBtn, // "Recent models" button
+			LastSessionBtn, // "Last session" button
+			SupportBtn, // "Support" button
+
+			/* Special id that indicate thes appending of
+			 * plugin's button at the buttons layout in WelcomeWidget */
+			AppendBtn
+		};
+
 		struct PluginWidgets {
 			//! \brief The action button that somehow toggles the plugin's main widget
 			QAbstractButton *action_btn;
@@ -115,14 +131,27 @@ class __libgui PgModelerGuiPlugin: public PgModelerPlugin {
 			 * or something that executes small tasks */
 			*extra_wgt;
 
-			PluginWidgets(QAbstractButton *act_btn, QWidget *m_wgt, QWidget *x_wgt)
+			/*! \brief The tool button that is inserted in the layout at WelcomeWidget
+			 * to trigger an specific action of the plugin. The actual button styles
+			 * are overriden by the WelcomWidget tool buttons style to keep the UI uniform.
+			 * This widget is only installed when the plugin's dock mode is DockOnMainWnd,
+			 * otherwise it is ignored */
+			QToolButton *welcome_wgt_btn;
+
+			//! \brief The position where the welcome wiget button must be installed
+			WelcomeWgtBtnId w_wgt_btn_id;
+
+			PluginWidgets(QAbstractButton *act_btn, QWidget *m_wgt, QWidget *ext_wgt,
+										QToolButton *w_wgt_btn = nullptr, WelcomeWgtBtnId w_btn_id = AppendBtn)
 			{
 				action_btn = act_btn;
 				main_wgt = m_wgt;
-				extra_wgt = x_wgt;
+				extra_wgt = ext_wgt;
+				welcome_wgt_btn = w_wgt_btn;
+				w_wgt_btn_id = w_btn_id;
 			}
 
-			PluginWidgets() : PluginWidgets(nullptr, nullptr, nullptr) {}
+			PluginWidgets() : PluginWidgets(nullptr, nullptr, nullptr, nullptr) {}
 		};
 
 		enum ActionId: unsigned {

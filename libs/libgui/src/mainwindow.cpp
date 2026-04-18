@@ -2803,6 +2803,7 @@ void MainWindow::installPluginWidgets()
 	connect(operations_btn, &QPushButton::toggled, this, uncheck_btns_in_group_lmb);
 
 	QPushButton *act_btn = nullptr;
+	QToolButton *welc_wgt_btn = nullptr;
 	QWidget *m_wgt = nullptr, *x_wgt = nullptr;
 	int wgt_idx = -1;
 
@@ -2811,6 +2812,7 @@ void MainWindow::installPluginWidgets()
 		act_btn = qobject_cast<QPushButton *>(p_wgt.action_btn);
 		m_wgt = p_wgt.main_wgt;
 		x_wgt = p_wgt.extra_wgt;
+		welc_wgt_btn = p_wgt.welcome_wgt_btn;
 
 		if(!act_btn)
 			continue;
@@ -2833,6 +2835,14 @@ void MainWindow::installPluginWidgets()
 			plugins_info_wgts_lt->addWidget(x_wgt);
 
 		act_btn->setProperty(Attributes::Index.toStdString().c_str(), wgt_idx);
+
+		if(welc_wgt_btn)
+		{
+			welc_wgt_btn->setToolButtonStyle(welcome_wgt->new_tb->toolButtonStyle());
+			welc_wgt_btn->setIconSize(welcome_wgt->new_tb->iconSize());
+			welc_wgt_btn->setFont(welcome_wgt->new_tb->font());
+			welcome_wgt->buttons_lt->insertWidget(p_wgt.w_wgt_btn_id, welc_wgt_btn);
+		}
 
 		connect(act_btn, &QPushButton::toggled, this, check_btn_in_group_lmb);
 	}
