@@ -109,7 +109,7 @@ void UpdateNotifierWidget::handleUpdateChecked(QNetworkReply *reply)
 	{
 		msg_box.show(tr("Failed to check updates"),
 								 tr("The update notifier failed to check for new versions! Please, verify your internet connectivity and try again! Connection error returned: <em>%1</em> - <strong>%2</strong>.").arg(http_status).arg(reply->errorString()),
-								 Messagebox::Error, Messagebox::OkButton);
+								 Messagebox::Error, Messagebox::OkButton, false);
 	}
 	else
 	{
@@ -151,7 +151,7 @@ void UpdateNotifierWidget::handleUpdateChecked(QNetworkReply *reply)
 				{
 					msg_box.show(tr("No updates found"),
 											 tr("You are running the most recent pgModeler version! No update needed."),
-											 Messagebox::Info, Messagebox::OkButton);
+											 Messagebox::Info, Messagebox::OkButton, false);
 				}
 
 				emit s_updateAvailable(upd_found);
@@ -160,7 +160,7 @@ void UpdateNotifierWidget::handleUpdateChecked(QNetworkReply *reply)
 			{
 				msg_box.show(tr("Failed to check updates"),
 										 tr("The update notifier failed to check for new versions! A HTTP status code was returned: <strong>%1</strong>").arg(http_status),
-										 Messagebox::Error, Messagebox::OkButton);
+										 Messagebox::Error, Messagebox::OkButton, false);
 			}
 
 			update_chk_reply->deleteLater();
