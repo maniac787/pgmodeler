@@ -132,6 +132,11 @@ class __libgui Messagebox: public QDialog, public Ui::Messagebox {
 											 const QString &yes_lbl="", const QString &no_lbl="", const QString &cancel_lbl="",
 											 const QString &yes_ico="", const QString &no_ico="", const QString &cancel_ico="");
 
+		//! \brief Shows an confirmation message box with the provided message, a custom message icon and the defined buttons id
+		static int confirm(const QString &msg, MessageType icon_type, ButtonsId btns_id = YesNoButtons,
+											 const QString &yes_lbl="", const QString &no_lbl="", const QString &cancel_lbl="",
+											 const QString &yes_ico="", const QString &no_ico="", const QString &cancel_ico="");
+
 		static bool isAccepted(int res);
 		static bool isRejected(int res);
 		static bool isCanceled(int res);

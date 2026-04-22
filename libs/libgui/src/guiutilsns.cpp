@@ -240,8 +240,9 @@ namespace GuiUtilsNs {
 		if(!widget)
 			return;
 
-		QFont font=widget->font();
+		QFont font = widget->font();
 		font.setPointSizeF(font.pointSizeF() * factor);
+
 		font.setBold(bold);
 		font.setItalic(italic);
 		widget->setFont(font);
@@ -1023,6 +1024,12 @@ namespace GuiUtilsNs {
 			for(auto &lt : layouts)
 				configureBuddyWidget(lt);
 		}
+	}
+
+	void configureBuddyWidgets(const QWidgetList &wgt_list)
+	{
+		for(auto &wgt : wgt_list)
+			configureBuddyWidgets(wgt);
 	}
 
 	QLayout *createBuddyWidgetLayout(QLabel *label, QWidget *widget, QWidget *append_widget, int margin, int spacing)

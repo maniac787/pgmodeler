@@ -347,10 +347,50 @@ namespace GuiUtilsNs {
 	 * user must take care of the destruction of the object */
 	__libgui NumberedTextEditor *createNumberedTextEditor(QWidget *parent, bool act_btns_enabled = false, qreal custom_fnt_size = 0);
 
+	/*! \brief Configures all buddy labels in the provided layout
+	 *
+	 *  NOTE: the function may not work if the layout is somehow a
+	 *  child of a QSplitter. To workaround the problem it's needed
+	 *  to create a single-shot timer to force the widget to have
+	 *  their fonts changed if it is called in a widgets constructor.
+	 *  For example:
+	 *  ...
+	 *  setsUi(this)
+	 *
+	 *  QTimer::singleShot(0, this, [this]() {
+	 *		GuiUtilsNs::configureBuddyWidgets(layout);
+	 *  }); */
 	__libgui void configureBuddyWidget(QLayout *lt);
 
-	//! \brief Configures all buddy labels in the provided widget
+	/*! \brief Configures all buddy labels in the provided widget
+	 *
+	 *  NOTE: the function may not work if the layout is somehow a
+	 *  child of a QSplitter. To workaround the problem it's needed
+	 *  to create a single-shot timer to force the widget to have
+	 *  their fonts changed if it is called in a widgets constructor.
+	 *  For example:
+	 *  ...
+	 *  setsUi(this)
+	 *
+	 *  QTimer::singleShot(0, this, [this]() {
+	 *		GuiUtilsNs::configureBuddyWidgets(widget);
+	 *  }); */
 	__libgui void configureBuddyWidgets(QWidget *widget);
+
+	/*! \brief Configures all buddy labels in the provided list of widgets
+	 *
+	 *  NOTE: the function may not work if the layout is somehow a
+	 *  child of a QSplitter. To workaround the problem it's needed
+	 *  to create a single-shot timer to force the widget to have
+	 *  their fonts changed if it is called in a widgets constructor.
+	 *  For example:
+	 *  ...
+	 *  setsUi(this)
+	 *
+	 *  QTimer::singleShot(0, this, [this]() {
+	 *		GuiUtilsNs::configureBuddyWidgets(wgt_list);
+	 *  }); */
+	__libgui void configureBuddyWidgets(const QWidgetList &wgt_list);
 
 	//! \brief Creates a layout that contains a label and a widget arranged vertically
 	__libgui QLayout *createBuddyWidgetLayout(QLabel *label, QWidget *widget, QWidget *append_widget = nullptr,
