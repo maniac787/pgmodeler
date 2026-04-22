@@ -29,6 +29,7 @@
 #include "settings/generalconfigwidget.h"
 #include "utilsns.h"
 #include "dbobjects/pgsqltypewidget.h"
+#include "tabordermanager.h"
 
 BaseObjectWidget::BaseObjectWidget(QWidget *parent, ObjectType obj_type): QWidget(parent)
 {

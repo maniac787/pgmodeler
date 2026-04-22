@@ -32,7 +32,6 @@
 #include "messagebox.h"
 #include "dbobjects/baseobjectwidget.h"
 #include <type_traits>
-#include "tabordermanager.h"
 
 class __libgui BaseForm: public QDialog, public Ui::BaseForm {
 	Q_OBJECT
@@ -62,9 +61,10 @@ class __libgui BaseForm: public QDialog, public Ui::BaseForm {
 		/*! \brief Injects the specified object into the form and turns it the main widget.
 		 * The widget is reparented to the stack widget within the form.
 		 * The accept_slot is the fucntion pointer to the slot from the provided widget that can be
-		 * optionally used to replace the default accept() of the form's footer aplly button. */
+		 * optionally used to replace the default accept() of the form's footer aplly button.
+		 * The accept_on_return when true causes BaseForm to auto-accept when accept_slot successfully returns */
 		template <class Class, typename Slot>
-		void setMainWidget(Class *widget, Slot accept_slot);
+		void setMainWidget(Class *widget, Slot accept_slot, bool accept_on_return = false);
 
 		/*! \brief Injects the specified object into the form and turns it the main widget.
 		 * The widget is reparented to the stack widget within the form.
@@ -103,14 +103,25 @@ class __libgui BaseForm: public QDialog, public Ui::BaseForm {
 };
 
 template <class Class, typename Slot>
-void BaseForm::setMainWidget(Class *widget, Slot accept_slot)
+void BaseForm::setMainWidget(Class *widget, Slot accept_slot, bool accept_on_return)
 {
 	if(!widget)
 		return;
 
 	setMainWidget(widget);
 	disconnect(apply_ok_btn, nullptr, this, nullptr);
-	connect(apply_ok_btn, &QPushButton::clicked, widget, accept_slot);
+
+	if(accept_on_return)
+	{
+		connect(apply_ok_btn, &QPushButton::clicked, this, [this, widget, accept_slot](){
+			__trycatch (
+				std::invoke(accept_slot, widget);
+				accept();
+			)
+		});
+	}
+	else
+		connect(apply_ok_btn, &QPushButton::clicked, widget, accept_slot);
 }
 
 template <class Class, typename Slot>
