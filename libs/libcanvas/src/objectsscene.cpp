@@ -26,6 +26,7 @@
 #include "tableview.h"
 #include "schemaview.h"
 #include "databasemodel.h"
+#include "customuistyle.h"
 #include <QScrollBar>
 
 const QColor ObjectsScene::DefaultGridColor { "#e1e1e1"};
@@ -589,7 +590,8 @@ void ObjectsScene::setLayerColors(int layer_id, QColor txt_color, QColor bg_colo
 		return;
 
 	layers_paths[layer_id]->setTextColor(txt_color);
-	layers_paths[layer_id]->setPen(QPen(bg_color, BaseObjectView::ObjectBorderWidth * BaseObjectView::getScreenDpiFactor()));
+	layers_paths[layer_id]->setPen(QPen(CustomUiStyle::getAdjustedColor(bg_color, CustomUiStyle::MinFactor, CustomUiStyle::MinFactor),
+																			BaseObjectView::ObjectBorderWidth * BaseObjectView::getScreenDpiFactor()));
 
 	bg_color.setAlpha(BaseObjectView::ObjectAlphaChannel * 0.80);
 	layers_paths[layer_id]->setBrush(bg_color);

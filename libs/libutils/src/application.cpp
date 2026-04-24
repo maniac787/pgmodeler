@@ -81,6 +81,8 @@ void Application::loadCustomFonts(const QString &def_font, double def_size)
 	//Install the custom fonts in .qrc file(s)
 	QFontDatabase::addApplicationFont(":fonts/fonts/exo2.ttf");
 	QFontDatabase::addApplicationFont(":fonts/fonts/exo2-italic.ttf");
+	QFontDatabase::addApplicationFont(":fonts/fonts/montserrat.ttf");
+	QFontDatabase::addApplicationFont(":fonts/fonts/montserrat-italic.ttf");
 	QFontDatabase::addApplicationFont(":fonts/fonts/source-code.ttf");
 	QFontDatabase::addApplicationFont(":fonts/fonts/source-code-italic.ttf");
 

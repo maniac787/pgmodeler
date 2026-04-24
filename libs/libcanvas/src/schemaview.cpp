@@ -23,6 +23,7 @@
 #include "objectsscene.h"
 #include "databasemodel.h"
 #include "utilsns.h"
+#include "customuistyle.h"
 
 SchemaView::SchemaView(Schema *schema) : BaseObjectView(schema)
 {
@@ -280,7 +281,7 @@ void SchemaView::configureObject()
 		color.setAlpha(ObjectAlphaChannel * 0.80);
 		box->setBrush(color);
 
-		color=QColor(color.red()/3,color.green()/3,color.blue()/3, 80);
+		color = CustomUiStyle::getAdjustedColor(color, CustomUiStyle::MinFactor, CustomUiStyle::MinFactor);
 		box->setPen(QPen(color, 1 * BaseObjectView::getScreenDpiFactor(), Qt::SolidLine));
 
 		this->bounding_rect=rect;
