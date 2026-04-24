@@ -59,13 +59,15 @@ PgModelerApp::PgModelerApp(int &argc, char **argv) : Application(argc,argv)
 		}
 	}
 
-	//Trying to identify if the user defined a custom UI language in the pgmodeler.conf file
+	//Trying to identify if the user defined a custom UI language
 	QString lang_id = GlobalAttributes::getConfigParamFromFile(Attributes::UiLanguage, GlobalAttributes::GeneralConf);
 
 	if(lang_id.isEmpty())
 		lang_id = QLocale::system().name();
 
 	loadTranslations(lang_id, true);
+
+	loadCustomFonts(Attributes::UiFont, Attributes::UiFontSize);
 }
 
 bool PgModelerApp::notify(QObject *receiver, QEvent *event)

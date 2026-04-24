@@ -33,6 +33,8 @@
 #include <QCryptographicHash>
 
 namespace UtilsNs {
+	static constexpr char OrigFontProp[] { "original-font" };
+
 	inline const QString EntityAmp("&amp;"),
 	EntityLt("&lt;"),
 	EntityGt("&gt;"),

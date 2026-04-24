@@ -240,7 +240,7 @@ namespace GuiUtilsNs {
 		if(!widget)
 			return;
 
-		QFont font = widget->font();
+		QFont font = qApp->font();
 		font.setPointSizeF(font.pointSizeF() * factor);
 
 		font.setBold(bold);

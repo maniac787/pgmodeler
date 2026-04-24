@@ -276,17 +276,14 @@ QString GlobalAttributes::getConfigParamFromFile(const QString &param_name, cons
 	if(input.open(QFile::ReadOnly) && !param_name.isEmpty())
 	{
 		QString buf = QString(input.readAll());
-		QRegularExpression regexp = QRegularExpression(QString("(%1)(.*)(=)(\\\")(.)+(\\\")(\\\n)*").arg(param_name));
+		QRegularExpression regexp = QRegularExpression(QString("(%1)\\s*=\\s*\\\"([^\\\"]*)\\\"").arg(param_name));
 		QRegularExpressionMatch match;
 		int idx =	-1;
 
 		match =	regexp.match(buf);
-		idx = match.capturedStart();
 
-					 //Extract the value of the attribute in the conf file
-		attr_val = buf.mid(idx, match.capturedLength());
-		attr_val.remove(param_name);
-		attr_val.remove(QChar('"')).remove(QChar('=')).remove(QChar('\n'));
+		if(match.hasMatch())
+			attr_val = match.capturedTexts().constLast();
 	}
 
 	return attr_val;

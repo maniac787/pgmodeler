@@ -757,6 +757,8 @@ extern __libparsers const QString
 	TyplesUpd,
 	UiLanguage,
 	UiTheme,
+	UiFont,
+	UiFontSize,
 	Undefined,
 	Underline,
 	Unique,

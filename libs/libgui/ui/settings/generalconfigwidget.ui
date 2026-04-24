@@ -179,17 +179,6 @@
            </item>
           </layout>
          </item>
-         <item row="1" column="0" colspan="2">
-          <layout class="QVBoxLayout" name="confs_dir_lt">
-           <item>
-            <widget class="QLabel" name="label_2">
-             <property name="text">
-              <string>Configurations directory</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
          <item row="4" column="0" colspan="2">
           <widget class="QCheckBox" name="low_verbosity_chk">
            <property name="sizePolicy">
@@ -209,31 +198,12 @@
            </property>
           </widget>
          </item>
-         <item row="3" column="0">
-          <layout class="QVBoxLayout" name="editor_args_lt">
+         <item row="1" column="0" colspan="2">
+          <layout class="QVBoxLayout" name="confs_dir_lt">
            <item>
-            <widget class="QLabel" name="label_4">
+            <widget class="QLabel" name="label_2">
              <property name="text">
-              <string>Editor arguments</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLineEdit" name="source_editor_args_edt">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="toolTip">
-              <string/>
-             </property>
-             <property name="readOnly">
-              <bool>false</bool>
-             </property>
-             <property name="clearButtonEnabled">
-              <bool>true</bool>
+              <string>Configurations directory</string>
              </property>
             </widget>
            </item>
@@ -369,6 +339,36 @@
               </widget>
              </item>
             </layout>
+           </item>
+          </layout>
+         </item>
+         <item row="3" column="0">
+          <layout class="QVBoxLayout" name="editor_args_lt">
+           <item>
+            <widget class="QLabel" name="label_4">
+             <property name="text">
+              <string>Editor arguments</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="source_editor_args_edt">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="toolTip">
+              <string/>
+             </property>
+             <property name="readOnly">
+              <bool>false</bool>
+             </property>
+             <property name="clearButtonEnabled">
+              <bool>true</bool>
+             </property>
+            </widget>
            </item>
           </layout>
          </item>

@@ -52,6 +52,9 @@ SchemaEditorForm::SchemaEditorForm(QWidget *parent) : QWidget(parent)
 		if(!btn)
 			continue;
 
+		// Forcing custom font configuration on buttons
+		btn->setFont(qApp->font());
+
 		if(!btn->toolTip().isEmpty() && !btn->shortcut().toString().isEmpty())
 			btn->setToolTip(btn->toolTip() + QString(" (%1)").arg(btn->shortcut().toString()));
 	}

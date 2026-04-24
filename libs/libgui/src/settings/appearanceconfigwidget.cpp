@@ -33,6 +33,7 @@
 #include <QButtonGroup>
 #include <QToolTip>
 #include <qcursor.h>
+#include "utilsns.h"
 
 std::map<QString, QPalette> AppearanceConfigWidget::theme_palettes;
 std::map<QString, attribs_map> AppearanceConfigWidget::config_params;
@@ -54,6 +55,11 @@ AppearanceConfigWidget::AppearanceConfigWidget(QWidget *parent) : BaseConfigWidg
 {
 	setupUi(this);
 	show_grid = show_delimiters = false;
+
+	custom_scale_spb->setMinimumHeight(theme_cmb->height());
+	ui_font_size_spb->setMinimumHeight(ui_font_cmb->height());
+	code_font_size_spb->setMinimumHeight(code_font_cmb->height());
+	tab_width_spb->setMinimumHeight(code_font_cmb->height());
 
 	/* Initialize system palette only when the lightness of window 
 	 * and button roles are zero (black) which indicates that the 
@@ -218,6 +224,11 @@ CREATE TABLE public.table_b (\n \
 	GuiUtilsNs::configureBuddyWidgets(this);
 
 	connect(ico_sz_btn_grp, &QButtonGroup::buttonToggled, this, __slot(this, AppearanceConfigWidget::previewUiSettings));
+
+	connect(ui_font_chk, &QCheckBox::toggled, ui_font_cmb, &QComboBox::setEnabled);
+	connect(ui_font_chk, &QCheckBox::toggled, ui_font_size_spb, &QDoubleSpinBox::setEnabled);
+	connect(ui_font_cmb, &QFontComboBox::currentFontChanged, this, &AppearanceConfigWidget::previewCustomUiFont);
+	connect(ui_font_size_spb, &QDoubleSpinBox::textChanged, this, &AppearanceConfigWidget::previewCustomUiFont);
 
 	connect(element_cmb, &QComboBox::currentTextChanged, this, &AppearanceConfigWidget::enableConfigElement);
 	connect(elem_font_cmb, &QFontComboBox::currentFontChanged, this, &AppearanceConfigWidget::applyElementFontStyle);
@@ -615,6 +626,28 @@ void AppearanceConfigWidget::loadConfiguration()
 		theme_cmb->blockSignals(false);
 		ico_sz_btn_grp->blockSignals(false);
 
+		QString ui_fnt_name =
+				config_params[GlobalAttributes::AppearanceConf][Attributes::UiFont];
+
+		ui_font_chk->setChecked(!ui_fnt_name.isEmpty());
+
+		if(!ui_fnt_name.isEmpty())
+		{
+			ui_font_cmb->blockSignals(true);
+			ui_font_cmb->setCurrentFont(ui_fnt_name);
+			ui_font_cmb->blockSignals(false);
+		}
+
+		double ui_fnt_size =
+				config_params[GlobalAttributes::AppearanceConf][Attributes::UiFontSize].toDouble();
+
+		if(ui_fnt_size > 0)
+		{
+			ui_font_size_spb->blockSignals(true);
+			ui_font_size_spb->setValue(ui_fnt_size);
+			ui_font_size_spb->blockSignals(false);
+		}
+
 		custom_scale_chk->setChecked(config_params[GlobalAttributes::AppearanceConf].count(Attributes::CustomScale));
 		custom_scale_spb->setValue(config_params[GlobalAttributes::AppearanceConf][Attributes::CustomScale].toDouble());
 		expansion_factor_spb->setValue(config_params[Attributes::Design][Attributes::ExpansionFactor].toUInt());
@@ -928,6 +961,28 @@ void AppearanceConfigWidget::enableConfigElement()
 	elem_font_size_spb->blockSignals(false);
 }
 
+void AppearanceConfigWidget::previewCustomUiFont()
+{
+	QFont custom_fnt = ui_font_cmb->currentFont(),
+			wgt_fnt;
+
+	custom_fnt.setPointSizeF(ui_font_size_spb->value());
+	qApp->setFont(custom_fnt);
+
+	for(auto &wgt : qApp->allWidgets())
+	{
+		wgt_fnt = wgt->font();
+
+		if(wgt->property(UtilsNs::OrigFontProp).isNull())
+			wgt->setProperty(UtilsNs::OrigFontProp, wgt_fnt);
+
+		wgt_fnt.setFamily(custom_fnt.family());
+		wgt->setFont(wgt_fnt);
+	}
+
+	setConfigurationChanged(true);
+}
+
 void AppearanceConfigWidget::applyElementColor(unsigned color_idx, QColor color)
 {
 	if(conf_items[element_cmb->currentIndex()].obj_conf)
@@ -1001,6 +1056,23 @@ void AppearanceConfigWidget::restoreDefaults()
 	}
 }
 
+void AppearanceConfigWidget::restoreUiFontStyle()
+{
+	// Restore the original font of widgets
+	QFont wgt_fnt;
+
+	qApp->setFont(qApp->property(UtilsNs::OrigFontProp).value<QFont>());
+
+	for(auto &wgt : qApp->allWidgets())
+	{
+		if(wgt->property(UtilsNs::OrigFontProp).isNull())
+			continue;
+
+		wgt_fnt = wgt->property(UtilsNs::OrigFontProp).value<QFont>();
+		wgt->setFont(wgt_fnt);
+	}
+}
+
 void AppearanceConfigWidget::previewCodeFontStyle()
 {
 	QFont fnt;
@@ -1057,13 +1129,6 @@ void AppearanceConfigWidget::applyUiTheme()
 
 	pal = theme_palettes[ui_theme];
 	qApp->setPalette(pal);
-
-	/* if(CustomUiStyle::isDarkPalette(qApp->palette()))
-	{
-		// Forcing QMenu class to use a lighter base color
-		pal.setColor(QPalette::Base, pal.color(QPalette::Base));
-		qApp->setPalette(pal, "QMenu");
-	} */
 
 	applySyntaxHighlightTheme();
 	applyUiStyleSheet();

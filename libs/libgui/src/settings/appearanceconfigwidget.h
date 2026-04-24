@@ -149,6 +149,7 @@ class __libgui AppearanceConfigWidget: public BaseConfigWidget, public Ui::Appea
 
 	private slots:
 		void enableConfigElement();
+		void previewCustomUiFont();
 		void applyElementFontStyle();
 		void applyElementColor(unsigned color_idx, QColor color);
 		void previewCodeFontStyle();
@@ -162,6 +163,7 @@ class __libgui AppearanceConfigWidget: public BaseConfigWidget, public Ui::Appea
 
 	public slots:
 		void restoreDefaults() override;
+		void restoreUiFontStyle();
 };
 
 #endif

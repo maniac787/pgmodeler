@@ -53,6 +53,7 @@
 #include <QSpinBox>
 #include <QDoubleSpinBox>
 #include <QGroupBox>
+#include <QMenu>
 #include <cmath>
 
 QMap<QStyle::PixelMetric, int> CustomUiStyle::pixel_metrics;
@@ -882,6 +883,11 @@ void CustomUiStyle::polish(QWidget *widget)
 		widget->setAttribute(Qt::WA_Hover);
 		widget->installEventFilter(const_cast<CustomUiStyle *>(this));
 	}
+
+	/* Forcing QMenu to have the same font as the global one
+	 * defined in qApp */
+	if(qobject_cast<QMenu *>(widget))
+		widget->setFont(qApp->font());
 }
 
 QPolygonF CustomUiStyle::rotatePolygon(const QPolygonF &polygon, qreal degrees)

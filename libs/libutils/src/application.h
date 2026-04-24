@@ -57,11 +57,18 @@ class __libutils Application: public QApplication {
 		 * In case of success installs a translator object in the application */
 		void loadTranslation(const QString &lang_id, const QString &directory);
 
+		/*! \brief Loads the application's custom fonts (stored in .qrc file)
+		 * and install them in the font database. Additionally, a default font family and size
+		 * can be specified to be the default for the whole application */
+		void loadCustomFonts(const QString &def_font, double def_size);
+
 	public:
 		Application(int & argc, char ** argv);
 
 		//! \brief Loads both UI translations and addition translations provided by plugins (incl_plugins_tr = true)
 		void loadTranslations(const QString &lang_id, bool incl_plugins_tr);
+
+		void loadCustomFonts(const QString &def_font_attr, const QString &def_size_attr);
 
 	signals:
 		void s_messageLogged(QtMsgType, const QMessageLogContext &, const QString &);

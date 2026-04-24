@@ -308,4 +308,10 @@
         <file>images/nullptrlabs_dark.png</file>
         <file>images/nullptrlabs_light.png</file>
     </qresource>
+    <qresource prefix="/fonts">
+        <file>fonts/exo2.ttf</file>
+        <file>fonts/exo2-italic.ttf</file>
+        <file>fonts/source-code.ttf</file>
+        <file>fonts/source-code-italic.ttf</file>
+    </qresource>
 </RCC>

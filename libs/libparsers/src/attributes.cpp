@@ -744,6 +744,8 @@ namespace Attributes {
 	TyplesUpd("tuples-upd"),
 	UiLanguage("ui-language"),
 	UiTheme("ui-theme"),
+	UiFont("ui-font"),
+	UiFontSize("ui-font-size"),
 	Undefined("undefined"),
 	Underline("underline"),
 	Unique("unique"),

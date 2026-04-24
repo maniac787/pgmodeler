@@ -6,6 +6,8 @@
 <!ATTLIST appearance ui-theme CDATA #IMPLIED>
 <!ATTLIST appearance icons-size (big|medium|small) "big">
 <!ATTLIST appearance custom-scale CDATA #IMPLIED>
+<!ATTLIST appearance ui-font CDATA #IMPLIED>
+<!ATTLIST appearance ui-font-size CDATA #IMPLIED>
 
 <!ELEMENT design EMPTY>
 <!ATTLIST design grid-size CDATA #REQUIRED>

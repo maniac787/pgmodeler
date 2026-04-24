@@ -107,10 +107,16 @@ void ConfigurationWidget::__discardConfiguration()
 				ConnectionsConfigWidget *conn_wgt =
 						qobject_cast<ConnectionsConfigWidget *>(conf_wgt);
 
+				AppearanceConfigWidget *app_wgt =
+						qobject_cast<AppearanceConfigWidget *>(conf_wgt);
+
 				conf_wgt->loadConfiguration();
 
 				if(conn_wgt)
 					conn_wgt->resetForm();
+
+				if(app_wgt)
+					app_wgt->restoreUiFontStyle();
 			}
 		}
 

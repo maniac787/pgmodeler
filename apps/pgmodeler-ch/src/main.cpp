@@ -32,7 +32,9 @@ int main(int argc, char **argv)
 		GlobalAttributes::init(argv[0], true);
 		Application app(argc,argv);
 		QStringList args = app.arguments();
+
 		app.loadTranslations(QLocale::system().name(), false);
+		app.loadCustomFonts(Attributes::UiFont, Attributes::UiFontSize);
 
 		try
 		{
