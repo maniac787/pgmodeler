@@ -16,6 +16,10 @@
 	\s custom-scale="{custom-scale}"
 %end
 
+%if {ui-font} %then
+	\s ui-font="{ui-font}" \s ui-font-size="{ui-font-size}"
+%end
+
 > \n
 
 \n \t <design

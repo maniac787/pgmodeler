@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>854</width>
+    <width>1007</width>
     <height>919</height>
    </rect>
   </property>
@@ -386,6 +386,9 @@
               <layout class="QVBoxLayout" name="verticalLayout_25">
                <item>
                 <widget class="QLabel" name="ui_font_size_lbl">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                    <horstretch>0</horstretch>

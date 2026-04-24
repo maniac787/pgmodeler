@@ -227,6 +227,7 @@ CREATE TABLE public.table_b (\n \
 
 	connect(ui_font_chk, &QCheckBox::toggled, ui_font_cmb, &QComboBox::setEnabled);
 	connect(ui_font_chk, &QCheckBox::toggled, ui_font_size_spb, &QDoubleSpinBox::setEnabled);
+	connect(ui_font_chk, &QCheckBox::toggled, ui_font_size_lbl, &QDoubleSpinBox::setEnabled);
 	connect(ui_font_cmb, &QFontComboBox::currentFontChanged, this, &AppearanceConfigWidget::previewCustomUiFont);
 	connect(ui_font_size_spb, &QDoubleSpinBox::textChanged, this, &AppearanceConfigWidget::previewCustomUiFont);
 
@@ -781,9 +782,9 @@ void AppearanceConfigWidget::saveConfiguration()
 		config_params.erase(GlobalAttributes::AppearanceConf);
 		attribs[Attributes::UiTheme] = theme_cmb->currentData(Qt::UserRole).toString();
 		attribs[Attributes::IconsSize] = ico_sz_btn_grp->checkedButton()->property(Attributes::IconsSize.toLatin1()).toString();
-
+		attribs[Attributes::UiFont] = ui_font_chk->isChecked() ? ui_font_cmb->currentFont().family() : "";
+		attribs[Attributes::UiFontSize] = ui_font_chk->isChecked() ? QString::number(ui_font_size_spb->value(), 'g', 2) : "";
 		attribs[Attributes::CustomScale] = custom_scale_chk->isChecked() ? QString::number(custom_scale_spb->value(), 'g', 2) : "";
-
 		config_params[Attributes::UiTheme] = attribs;
 		attribs.clear();
 
@@ -796,7 +797,6 @@ void AppearanceConfigWidget::saveConfiguration()
 		attribs[Attributes::CanvasColor] = canvas_color_cp->getColor(0).name();
 		attribs[Attributes::DelimitersColor] = delimiters_color_cp->getColor(0).name();
 		attribs[Attributes::ExpansionFactor] = QString::number(expansion_factor_spb->value());
-
 		config_params[Attributes::Design] = attribs;
 		attribs.clear();
 
@@ -808,9 +808,7 @@ void AppearanceConfigWidget::saveConfiguration()
 		attribs[Attributes::LineNumbersBgColor] = line_num_colors_cp->getColor(1).name();
 		attribs[Attributes::LineNumbersHlColor] = line_num_colors_cp->getColor(2).name();
 		attribs[Attributes::LineHighlightColor] = line_num_colors_cp->getColor(3).name();
-
 		attribs[Attributes::TabWidth] = QString::number(tab_width_chk->isChecked() ? tab_width_spb->value() : 0);
-
 		config_params[Attributes::Code] = attribs;
 		attribs.clear();
 
