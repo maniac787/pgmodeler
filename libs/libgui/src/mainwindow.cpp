@@ -1418,7 +1418,7 @@ void MainWindow::addModel(ModelWidget *model_wgt)
 		model_nav_wgt->addModel(model_wgt);
 		models_tbw->blockSignals(true);
 		models_tbw->addTab(model_wgt, model_wgt->getDatabaseModel()->getName());
-		models_tbw->setCurrentIndex(models_tbw->count()-1);
+		models_tbw->setCurrentIndex(models_tbw->count() - 1);
 		models_tbw->blockSignals(false);
 
 		setCurrentModel();

@@ -88,14 +88,14 @@ void ModelNavigationWidget::insertModel(ModelWidget *model, int idx)
 	if(models_cmb->count() == 0)
 		idx = 0;
 	else if(idx < 0 || idx > models_cmb->count())
-		idx = models_cmb->count() - 1;
+		idx = models_cmb->count();
 
 	models_cmb->insertItem(idx, model->getDatabaseModel()->getName(), tooltip);
 	models_cmb->setCurrentIndex(idx);
 	models_cmb->setToolTip(tooltip);
 
 	models_cmb->blockSignals(false);
-	model_wgts.append(model);
+	model_wgts.insert(idx, model);
 
 	setCurrentModelModified(model->isModified());
 	enableNavigationButtons();
