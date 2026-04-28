@@ -84,11 +84,6 @@ ConfigurationWidget::~ConfigurationWidget()
 	connections_conf->destroyConnections();
 }
 
-void ConfigurationWidget::hideEvent(QHideEvent *)
-{
-	general_tb->setChecked(true);
-}
-
 void ConfigurationWidget::showEvent(QShowEvent *)
 {
 	snippets_conf->snippet_txt->updateLineNumbers();
@@ -143,6 +138,9 @@ int ConfigurationWidget::checkChangedConfiguration()
 				applyConfiguration();
 			else if(res == Messagebox::Rejected)
 				__discardConfiguration();
+
+			if(res != Messagebox::Canceled)
+				general_tb->setChecked(true);
 
 			return res;
 		}
