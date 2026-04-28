@@ -122,7 +122,7 @@ int Messagebox::show(Exception e, const QString &msg, MessageType icon_type, But
 	{
 		raw_stack_txt = GuiUtilsNs::createNumberedTextEditor(stacktrace_tbw->widget(2), true);
 		raw_stack_txt->setReadOnly(true);
-		raw_stack_txt->setLineNumbersVisible(false);
+		raw_stack_txt->showLineNumbers(false);
 		raw_stack_txt->setWordWrap(true);
 		GuiUtilsNs::configureTextEditFont(raw_stack_txt, font().pointSizeF());
 		stacktrace_tbw->widget(2)->layout()->setContentsMargins(GuiUtilsNs::LtMargins);
