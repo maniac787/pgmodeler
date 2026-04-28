@@ -36,7 +36,7 @@ DataGridWidget::DataGridWidget(const QString &sch_name, const QString &tab_name,
 
 	CustomUiStyle::setStyleHint(CustomUiStyle::InfoFrmHint, result_info_frm);
 	CustomUiStyle::setStyleHint(CustomUiStyle::AlertFrmHint, warning_frm);
-	CustomUiStyle::setStyleHint(CustomUiStyle::DefaultFrmHint, { tab_info_frm, separator_ln });
+	CustomUiStyle::setStyleHint(CustomUiStyle::DefaultFrmHint, { tab_info_frm, separator_ln, separator2_ln });
 	GuiUtilsNs::configureBuddyWidgets(order_by_grp);
 
 	schema_lbl->setText(sch_name);
@@ -1460,7 +1460,7 @@ QString DataGridWidget::getDMLCommand(int row)
 				if(op_type == OpInsert)
 					val_list.push_back(value);
 				else
-					val_list.push_back(QString("\"%1\"=%2").arg(col_name).arg(value));
+					val_list.push_back(QString("\"%1\"=%2").arg(col_name, value));
 			}
 		}
 
@@ -1468,9 +1468,14 @@ QString DataGridWidget::getDMLCommand(int row)
 			return "";
 
 		if(op_type == OpUpdate)
-			fmt_cmd = fmt_cmd.arg(fmt_tb_name).arg(val_list.join(", ")).arg(flt_list.join(" AND "));
+			fmt_cmd = fmt_cmd.arg(fmt_tb_name, val_list.join(", "), flt_list.join(" AND "));
 		else
-			fmt_cmd = fmt_cmd.arg(fmt_tb_name).arg(col_list.join(", ")).arg(val_list.join(", "));
+		{
+			fmt_cmd = fmt_cmd.arg(fmt_tb_name, col_list.join(", "), val_list.join(", "));
+
+			if(ignore_conflict_chk->isChecked())
+				fmt_cmd += " ON CONFLICT DO NOTHING";
+		}
 	}
 
 	return fmt_cmd;

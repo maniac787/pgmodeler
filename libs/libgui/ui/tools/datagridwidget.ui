@@ -358,6 +358,12 @@
         </item>
         <item>
          <widget class="Line" name="separator_ln">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
           <property name="maximumSize">
            <size>
             <width>1</width>
@@ -602,6 +608,44 @@
            </widget>
           </item>
          </layout>
+        </item>
+        <item>
+         <widget class="Line" name="separator2_ln">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>1</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="autoFillBackground">
+           <bool>false</bool>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Shadow::Plain</enum>
+          </property>
+          <property name="lineWidth">
+           <number>1</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Orientation::Vertical</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="ignore_conflict_chk">
+          <property name="toolTip">
+           <string>&lt;p&gt;Discard conflicting rows during INSERT operations without aborting the current transaction.&lt;/p&gt;</string>
+          </property>
+          <property name="text">
+           <string>Ignore conflicting rows</string>
+          </property>
+         </widget>
         </item>
         <item>
          <spacer name="horizontalSpacer">
