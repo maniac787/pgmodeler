@@ -1207,13 +1207,14 @@ void MainWindow::validateRecentModelsActions()
 		fnt = act->font();
 		fnt.setStrikeOut(!fi.exists() || !fi.isReadable() || !fi.isFile());
 		act->setFont(fnt);
-		act->setToolTip(fi.fileName() + (fnt.strikeOut() ? tr(" (not accessible)") : ""));
+		act->setToolTip(fi.absoluteFilePath() +
+										(fnt.strikeOut() ? tr(" (not accessible)") : ""));
 	}
 }
 
 void MainWindow::updateRecentModelsMenu()
 {
-	QAction *act=nullptr;
+	QAction *act = nullptr;
 	QFileInfo fi;
 	QString dbm_ext = GlobalAttributes::DbModelExt;
 
@@ -1229,7 +1230,7 @@ void MainWindow::updateRecentModelsMenu()
 	{
 		fi.setFile(recent_mdl);
 
-		act=recent_models_menu->addAction(fi.fileName(),this, &MainWindow::loadModelFromAction);
+		act = recent_models_menu->addAction(fi.fileName(), this, &MainWindow::loadModelFromAction);
 		act->setToolTip(recent_mdl);
 		act->setData(recent_mdl);
 
@@ -2334,14 +2335,14 @@ void MainWindow::setBottomFloatingWidgetPos(QWidget *widget, QAbstractButton *bt
 void MainWindow::configureSamplesMenu()
 {
 	QDir dir(GlobalAttributes::getSamplesPath());
-	QStringList files=dir.entryList({ QString("*%1").arg(GlobalAttributes::DbModelExt) });
-	QAction *act=nullptr;
+	QStringList files = dir.entryList({ QString("*%1").arg(GlobalAttributes::DbModelExt) });
+	QAction *act  =nullptr;
 	QString path;
 
 	while(!files.isEmpty())
 	{
-		act=sample_mdls_menu.addAction(files.front(), this, &MainWindow::loadModelFromAction);
-		path=QFileInfo(GlobalAttributes::getSamplesPath() + GlobalAttributes::DirSeparator + files.front()).absoluteFilePath();
+		act = sample_mdls_menu.addAction(files.front(), this, &MainWindow::loadModelFromAction);
+		path = QFileInfo(GlobalAttributes::getSamplesPath() + GlobalAttributes::DirSeparator + files.front()).absoluteFilePath();
 		act->setToolTip(path);
 		act->setData(path);
 		act->setIcon(GuiUtilsNs::getIcon("dbmfile"));
@@ -2350,7 +2351,7 @@ void MainWindow::configureSamplesMenu()
 
 	if(sample_mdls_menu.isEmpty())
 	{
-		act=sample_mdls_menu.addAction(tr("(no samples found)"));
+		act = sample_mdls_menu.addAction(tr("(no samples found)"));
 		act->setEnabled(false);
 	}
 
