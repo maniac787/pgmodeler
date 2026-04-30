@@ -37,6 +37,12 @@ class __libgui BaseForm: public QDialog, public Ui::BaseForm {
 	Q_OBJECT
 
 	private:
+		//! \brief Store the reference to the main widget
+		QWidget *main_wgt;
+
+		//! \brief Store the reference to the installed tab order manager in main widget
+		QObject *tab_order_mng;
+
 		/*! \brief Resizes the dialog according to the minimum sizes of the provided widget.
 				If the widget size exceed 70% of the screen size a scroll area will be created and
 				the widget reparented to it. If the minimum size of the widget is 0 then the size
@@ -53,6 +59,11 @@ class __libgui BaseForm: public QDialog, public Ui::BaseForm {
 
 		//! \brief Sets the current form size as the minimum size
 		void adjustMinimumSize();
+
+		/*! \brief Install an instace of TabOrderManager in the form so
+		 *  tab order can be properly handled no matter the positions of the
+		 *	fields in the main widget */
+		void installTabManager();
 
 		/*! \brief Injects the specified object into the form and turns it the main widget.
 		 * The widget is reparented to the stack widget within the form. */

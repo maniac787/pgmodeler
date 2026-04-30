@@ -21,9 +21,12 @@
 
 #include "baseform.h"
 #include "guiutilsns.h"
+#include "tabordermanager.h"
 
 BaseForm::BaseForm(QWidget *parent, Qt::WindowFlags f) : QDialog(parent, f)
 {
+	main_wgt = nullptr;
+	tab_order_mng = nullptr;
 	setupUi(this);
 	setWindowFlags(this->windowFlags() | Qt::WindowMinMaxButtonsHint);
 }
@@ -60,10 +63,32 @@ void BaseForm::adjustMinimumSize()
 	setMinimumSize(size());
 }
 
+void BaseForm::installTabManager()
+{
+	if(!main_wgt)
+	{
+		qDebug() << "BaseForm::installTabManager: no main widget to install tab order manager!";
+		return;
+	}
+
+	if(main_wgt->findChild<TabOrderManager *>() || tab_order_mng)
+	{
+		qDebug() << "BaseForm::installTabManager: main widget ("
+						 << main_wgt->metaObject()->className()
+						 << ") already has a tab order manager installed!";
+		return;
+	}
+
+	tab_order_mng = new TabOrderManager(main_wgt);
+	main_wgt->installEventFilter(tab_order_mng);
+}
+
 void BaseForm::resizeForm(QWidget *widget)
 {
 	if(!widget)
 		return;
+
+	main_wgt = widget;
 
 	QSize min_size = widget->minimumSize();
 	int max_h = 0, max_w = 0, curr_w =0, curr_h = 0;
