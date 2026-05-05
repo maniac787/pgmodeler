@@ -240,12 +240,16 @@ namespace GuiUtilsNs {
 		if(!widget)
 			return;
 
-		QFont font = qApp->font();
-		font.setPointSizeF(font.pointSizeF() * factor);
-
-		font.setBold(bold);
-		font.setItalic(italic);
-		widget->setFont(font);
+		/* Ensure that the font configuration is pushed to the end of the Qt's event queue
+		 * via QTimer::singleShot(0). This will cause the widget to have its font
+		 * changed after all events (including visual ones) are processed */
+		QTimer::singleShot(0, widget, [widget, factor, bold, italic]() {
+			QFont font = qApp->font();
+			font.setPointSizeF(font.pointSizeF() * factor);
+			font.setBold(bold);
+			font.setItalic(italic);
+			widget->setFont(font);
+		});
 	}
 
 	void configureWidgetsFont(const QWidgetList &widgets, FontFactorId factor_id, bool bold, bool italic)
