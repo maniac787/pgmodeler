@@ -71,7 +71,9 @@ void BaseForm::installTabManager()
 		return;
 	}
 
-	if(main_wgt->findChild<TabOrderManager *>() || tab_order_mng)
+	TabOrderManager *tab_mng = main_wgt->findChild<TabOrderManager *>();
+
+	if((tab_mng && tab_mng->parent() == main_wgt) || tab_order_mng)
 	{
 		qDebug() << "BaseForm::installTabManager: main widget ("
 						 << main_wgt->metaObject()->className()
