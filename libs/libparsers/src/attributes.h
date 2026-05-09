@@ -47,6 +47,7 @@ extern __libparsers const QString
 	AlertDisableQuoting,
 	AlertOpenSqlTabs,
 	AlertUnsavedModels,
+	AlertResizeRowsCols,
 	Alias,
 	Alignment,
 	AlignObjsToGrid,

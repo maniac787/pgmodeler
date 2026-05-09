@@ -93,8 +93,8 @@
           </property>
           <property name="iconSize">
            <size>
-            <width>25</width>
-            <height>25</height>
+            <width>22</width>
+            <height>22</height>
            </size>
           </property>
           <property name="shortcut">
@@ -131,8 +131,8 @@
           </property>
           <property name="iconSize">
            <size>
-            <width>25</width>
-            <height>25</height>
+            <width>22</width>
+            <height>22</height>
            </size>
           </property>
           <property name="shortcut">
@@ -169,8 +169,8 @@
           </property>
           <property name="iconSize">
            <size>
-            <width>25</width>
-            <height>25</height>
+            <width>22</width>
+            <height>22</height>
            </size>
           </property>
           <property name="shortcut">
@@ -213,8 +213,8 @@
           </property>
           <property name="iconSize">
            <size>
-            <width>25</width>
-            <height>25</height>
+            <width>22</width>
+            <height>22</height>
            </size>
           </property>
           <property name="checkable">
@@ -251,8 +251,8 @@
           </property>
           <property name="iconSize">
            <size>
-            <width>25</width>
-            <height>25</height>
+            <width>22</width>
+            <height>22</height>
            </size>
           </property>
           <property name="checkable">
@@ -292,8 +292,8 @@
           </property>
           <property name="iconSize">
            <size>
-            <width>25</width>
-            <height>25</height>
+            <width>22</width>
+            <height>22</height>
            </size>
           </property>
           <property name="shortcut">
@@ -336,8 +336,8 @@
           </property>
           <property name="iconSize">
            <size>
-            <width>25</width>
-            <height>25</height>
+            <width>22</width>
+            <height>22</height>
            </size>
           </property>
           <property name="shortcut">
@@ -423,14 +423,14 @@
          <widget class="QLabel" name="user_icon_lbl">
           <property name="minimumSize">
            <size>
-            <width>25</width>
-            <height>25</height>
+            <width>22</width>
+            <height>22</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>25</width>
-            <height>25</height>
+            <width>22</width>
+            <height>22</height>
            </size>
           </property>
           <property name="text">
@@ -500,14 +500,14 @@
          <widget class="QLabel" name="db_icon_lbl">
           <property name="minimumSize">
            <size>
-            <width>25</width>
-            <height>25</height>
+            <width>22</width>
+            <height>22</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>25</width>
-            <height>25</height>
+            <width>22</width>
+            <height>22</height>
            </size>
           </property>
           <property name="text">
@@ -572,14 +572,14 @@
          <widget class="QLabel" name="encoding_ico_lbl">
           <property name="minimumSize">
            <size>
-            <width>25</width>
-            <height>25</height>
+            <width>22</width>
+            <height>22</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>25</width>
-            <height>25</height>
+            <width>22</width>
+            <height>22</height>
            </size>
           </property>
           <property name="text">
@@ -649,14 +649,14 @@
          <widget class="QLabel" name="server_ico_lbl">
           <property name="minimumSize">
            <size>
-            <width>25</width>
-            <height>25</height>
+            <width>22</width>
+            <height>22</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>25</width>
-            <height>25</height>
+            <width>22</width>
+            <height>22</height>
            </size>
           </property>
           <property name="text">
@@ -741,8 +741,8 @@
         </property>
         <property name="iconSize">
          <size>
-          <width>25</width>
-          <height>25</height>
+          <width>22</width>
+          <height>22</height>
          </size>
         </property>
         <property name="autoRaise">
@@ -1002,8 +1002,8 @@
                 </property>
                 <property name="iconSize">
                  <size>
-                  <width>25</width>
-                  <height>25</height>
+                  <width>22</width>
+                  <height>22</height>
                  </size>
                 </property>
                 <property name="checkable">
@@ -1042,8 +1042,8 @@
                 </property>
                 <property name="iconSize">
                  <size>
-                  <width>25</width>
-                  <height>25</height>
+                  <width>22</width>
+                  <height>22</height>
                  </size>
                 </property>
                 <property name="checkable">
@@ -1082,8 +1082,8 @@
                 </property>
                 <property name="iconSize">
                  <size>
-                  <width>25</width>
-                  <height>25</height>
+                  <width>22</width>
+                  <height>22</height>
                  </size>
                 </property>
                 <property name="checkable">
@@ -1201,7 +1201,7 @@
            <property name="spacing">
             <number>5</number>
            </property>
-           <item row="0" column="0">
+           <item row="1" column="0">
             <widget class="QListWidget" name="msgoutput_lst">
              <property name="sizeAdjustPolicy">
               <enum>QAbstractScrollArea::SizeAdjustPolicy::AdjustToContents</enum>
@@ -1235,6 +1235,25 @@
              </property>
              <property name="spacing">
               <number>2</number>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QProgressBar" name="row_proc_pb">
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>10</height>
+              </size>
+             </property>
+             <property name="maximum">
+              <number>100</number>
+             </property>
+             <property name="value">
+              <number>0</number>
+             </property>
+             <property name="textVisible">
+              <bool>false</bool>
              </property>
             </widget>
            </item>

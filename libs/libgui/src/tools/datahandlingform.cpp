@@ -37,6 +37,9 @@ DataHandlingForm::DataHandlingForm(QWidget * parent, Qt::WindowFlags f): QDialog
 
 	curr_grid_wgt = nullptr;
 
+	table_cmb->setMaximumHeight(browse_data_tb->height());
+	schema_cmb->setMaximumHeight(browse_data_tb->height());
+
 	QToolButton *btn = nullptr;
 	QFont fnt;
 

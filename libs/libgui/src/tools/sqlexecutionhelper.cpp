@@ -82,14 +82,37 @@ void SQLExecutionHelper::executeCommand()
 		notices = connection.getNotices();
 
 		if(!res.isEmpty())
-			result_model = new ResultSetModel(res, catalog);
+		{
+			emit s_resultReceived();
+			result_model = new ResultSetModel();
 
-		emit s_executionFinished(res.getTupleCount());
+			connect(result_model, &ResultSetModel::s_rowProcessed, this, &SQLExecutionHelper::s_rowProcessed);
+			result_model->initResultSetModel(res, catalog, &cancelled);
+			disconnect(result_model, nullptr, this, nullptr);
+
+			if(cancelled)
+			{
+				destroyResultModel();
+				emit s_executionAborted(Exception(tr("Command execution aborted by the user! Results discarded."), PGM_FUNC, PGM_FILE, PGM_LINE));
+			}
+			else
+				emit s_executionFinished(res.getTupleCount());
+		}
 	}
 	catch(Exception &e)
 	{
+		destroyResultModel();
 		connection.close();
 		emit s_executionAborted(e);
+	}
+}
+
+void SQLExecutionHelper::destroyResultModel()
+{
+	if(result_model)
+	{
+		delete result_model;
+		result_model = nullptr;
 	}
 }
 

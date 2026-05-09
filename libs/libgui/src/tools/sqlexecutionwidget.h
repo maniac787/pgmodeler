@@ -71,11 +71,14 @@ class __libgui SQLExecutionWidget: public QWidget, public Ui::SQLExecutionWidget
 
 		code_menu,
 
-		result_menu;
+		result_menu,
+
+		result_tab_menu;
 
 		QAction *action_save, *action_save_as, *action_load,
 		*action_wrap, *action_clear_all, *action_search,
-		*action_filter, *action_export;
+		*action_filter, *action_export,
+		*action_adjust_cols, *action_adjust_rows, *action_sel_rows_cols;
 
 		SearchReplaceWidget *find_replace_wgt;
 
@@ -95,6 +98,8 @@ class __libgui SQLExecutionWidget: public QWidget, public Ui::SQLExecutionWidget
 		void switchToExecutionMode(bool value);
 
 		void destroyResultModel();
+
+		void configureTableCornerBtn();
 
 	protected:
 		//! \brief Widget that serves as SQL commands input
@@ -199,6 +204,8 @@ class __libgui SQLExecutionWidget: public QWidget, public Ui::SQLExecutionWidget
 		void filterResults();
 
 		void togglePluginButton(bool checked);
+
+		void resizeRowsCols();
 
 		friend class SQLToolWidget;
 };

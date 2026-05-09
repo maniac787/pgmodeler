@@ -38,6 +38,10 @@ class __libgui ResultSetModel: public QAbstractTableModel {
 	Q_OBJECT
 
 	private:
+		bool initialized;
+
+		bool *cancel_flag;
+
 		int col_count, row_count;
 
 		QStringList item_data, header_data, tooltip_data;
@@ -46,9 +50,12 @@ class __libgui ResultSetModel: public QAbstractTableModel {
 
 		void insertColumn(int, const QModelIndex &){}
 		void insertRow(int, const QModelIndex &){}
+		bool isCancelFlagOn();
+		void clear();
 
 	public:
-		ResultSetModel(ResultSet &res, Catalog &catalog, QObject *parent = 0);
+		ResultSetModel(QObject *parent = 0);
+
 		int rowCount(const QModelIndex & = QModelIndex()) const override;
 		int columnCount(const QModelIndex &) const override;
 		QModelIndex index(int row, int column, const QModelIndex &parent) const override;
@@ -59,7 +66,20 @@ class __libgui ResultSetModel: public QAbstractTableModel {
 		void append(ResultSet &res);
 		bool isEmpty();
 
+		void setCancelFlag(bool *cancel_flg);
+
+		/*! \brief Initializes the result set model with the provided ResultSet
+		 *  The catalog is used the determine column types
+		 *  The optional cancel_flg is a pointer to a boolean variable that controls the
+		 *  canceling process where a result set is being constructed (e.g. SQLExecutionHelper)
+		 *  this is usefult to stop constructing the model if the outer process was
+		 *  canceled by the user, avoding blocking the UI */
+		void initResultSetModel(ResultSet &res, Catalog &catalog, bool *cancel_flg = nullptr);
+
 		static QString getPgTypeIconName(const QString &type);
+
+	signals:
+		void s_rowProcessed(int row, int row_cnt);
 };
 
 #endif

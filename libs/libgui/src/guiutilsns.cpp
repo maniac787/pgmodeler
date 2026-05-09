@@ -213,22 +213,24 @@ namespace GuiUtilsNs {
 
 	void configureWidgetFont(QWidget *widget, FontFactorId factor_id, bool bold, bool italic)
 	{
-		double factor = 1;
+		double factor = 0;
 
 		switch(factor_id)
 		{
 			case SmallFontFactor:
-				factor=0.80;
+				factor = 0.80;
 			break;
 			case MediumFontFactor:
-				factor=0.90;
+				factor = 0.90;
 			break;
 			case BigFontFactor:
-				factor=1.10;
+				factor = 1.10;
 			break;
 			case HugeFontFactor:
+				factor = 1.40;
+			break;
 			default:
-				factor=1.40;
+				factor = 1;
 			break;
 		}
 

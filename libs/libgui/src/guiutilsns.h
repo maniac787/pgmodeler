@@ -68,6 +68,7 @@ namespace GuiUtilsNs {
 	enum FontFactorId: unsigned {
 		SmallFontFactor,
 		MediumFontFactor,
+		DefaultFontFactor,
 		BigFontFactor,
 		HugeFontFactor
 	};

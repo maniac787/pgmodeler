@@ -23,17 +23,27 @@
 #include "guiutilsns.h"
 #include <pgsqltypes/pgsqltype.h>
 
-ResultSetModel::ResultSetModel(ResultSet &res, Catalog &catalog, QObject *parent) : QAbstractTableModel(parent)
+ResultSetModel::ResultSetModel(QObject *parent) : QAbstractTableModel(parent)
+{
+	cancel_flag = nullptr;
+	initialized = false;
+}
+
+void ResultSetModel::initResultSetModel(ResultSet &res, Catalog &catalog, bool *cancel_flg)
 {
 	try
 	{
+		if(initialized)
+			return;
+
 		Catalog aux_cat = catalog;
 		std::vector<unsigned> type_ids;
 		std::vector<unsigned>::iterator end;
 		std::vector<attribs_map> types;
 		std::map<int, QString> type_names;
-		//int col = 0;
 
+		initialized = true;
+		cancel_flag = cancel_flg;
 		header_icons.clear();
 		col_count = res.getColumnCount();
 		row_count = res.getTupleCount();
@@ -41,23 +51,32 @@ ResultSetModel::ResultSetModel(ResultSet &res, Catalog &catalog, QObject *parent
 		insertColumns(0, col_count);
 		insertRows(0, row_count);
 
-		for(int col = 0; col < col_count; col++)
+		for(int col = 0; col < col_count && !isCancelFlagOn(); col++)
 		{
 			header_data.push_back(" " + res.getColumnName(col));
 			type_ids.push_back(res.getColumnTypeId(col));
 		}
 
+		int row = 1;
 		if(res.accessTuple(ResultSet::FirstTuple))
 		{
 			do
 			{
 				//Fills the current row with the values of current tuple
-				for(int col = 0; col < col_count; col++)
+				for(int col = 0; col < col_count && !isCancelFlagOn(); col++)
 				{
 					item_data.push_back(res.getColumnValue(col));
 				}
+
+				emit s_rowProcessed(row++, row_count);
 			}
-			while(res.accessTuple(ResultSet::NextTuple));
+			while(res.accessTuple(ResultSet::NextTuple) && !isCancelFlagOn());
+		}
+
+		if(isCancelFlagOn())
+		{
+			clear();
+			return;
 		}
 
 		aux_cat.setQueryFilter(Catalog::ListAllObjects);
@@ -66,7 +85,6 @@ ResultSetModel::ResultSetModel(ResultSet &res, Catalog &catalog, QObject *parent
 		type_ids.erase(end, type_ids.end());
 
 		types = aux_cat.getObjectsAttributes(ObjectType::Type, "", "", type_ids);
-		//col = 0;
 
 		for(auto &tp : types)
 			type_names[tp[Attributes::Oid].toInt()] = tp[Attributes::Name];
@@ -84,6 +102,23 @@ ResultSetModel::ResultSetModel(ResultSet &res, Catalog &catalog, QObject *parent
 	{
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
+}
+
+bool ResultSetModel::isCancelFlagOn()
+{
+	return cancel_flag && *cancel_flag;
+}
+
+void ResultSetModel::clear()
+{
+	col_count = row_count = 0;
+	removeColumns(0, col_count);
+	removeRows(0, row_count);
+	item_data.clear();
+	header_data.clear();
+	tooltip_data.clear();
+	header_icons.clear();
+	cancel_flag = nullptr;
 }
 
 int ResultSetModel::rowCount(const QModelIndex &) const

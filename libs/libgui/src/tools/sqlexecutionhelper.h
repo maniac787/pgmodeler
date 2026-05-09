@@ -49,6 +49,8 @@ class __libgui SQLExecutionHelper : public QObject {
 
 		QStringList notices;
 
+		void destroyResultModel();
+
 	public:
 		SQLExecutionHelper();
 
@@ -73,6 +75,8 @@ class __libgui SQLExecutionHelper : public QObject {
 	signals:
 		void s_executionFinished(int rows_affected);
 		void s_executionAborted(Exception e);
+		void s_resultReceived();
+		void s_rowProcessed(int row, int row_cnt);
 };
 
 #endif

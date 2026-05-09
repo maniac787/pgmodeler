@@ -31,6 +31,7 @@
 #include <QClipboard>
 #include <QButtonGroup>
 #include <qnamespace.h>
+#include "generalconfigwidget.h"
 
 std::map<QString, QString> SQLExecutionWidget::cmd_history;
 int SQLExecutionWidget::cmd_history_max_len {1000};
@@ -44,6 +45,7 @@ SQLExecutionWidget::SQLExecutionWidget(QWidget * parent) : QWidget(parent)
 	plugins_wgts_stw->setVisible(false);
 	sql_cmd_splitter->setSizes({800, 200});
 
+	GuiUtilsNs::configureWidgetFont(row_proc_pb, GuiUtilsNs::SmallFontFactor);
 	CustomUiStyle::setStyleHint(CustomUiStyle::DefaultFrmHint,
 															{ db_info_frm, separator_ln, separator_ln2, separator_ln3 });
 
@@ -87,9 +89,6 @@ SQLExecutionWidget::SQLExecutionWidget(QWidget * parent) : QWidget(parent)
 	file_tb->setToolTip(file_tb->toolTip() + QString(" (%1)").arg(file_tb->shortcut().toString()));
 	output_tb->setToolTip(output_tb->toolTip() + QString(" (%1)").arg(output_tb->shortcut().toString()));
 	clear_all_tb->setToolTip(clear_all_tb->toolTip() + QString(" (%1)").arg(clear_all_tb->shortcut().toString()));
-
-	for(auto &btn : top_btns_wgt->findChildren<QToolButton *>())
-		GuiUtilsNs::configureWidgetFont(btn, GuiUtilsNs::MediumFontFactor);
 
 	results_tbw->setItemDelegate(new PlainTextItemDelegate(this, true));
 
@@ -210,9 +209,92 @@ SQLExecutionWidget::SQLExecutionWidget(QWidget * parent) : QWidget(parent)
 	connect(&sql_exec_hlp, &SQLExecutionHelper::s_executionFinished, this, &SQLExecutionWidget::finishExecution);
 	connect(&sql_exec_hlp, &SQLExecutionHelper::s_executionAborted, &sql_exec_thread, &QThread::quit);
 	connect(&sql_exec_hlp, &SQLExecutionHelper::s_executionAborted, this, &SQLExecutionWidget::handleExecutionAborted);
+
+	connect(&sql_exec_hlp, &SQLExecutionHelper::s_resultReceived, this, [this](){
+		QString time_str = QString("[%1]:").arg(QTime::currentTime().toString("hh:mm:ss.zzz"));
+		GuiUtilsNs::createOutputListItem(msgoutput_lst,
+											UtilsNs::formatMessage(QString("%1 %2").arg(time_str, tr("Command executed. Building results grid..."))),
+											GuiUtilsNs::getPixmap("info"));
+		row_proc_pb->setVisible(true);
+	});
+
+	connect(&sql_exec_hlp, &SQLExecutionHelper::s_rowProcessed, this, [this](int row, int row_cnt) {
+		row_proc_pb->setMaximum(row_cnt);
+		row_proc_pb->setValue(row);
+	});
+
 	connect(stop_tb, &QToolButton::clicked, &sql_exec_hlp, &SQLExecutionHelper::cancelCommand, Qt::DirectConnection);
 
 	installPluginWidgets();
+	configureTableCornerBtn();
+}
+
+void SQLExecutionWidget::configureTableCornerBtn()
+{
+	QAbstractButton *btn = results_tbw->findChild<QAbstractButton *>();
+
+	if(!btn)
+		return;
+
+	btn->disconnect(btn, nullptr, results_tbw, nullptr);
+
+	action_sel_rows_cols = result_tab_menu.addAction(tr("Select all"));
+	action_sel_rows_cols->setIcon(GuiUtilsNs::getIcon("selalldata"));
+
+	connect(action_sel_rows_cols, &QAction::triggered, this, [this](){
+		QItemSelectionModel *sel_model = results_tbw->selectionModel();
+		QModelIndex tl_index = results_tbw->model()->index(0, 0),
+				br_index = results_tbw->model()->index(results_tbw->model()->rowCount() - 1,
+																							 results_tbw->model()->columnCount() - 1);
+
+		QItemSelection selection(tl_index, br_index);
+		sel_model->select(selection, QItemSelectionModel::Select | QItemSelectionModel::Rows);
+	});
+
+	action_adjust_cols = result_tab_menu.addAction(tr("Adjust columns"));
+	action_adjust_cols->setIcon(GuiUtilsNs::getIcon("resizecols"));
+
+	action_adjust_rows = result_tab_menu.addAction(tr("Adjust rows"));
+	action_adjust_rows->setIcon(GuiUtilsNs::getIcon("resizerows"));
+
+	connect(action_adjust_cols, &QAction::triggered, this, &SQLExecutionWidget::resizeRowsCols);
+	connect(action_adjust_rows, &QAction::triggered, this, &SQLExecutionWidget::resizeRowsCols);
+
+	connect(btn, &QAbstractButton::clicked, this, [this](){
+		result_tab_menu.exec(QCursor::pos());
+	});
+}
+
+void SQLExecutionWidget::resizeRowsCols()
+{
+	if(results_tbw->model()->rowCount() > 10000 &&
+		 GeneralConfigWidget::getConfigurationParam(Attributes::Configuration,
+																								Attributes::AlertResizeRowsCols) != Attributes::False)
+	{
+		Messagebox msgbox;
+
+		msgbox.setCustomOptionText(tr("Don't ask me again"));
+		msgbox.show(tr("Resizing rows or columns in a heavily populated data grid is an expensive operation and may cause the UI to freeze for several minutes. Do you want to proceed?"),
+								Messagebox::Alert, Messagebox::YesNoButtons);
+
+		GeneralConfigWidget::appendConfigurationSection(Attributes::Configuration,
+																										{{ Attributes::AlertResizeRowsCols,
+																											 msgbox.isCustomOptionChecked() ? Attributes::False : Attributes::True }});
+
+		if(msgbox.isRejected())
+			return;
+	}
+
+	qApp->setOverrideCursor(Qt::WaitCursor);
+	results_tbw->setUpdatesEnabled(false);
+
+	if(sender() == action_adjust_cols)
+		results_tbw->resizeColumnsToContents();
+	else
+		results_tbw->resizeRowsToContents();
+
+	results_tbw->setUpdatesEnabled(true);
+	qApp->restoreOverrideCursor();
 }
 
 SQLExecutionWidget::~SQLExecutionWidget()
@@ -276,6 +358,7 @@ void SQLExecutionWidget::reloadHighlightConfigs()
 
 void SQLExecutionWidget::installPluginWidgets()
 {
+	QList<QToolButton *> btns { top_btns_wgt->findChildren<QToolButton *>() };
 	QToolButton *btn = nullptr;
 	QWidget *wgt = nullptr;
 	int wgt_idx = -1;
@@ -289,12 +372,12 @@ void SQLExecutionWidget::installPluginWidgets()
 		if(!btn)
 			continue;
 
+		btns.append(btn);
 		plugins_btns_lt->addWidget(btn);
 
 		/* Forcing the button to have the same features of all other buttons in the
 		 * top area when they lie */
 		btn->setIconSize(run_sql_tb->iconSize());
-		btn->setFont(run_sql_tb->font());
 		btn->setSizePolicy(run_sql_tb->sizePolicy());
 		btn->setToolButtonStyle(run_sql_tb->toolButtonStyle());
 		btn->setAutoRaise(run_sql_tb->autoRaise());
@@ -309,6 +392,9 @@ void SQLExecutionWidget::installPluginWidgets()
 
 		btn->setProperty(Attributes::Index.toStdString().c_str(), wgt_idx);
 	}
+
+	for(auto &btn : btns)
+		GuiUtilsNs::configureWidgetFont(btn, GuiUtilsNs::DefaultFontFactor);
 }
 
 void SQLExecutionWidget::togglePluginButton(bool checked)
@@ -542,6 +628,7 @@ void SQLExecutionWidget::finishExecution(int rows_affected)
 		bool empty = false;
 		ResultSetModel *res_model = sql_exec_hlp.getResultSetModel();
 
+		row_proc_pb->setVisible(false);
 		end_exec=QDateTime::currentMSecsSinceEpoch();
 		total_exec = end_exec - start_exec;
 
@@ -553,7 +640,7 @@ void SQLExecutionWidget::finishExecution(int rows_affected)
 
 		results_tbw->setModel(res_model);
 		results_tbw->resizeColumnsToContents();
-		results_tbw->resizeRowsToContents();
+		//results_tbw->resizeRowsToContents();
 		results_tbw->setUpdatesEnabled(true);
 		results_tbw->blockSignals(false);
 
@@ -901,6 +988,7 @@ int SQLExecutionWidget::clearAll()
 void SQLExecutionWidget::clearOutput()
 {
 	msgoutput_lst->clear();
+	row_proc_pb->setVisible(false);
 	output_tbw->setTabText(0, tr("Results"));
 	output_tbw->setTabText(1, tr("Messages"));
 	output_tbw->setCurrentIndex(1);

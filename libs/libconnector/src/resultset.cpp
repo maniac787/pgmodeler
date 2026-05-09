@@ -77,13 +77,13 @@ void ResultSet::initResultSet(PGresult *sql_res)
 
 void ResultSet::clearResultSet()
 {
-  if(sql_result)
-    PQclear(sql_result);
+	if(sql_result)
+		PQclear(sql_result);
 
 	//Reset the other attributes
-  sql_result = nullptr;
-  empty_result = false;
-  current_tuple = -1;
+	sql_result = nullptr;
+	empty_result = false;
+	current_tuple = -1;
 }
 
 QString ResultSet::getColumnName(int column_idx)

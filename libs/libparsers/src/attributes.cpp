@@ -34,6 +34,7 @@ namespace Attributes {
 	AlertDisableQuoting("alert-disable-quoting"),
 	AlertOpenSqlTabs("alert-open-sqltabs"),
 	AlertUnsavedModels("alert-unsaved-models"),
+	AlertResizeRowsCols("alert-resize-rows-cols"),
 	Alias("alias"),
 	Alignment("alignment"),
 	AlignObjsToGrid("align-objs-to-grid"),

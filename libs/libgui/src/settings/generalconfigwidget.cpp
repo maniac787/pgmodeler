@@ -217,7 +217,8 @@ void GeneralConfigWidget::showEvent(QShowEvent *)
 																			 config_params[Attributes::Configuration][Attributes::AlertOpenSqlTabs] != Attributes::True ||
 																			 config_params[Attributes::Configuration][Attributes::UseDefDisambiguation] == Attributes::True ||
 																			 config_params[Attributes::Configuration][Attributes::AlertApplyMetadata] == Attributes::False ||
-																			 config_params[Attributes::Configuration][Attributes::AlertDisableQuoting] != Attributes::True);
+																			 config_params[Attributes::Configuration][Attributes::AlertDisableQuoting] != Attributes::True ||
+																			 config_params[Attributes::Configuration][Attributes::AlertResizeRowsCols] == Attributes::False);
 
 }
 
@@ -228,6 +229,7 @@ void GeneralConfigWidget::resetAlertChoices()
 	config_params[Attributes::Configuration][Attributes::UseDefDisambiguation] = Attributes::False;
 	config_params[Attributes::Configuration][Attributes::AlertApplyMetadata] = Attributes::True;
 	config_params[Attributes::Configuration][Attributes::AlertDisableQuoting] = Attributes::True;
+	config_params[Attributes::Configuration][Attributes::AlertResizeRowsCols] = Attributes::True;
 	reset_alerts_choices_btn->setEnabled(false);
 }
 

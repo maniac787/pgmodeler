@@ -203,6 +203,7 @@
         <file>icons/resetalerts.png</file>
         <file>icons/resetsizes.png</file>
         <file>icons/resizecols.png</file>
+        <file>icons/resizerows.png</file>
         <file>icons/restore.png</file>
         <file>icons/resultset.png</file>
         <file>icons/role.png</file>
@@ -214,6 +215,7 @@
         <file>icons/saveas.png</file>
         <file>icons/schema.png</file>
         <file>icons/schemarect.png</file>
+        <file>icons/selalldata.png</file>
         <file>icons/selection.png</file>
         <file>icons/selectmove.png</file>
         <file>icons/sendtoback.png</file>
