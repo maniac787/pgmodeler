@@ -20,7 +20,6 @@
 */
 
 #include "pgmodelerapp.h"
-#include "mainwindow.h"
 #include "utilsns.h"
 #include <signal.h>
 #include <QSplashScreen>
@@ -28,6 +27,9 @@
 #ifdef PRIV_CODE_SYMBOLS
 	#include "privcoreinit.h"
 	#include "privcoreclasses.h"
+	#include "privmainwindow.h"
+#else
+	#include "mainwindow.h"
 #endif
 
 namespace {
@@ -80,12 +82,13 @@ int main(int argc, char **argv)
 		splash.raise();
 		app.processEvents();
 
-		//Creates the main form
-		MainWindow fmain;
-
 		#ifdef PRIV_CODE_SYMBOLS
-			__pgm_plus_gui_init
+			PrivMainWindow fmain;
+		#else
+			MainWindow fmain;
 		#endif
+
+		fmain.initMainWindow();
 
 		// Displaying the splash for one and a half second after displaying the main window
 		QTimer::singleShot(1500, &splash, [&splash, &fmain]() {

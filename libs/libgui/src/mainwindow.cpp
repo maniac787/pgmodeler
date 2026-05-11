@@ -30,20 +30,20 @@
 
 int MainWindow::ToolsActionsCount {0};
 bool MainWindow::confirm_validation {true};
-QList<QAction *> MainWindow::view_actions {};
+QMap<MainWindow::MWViewsId, QAction *> MainWindow::view_actions {};
+
+const QString MainWindow::TmplWindowTitle { QT_TR_NOOP("pgModeler %1 - PostgreSQL Database Modeler %2") };
 
 MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags) : QMainWindow(parent, flags)
 {	
 	setupUi(this);
 	pending_op = NoPendingOp;
-	window_title = tr("pgModeler %1 - PostgreSQL Database Modeler %2");
+	curr_view = WelcomeView;
+}
 
-	#ifdef PRIV_CODE_SYMBOLS
-		window_title = window_title.arg("Plus", GlobalAttributes::PgModelerVersion);
-	#else
-		window_title = window_title.arg("", GlobalAttributes::PgModelerVersion);
-	#endif
-
+void MainWindow::initMainWindow()
+{
+	window_title = TmplWindowTitle.arg("", GlobalAttributes::PgModelerVersion);
 	recent_models_menu = new QMenu(this);
 	recent_models_menu->setObjectName("recent_models_menu");
 
@@ -61,10 +61,6 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags) : QMainWindow(par
 		clearRecentModelsMenu(false);
 	});
 
-	#ifdef DEMO_VERSION
-		window_title+=tr(" (Demo)");
-	#endif
-
 	setWindowTitle(window_title);
 	createMainWidgets();
 	loadConfigurations();
@@ -75,10 +71,6 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags) : QMainWindow(par
 	updateRecentModelsMenu();
 	configureSamplesMenu();
 	applyConfigurations();
-
-	#ifdef PRIV_CODE_SYMBOLS
-		SQLExecutionWidget::loadSQLHistory();
-	#endif
 
 	GeneralConfigWidget *conf_wgt = configuration_wgt->getConfigurationWidget<GeneralConfigWidget>();
 	std::map<QString, attribs_map >confs = conf_wgt->getConfigurationParams();
@@ -348,12 +340,6 @@ void MainWindow::configureMenusActionsWidgets()
 		btn->setProperty("view_btn", true);
 	}
 
-	#ifndef PRIV_CODE_SYMBOLS
-		tools_acts_tb->removeAction(action_import);
-		tools_acts_tb->removeAction(action_diff);
-		tools_acts_tb->removeAction(action_manage);
-	#endif
-
 	ToolsActionsCount = tools_acts_tb->actions().size();
 	QList<QAction *> actions = model_acts_tb->actions();
 	actions.append(tools_acts_tb->actions());
@@ -409,20 +395,6 @@ void MainWindow::handleInitializationFailure(Exception &e)
 	}
 }
 
-template<class WgtClass>
-WgtClass *MainWindow::createViewWidget(MWViewsId view_id, const QString &view_name)
-{
-	QWidget *parent_wgt = views_stw->widget(view_id);
-
-	if(!parent_wgt)
-		throw Exception(tr("Page index %1 not created in views widget!").arg(view_id), ErrorCode::Custom, PGM_FUNC, PGM_FILE, PGM_LINE);
-
-	WgtClass *view_wgt = GuiUtilsNs::createWidgetInParent<WgtClass>(0, parent_wgt);
-	view_wgt->setObjectName(view_name);
-
-	return view_wgt;
-}
-
 void MainWindow::createMainWidgets()
 {
 	try
@@ -443,12 +415,6 @@ void MainWindow::createMainWidgets()
 		welcome_wgt = createViewWidget<WelcomeWidget>(WelcomeView, "welcome_wgt");
 		model_export_wgt = createViewWidget<ModelExportWidget>(ExportView, "model_export_wgt");
 		configuration_wgt = createViewWidget<ConfigurationWidget>(ConfigureView, "configuration_wgt");
-
-		#ifdef PRIV_CODE_SYMBOLS
-			sql_tool_wgt = createViewWidget<SQLToolWidget>(ManageView, "sql_tool_wgt");
-			db_import_wgt = createViewWidget<DatabaseImportWidget>(ImportView, "db_import_wgt");
-			diff_tool_wgt = createViewWidget<DiffToolWidget>(DiffView, "diff_tool_wgt");
-		#endif
 
 		fix_tools_wgt = createViewWidget<FixToolsWidget>(FixView, "fix_tools_wgt");
 
@@ -615,22 +581,25 @@ void MainWindow::connectSignalsToSlots()
 	 * must match the enum MWViewsId otherwise the views will
 	 * be switched in the wrong order when the user activate
 	 * one of the actions */
-	view_actions.append({
-		action_welcome, action_design,
-		action_manage, action_import,
-		action_export, action_diff,
-		action_fix, action_configure
+	view_actions.insert({
+		{ WelcomeView, action_welcome },
+		{ DesignView , action_design },
+		/*{ ManageView, action_manage },*/ /* action_import, */
+		{ ExportView, action_export }, /* action_diff, */
+		{ FixView, action_fix},
+		{ ConfigureView, action_configure }
 	});
 
-	int vw_id = 0;
-	for(auto &act : view_actions)
+	//int vw_id = 0;
+	//for(auto &act : view_actions)
+	for(auto [vw_id, act] : view_actions.asKeyValueRange())
 	{
-		act->setData(static_cast<MWViewsId>(vw_id++));
+		act->setData(vw_id);
 		connect(act, &QAction::toggled, this, qOverload<bool>(&MainWindow::changeCurrentView));
 	}
 
-	connect(action_export, &QAction::toggled, this, &MainWindow::validateBeforeOperation);
-	connect(action_diff, &QAction::toggled, this, &MainWindow::validateBeforeOperation);
+	//connect(action_export, &QAction::toggled, this, &MainWindow::validateBeforeOperation);
+	//connect(action_diff, &QAction::toggled, this, &MainWindow::validateBeforeOperation);
 
 	connect(action_bug_report, &QAction::triggered, this, &MainWindow::reportBug);
 	connect(action_compact_view, &QAction::triggered, this, &MainWindow::toggleCompactView);
@@ -692,36 +661,6 @@ void MainWindow::connectSignalsToSlots()
 	connect(model_valid_wgt, &ModelValidationWidget::s_connectionsUpdateRequested, this, [this](){
 		updateConnections(true);
 	});
-
-	#ifdef PRIV_CODE_SYMBOLS
-		connect(sql_tool_wgt, &SQLToolWidget::s_connectionsUpdateRequested, this, [this](){
-			updateConnections(true);
-		});
-
-		connect(db_import_wgt, &DatabaseImportWidget::s_connectionsUpdateRequested, this, [this](){
-			updateConnections(true);
-		});
-
-		connect(db_import_wgt, &DatabaseImportWidget::s_importStarted, this, [this](){
-			stopSaveTimers(true);
-		});
-
-		connect(db_import_wgt, &DatabaseImportWidget::s_importFinished, this, &MainWindow::handleImportFinished);
-
-		connect(diff_tool_wgt, &DiffToolWidget::s_connectionsUpdateRequested, this, [this](){
-			updateConnections(true);
-		});
-
-		connect(diff_tool_wgt, &DiffToolWidget::s_diffStarted, this, [this](){
-			stopSaveTimers(true);
-		});
-
-		connect(diff_tool_wgt, &DiffToolWidget::s_diffCanceled, this, [this](){
-			stopSaveTimers(false);
-		});
-
-		connect(diff_tool_wgt, &DiffToolWidget::s_loadDiffInSQLTool, this, &MainWindow::loadDiffInSQLTool);
-	#endif
 
 	connect(model_export_wgt, &ModelExportWidget::s_exportStarted, this, [this](){
 		stopSaveTimers(true);
@@ -914,13 +853,6 @@ void MainWindow::startOtherTimers()
 		}
 	#endif
 
-	#ifdef DEMO_VERSION
-		#warning "DEMO VERSION: demonstration version startup alert."
-		QTimer::singleShot(2000, this, [this](){
-			showDemoVersionWarning();
-		});
-	#endif
-
 	#ifdef CHECK_CURR_VER
 		//Showing the donate widget in the first run or if the version registered in the file diverges from the current
 		if(confs[Attributes::Configuration][Attributes::FirstRun] != Attributes::False ||
@@ -947,12 +879,8 @@ void MainWindow::resizeEvent(QResizeEvent *)
 
 void MainWindow::showEvent(QShowEvent *event)
 {
-	#ifdef PRIV_CODE_SYMBOLS
-		__pgm_plus_mwnd_impl;
-	#else
-		if(!event->spontaneous())
-			startOtherTimers();
-	#endif
+	if(!event->spontaneous())
+		startOtherTimers();
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -962,13 +890,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 	 * is still running */
 	if(model_valid_wgt->isThreadRunning() ||
 		 model_export_wgt->isThreadRunning() ||
-		 fix_tools_wgt->isToolRunning()
-		 
-		#ifdef PRIV_CODE_SYMBOLS
-		 	|| db_import_wgt->isThreadRunning() 
-			|| diff_tool_wgt->isThreadsRunning()
-		#endif
-		)
+		 fix_tools_wgt->isToolRunning())
 		event->ignore();
 	else
 	{
@@ -980,7 +902,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
 		plugins_config_menu.clear();
 
 		//If not in demo version there is no confirmation before close the software
-#ifndef DEMO_VERSION
 		Messagebox msg_box;
 
 		//Checking if there is modified models and ask the user to save them before close the application
@@ -1015,14 +936,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
 					event->ignore();
 			}
 		}
-
-		// Warning the user about non empty sql execution panels
-		#ifdef PRIV_CODE_SYMBOLS
-			checkOpenSQLTabs(event);
-		#endif
-#else
-		showDemoVersionWarning(true);
-#endif
 
 		if(!event->isAccepted())
 			return;
@@ -1077,7 +990,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 			for(auto &rec_model : recent_models)
 			{
-				param_id = QString("%1%2").arg(Attributes::Recent).arg(QString::number(i++).rightJustified(2, '0'));
+				param_id = QString("%1%2").arg(Attributes::Recent, QString::number(i++).rightJustified(2, '0'));
 				attribs[Attributes::Id] = param_id;
 				attribs[Attributes::Path] = rec_model;
 				conf_wgt->setConfigurationSection(param_id, attribs);
@@ -1094,11 +1007,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 		conf_wgt->saveConfiguration();
 		restoration_form->removeTemporaryFiles(true);
-
-		#ifdef PRIV_CODE_SYMBOLS
-			SQLExecutionWidget::saveSQLHistory();
-		#endif
-
 		qApp->quit();
 	}
 }
@@ -1111,27 +1019,10 @@ void MainWindow::updateConnections(bool force)
 	{
 		need_update = model_valid_wgt->connections_cmb->count() == 0 ||
 		              model_export_wgt->connections_cmb->count() == 0;
-
-		#ifdef PRIV_CODE_SYMBOLS
-			need_update = need_update ||
-			              sql_tool_wgt->connections_cmb->count() == 0 ||
-			              db_import_wgt->connections_cmb->count() == 0;
-		#endif
 	}
 
 	if(need_update)
 	{
-		#ifdef PRIV_CODE_SYMBOLS
-			if(sender() != sql_tool_wgt)
-				sql_tool_wgt->updateConnections();
-
-			if(sender() != db_import_wgt)
-				db_import_wgt->updateConnections();
-
-			if(sender() != diff_tool_wgt)
-				diff_tool_wgt->updateConnections();
-		#endif
-
 		if(sender() != model_valid_wgt)
 			model_valid_wgt->updateConnections();
 
@@ -1142,9 +1033,6 @@ void MainWindow::updateConnections(bool force)
 
 void MainWindow::saveTemporaryModels()
 {
-#ifdef DEMO_VERSION
-#warning "DEMO VERSION: temporary model saving disabled."
-#else
 	try
 	{
 		ModelWidget *model=nullptr;
@@ -1180,7 +1068,6 @@ void MainWindow::saveTemporaryModels()
 		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 		tmpmodel_save_timer.start();
 	}
-#endif
 }
 
 void MainWindow::clearRecentModelsMenu(bool missing_only)
@@ -1295,15 +1182,6 @@ void MainWindow::loadModelFromAction()
 
 void MainWindow::addModel(const QString &filename, int model_idx)
 {
-#ifdef DEMO_VERSION
-#warning "DEMO VERSION: database model creation limit."
-	if(models_tbw->count() >= 3)
-	{
-		Messagebox::alert(tr("The demonstration version can create only <strong>three</strong> instances of a database model! Close the open models before trying to create other ones."));
-		return;
-	}
-#endif
-
 	try
 	{
 		ModelWidget *model_tab=nullptr;
@@ -1409,15 +1287,6 @@ void MainWindow::addModel(const QString &filename, int model_idx)
 
 void MainWindow::addModel(ModelWidget *model_wgt)
 {
-#ifdef DEMO_VERSION
-#warning "DEMO VERSION: database model creation limit."
-	if(models_tbw->count() >= 3)
-	{
-		Messagebox::alert(tr("The demonstration version can create only <strong>three</strong> instances of a database model! Close the open models before trying to create other ones."));
-		return;
-	}
-#endif
-
 	try
 	{
 		if(!model_wgt)
@@ -1731,7 +1600,6 @@ bool MainWindow::closeModel(int model_id, bool keep_tab, bool confirm)
 	int msg_res = QDialog::Accepted;
 	bool model_closed = false;
 
-#ifndef DEMO_VERSION
 	//Ask the user to save the model if its modified
 	if(confirm && model->isModified())
 	{
@@ -1740,7 +1608,6 @@ bool MainWindow::closeModel(int model_id, bool keep_tab, bool confirm)
 																	.arg(model->getDatabaseModel()->getName()),
 																	Messagebox::YesNoButtons);
 	}
-#endif
 
 	if(!model->isModified() ||
 		 (model->isModified() && msg_res == Messagebox::Accepted))
@@ -1859,11 +1726,11 @@ void MainWindow::applyConfigurations()
 
 	updateConnections(true);
 
-	#ifdef PRIV_CODE_SYMBOLS
+	/* #ifdef PRIV_CODE_SYMBOLS
 		sql_tool_wgt->configureSnippets();
 		sql_tool_wgt->reloadHighlightConfigs();
 		sql_tool_wgt->updateTabs();
-	#endif
+	#endif */
 
 	qApp->restoreOverrideCursor();
 }
@@ -1889,11 +1756,6 @@ void MainWindow::saveAllModels()
 
 void MainWindow::saveModel(ModelWidget *model)
 {
-#ifdef DEMO_VERSION
-#warning "DEMO VERSION: model saving disabled."
-	Messagebox::alert(tr("You're running a demonstration version! The model saving feature is available only in the full version!"));
-#else
-
 	try
 	{
 		if(!model)
@@ -1992,13 +1854,12 @@ void MainWindow::saveModel(ModelWidget *model)
 		stopSaveTimers(false);
 		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
-#endif
 }
 
 void MainWindow::validateBeforeOperation()
 {
 	if(!current_model ||
-		 (!action_export->isChecked() && !action_diff->isChecked()))
+		 (curr_view != ExportView && curr_view != DiffView))
 		return;
 
 	DatabaseModel *db_model = current_model->getDatabaseModel();
@@ -2006,7 +1867,7 @@ void MainWindow::validateBeforeOperation()
 	if(confirm_validation && current_model->getDatabaseModel()->isInvalidated())
 	{
 		Messagebox msgbox;
-		bool is_export = action_export->isChecked();
+		bool is_export = (curr_view == ExportView);
 		QString btn_lbl = is_export ? tr("Export anyway") : tr("Diff anyway"),
 				icon_pth = GuiUtilsNs::getIconPath(is_export ? "export" : "diff");
 
@@ -2376,13 +2237,13 @@ void MainWindow::storeDockWidgetsSettings()
 	conf_wgt->setConfigurationSection(Attributes::ObjectFinder, params);
 	params.clear();
 
-	params[Attributes::SqlTool]=Attributes::True;
+	/* params[Attributes::SqlTool]=Attributes::True;
 	#ifdef PRIV_CODE_SYMBOLS
 		params[Attributes::ShowAttributesGrid]=(sql_tool_wgt->attributes_btn->isChecked() ? Attributes::True : "");
 		params[Attributes::ShowSourcePane]=(sql_tool_wgt->source_pane_btn->isChecked() ? Attributes::True : "");
 	#endif
 	conf_wgt->setConfigurationSection(Attributes::SqlTool, params);
-	params.clear();
+	params.clear(); */
 
 	params[Attributes::LayersConfig] = Attributes::True;
 	params[Attributes::RelsFollowTabsVisibility] = layers_cfg_wgt->rels_tabs_visibility_chk->isChecked() ? Attributes::True : "";
@@ -2395,14 +2256,12 @@ void MainWindow::restoreDockWidgetsSettings()
 	GeneralConfigWidget *conf_wgt = configuration_wgt->getConfigurationWidget<GeneralConfigWidget>();
 	std::map<QString, attribs_map> confs=conf_wgt->getConfigurationParams();
 
-#ifndef DEMO_VERSION
 	if(confs.count(Attributes::Validator))
 	{
 		model_valid_wgt->sql_validation_chk->setChecked(confs[Attributes::Validator][Attributes::SqlValidation]==Attributes::True);
 		model_valid_wgt->use_tmp_names_chk->setChecked(confs[Attributes::Validator][Attributes::UseUniqueNames]==Attributes::True);
 		model_valid_wgt->version_cmb->setCurrentText(confs[Attributes::Validator][Attributes::Version]);
 	}
-#endif
 
 	if(confs.count(Attributes::ObjectFinder))
 	{
@@ -2413,43 +2272,11 @@ void MainWindow::restoreDockWidgetsSettings()
 		obj_finder_wgt->exact_match_chk->setChecked(confs[Attributes::ObjectFinder][Attributes::ExactMatch]==Attributes::True);
 	}
 
-	#ifdef PRIV_CODE_SYMBOLS
-		if(confs.count(Attributes::SqlTool))
-		{
-			sql_tool_wgt->attributes_btn->setChecked(confs[Attributes::SqlTool][Attributes::ShowAttributesGrid]==Attributes::True);
-			sql_tool_wgt->source_pane_btn->setChecked(confs[Attributes::SqlTool][Attributes::ShowSourcePane]==Attributes::True);
-		}
-	#endif
-
 	if(confs.count(Attributes::LayersConfig))
 	{
 		layers_cfg_wgt->rels_tabs_visibility_chk->setChecked(confs[Attributes::LayersConfig][Attributes::RelsFollowTabsVisibility]==Attributes::True);
 	}
 }
-
-#ifdef DEMO_VERSION
-void MainWindow::showDemoVersionWarning(bool exit_msg)
-{
-	Messagebox msg_box;
-
-	if(!exit_msg)
-	{
-		msg_box.show(tr("Warning"),
-					 tr("You're running a demonstration version of pgModeler! Some key features like <strong>saving the model</strong>, <strong>code generation</strong>, and some others will be disabled or limited!<br/><br/>\
-							Please, support this project <a href='%2'>buying a full binary copy</a>, use the promo code <strong>DEMOTESTER</strong> and receive a special discount on any purchase. You can also get the <a href='%3'>source code</a> and compile it yourself.\
-							<strong>NOTE:</strong> pgModeler is open-source software, but purchasing binary copies or providing a donation of any amount will support the project and keep its development alive!<br/><br/>")
-							.arg(GlobalAttributes::PgModelerDownloadURL + "?purchase=true&promocode=DEMOTESTER", GlobalAttributes::PgModelerDownloadURL + "?source=true"),
-							Messagebox::Alert, Messagebox::OkButton);
-	}
-	else
-	{
-		msg_box.show(tr("Info"),
-					 tr("Thank you for testing pgModeler! Do not forget that you can support this project by <a href='%2'>buying a full binary copy</a> using the promo code <strong>DEMOTESTER</strong> to receive a special discount. Also, you can get the <a href='%3'>source code</a> and compile it yourself, instructions are on the site.")
-							.arg(GlobalAttributes::PgModelerDownloadURL + "?purchase=true&promocode=DEMOTESTER", GlobalAttributes::PgModelerDownloadURL + "?source=true"),
-							Messagebox::Info, Messagebox::OkButton);
-	}
-}
-#endif
 
 void MainWindow::executePendingOperation(bool valid_error)
 {
@@ -2469,9 +2296,9 @@ void MainWindow::executePendingOperation(bool valid_error)
 	if(pending_op == PendingSaveOp || pending_op == PendingSaveAsOp)
 		saveModel();
 	else if(pending_op == PendingExportOp)
-		action_export->toggle();
+		changeCurrentView(ExportView);
 	else if(pending_op == PendingDiffOp)
-		action_diff->toggle();
+		changeCurrentView(DiffView);
 
 	pending_op = NoPendingOp;
 }
@@ -2484,13 +2311,14 @@ void MainWindow::changeCurrentView(MWViewsId view_id)
 	bool enable = (view_id == DesignView);
 	QList<QAction *> actions;
 
-	for(auto &vw_act : view_actions)
+	curr_view = view_id;
+
+	for(auto [vw_id, vw_act] : view_actions.asKeyValueRange())
 	{
 		vw_act->blockSignals(true);
 		vw_act->setChecked(false);
 
-		if(view_id == static_cast<MWViewsId>(vw_act->data().toInt()) &&
-			 !vw_act->isChecked())
+		if(view_id == vw_id && !vw_act->isChecked())
 		{
 			vw_act->setChecked(true);
 			views_stw->setCurrentIndex(view_id);
@@ -2525,19 +2353,13 @@ void MainWindow::changeCurrentView(MWViewsId view_id)
 
 	QList<ModelWidget *> models = model_nav_wgt->getModelWidgets();
 
-	#ifdef PRIV_CODE_SYMBOLS
-		if(view_id == DiffView)
-			diff_tool_wgt->updateModels(models);
-
-		if(view_id == ImportView)
-			db_import_wgt->updateModels(models);
-	#endif
-
 	if(view_id == ExportView)
 		model_export_wgt->updateModels(models);
 
 	if(view_id == FixView)
 		fix_tools_wgt->updateModels(models);
+
+	validateBeforeOperation();
 }
 
 void MainWindow::changeCurrentView(bool checked)
@@ -2832,7 +2654,3 @@ void MainWindow::installPluginWidgets()
 		connect(act_btn, &QPushButton::toggled, this, check_btn_in_group_lmb);
 	}
 }
-
-#ifdef PRIV_CODE_SYMBOLS
-	#include "privmainwindow.cpp"
-#endif
