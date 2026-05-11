@@ -107,7 +107,6 @@ set(SOURCES
     src/widgets/objectrenamewidget.cpp src/widgets/objectrenamewidget.h
     src/widgets/objectsearchwidget.cpp src/widgets/objectsearchwidget.h
     src/widgets/objectselectorwidget.cpp src/widgets/objectselectorwidget.h
-    src/widgets/objectsfilterwidget.cpp src/widgets/objectsfilterwidget.h
     src/widgets/objecttypeslistwidget.cpp src/widgets/objecttypeslistwidget.h
     src/widgets/operationlistwidget.cpp src/widgets/operationlistwidget.h
     src/widgets/sceneinfowidget.cpp src/widgets/sceneinfowidget.h
@@ -197,7 +196,6 @@ set(FORMS
     ui/widgets/modeloverviewwidget.ui
     ui/widgets/objectselectorwidget.ui
     ui/widgets/changelogwidget.ui
-    ui/widgets/objectsfilterwidget.ui
     ui/widgets/tabledatawidget.ui
     ui/widgets/colorpickerwidget.ui
     ui/widgets/layersconfigwidget.ui
