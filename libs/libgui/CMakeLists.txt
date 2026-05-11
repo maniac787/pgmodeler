@@ -82,7 +82,6 @@ set(SOURCES
     src/utils/matchinfo.cpp src/utils/matchinfo.h
     src/utils/objectslistmodel.cpp src/utils/objectslistmodel.h
     src/utils/plaintextitemdelegate.cpp src/utils/plaintextitemdelegate.h
-    src/utils/resultsetmodel.cpp src/utils/resultsetmodel.h
     src/utils/syntaxhighlighter.cpp src/utils/syntaxhighlighter.h
     src/utils/textblockinfo.cpp src/utils/textblockinfo.h
     src/widgets/aboutwidget.cpp src/widgets/aboutwidget.h
