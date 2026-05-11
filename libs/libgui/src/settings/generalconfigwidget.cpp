@@ -30,9 +30,9 @@
 #include <QRadioButton>
 
 #ifdef PRIV_CODE_SYMBOLS
-	#include "libgui/tools/sqlexecutionwidget.h"
-	#include "libgui/tools/difftoolwidget.h"
-	#include "libgui/tools/databaseimportwidget.h"
+	#include "tools/sqlexecutionwidget.h"
+	#include "tools/difftoolwidget.h"
+	#include "tools/databaseimportwidget.h"
 #endif
 
 std::map<QString, GeneralConfigWidget::WidgetState> GeneralConfigWidget::widgets_geom;

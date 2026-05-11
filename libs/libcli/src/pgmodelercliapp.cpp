@@ -2322,7 +2322,7 @@ void PgModelerCliApp::exportModel()
 }
 
 #ifdef PRIV_CODE_SYMBOLS
-#include "libcli/privpgmodelercliapp.cpp"
+#include "privpgmodelercliapp.cpp"
 #endif
 
 void PgModelerCliApp::updateMimeType()

@@ -23,7 +23,7 @@
 
 #warning "Fix me: remove after refactoring ModelObjectsWidget::filter() method"
 #ifdef PRIV_CORE_SYMBOLS
-	#include "libgui/tools/databaseimportwidget.h"
+	#include "tools/databaseimportwidget.h"
 #endif
 
 #include "guiutilsns.h"

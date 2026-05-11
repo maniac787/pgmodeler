@@ -56,9 +56,9 @@
 #include "tools/fixtoolswidget.h"
 
 #ifdef PRIV_CODE_SYMBOLS
-	#include "libgui/tools/sqltoolwidget.h"
-	#include "libgui/tools/databaseimportwidget.h"
-	#include "libgui/tools/difftoolwidget.h"
+	#include "tools/sqltoolwidget.h"
+	#include "tools/databaseimportwidget.h"
+	#include "tools/difftoolwidget.h"
 #endif
 
 class __libgui MainWindow: public QMainWindow, public Ui::MainWindow {

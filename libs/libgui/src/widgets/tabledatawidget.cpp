@@ -25,7 +25,7 @@
 
 #warning "Fix me: remove after moving copySelection to GuiUtils"
 #ifdef PRIV_CODE_SYMBOLS
-#include "libgui/tools/sqlexecutionwidget.h"
+#include "tools/sqlexecutionwidget.h"
 #endif
 
 #include "guiutilsns.h"
