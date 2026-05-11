@@ -29,7 +29,7 @@
 #define DATABASE_EXPLORER_WIDGET_H
 
 #include "ui_databaseexplorerwidget.h"
-#include "databaseimporthelper.h"
+#include "tools/databaseimporthelper.h"
 #include "schemaparser.h"
 #include <QMenu>
 

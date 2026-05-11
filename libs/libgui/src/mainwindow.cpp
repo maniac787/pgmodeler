@@ -181,17 +181,6 @@ void MainWindow::addNewLayer(const QString &layer_name)
 	current_model->layers_wgt->setAttributes(current_model);
 }
 
-void MainWindow::handleImportFinished(bool aborted_by_error)
-{
-	if(db_import_wgt->getModel())
-		addModel(db_import_wgt->getModel());
-	else if(current_model)
-		updateDockWidgets();
-
-	stopSaveTimers(false);
-	action_design->setChecked(!aborted_by_error);
-}
-
 void MainWindow::dropEvent(QDropEvent *event)
 {
 	loadModelsFromMimeData(event->mimeData());
@@ -357,6 +346,10 @@ void MainWindow::configureMenusActionsWidgets()
 		btn->setProperty("view_btn", true);
 	}
 
+	#ifndef PRIV_CODE_SYMBOLS
+		tools_acts_tb->removeAction(action_import);
+	#endif
+
 	ToolsActionsCount = tools_acts_tb->actions().size();
 	QList<QAction *> actions = model_acts_tb->actions();
 	actions.append(tools_acts_tb->actions());
@@ -446,7 +439,11 @@ void MainWindow::createMainWidgets()
 		welcome_wgt = createViewWidget<WelcomeWidget>(WelcomeView, "welcome_wgt");
 		sql_tool_wgt = createViewWidget<SQLToolWidget>(ManageView, "sql_tool_wgt");
 		configuration_wgt = createViewWidget<ConfigurationWidget>(ConfigureView, "configuration_wgt");
-		db_import_wgt = createViewWidget<DatabaseImportWidget>(ImportView, "db_import_wgt");
+
+		#ifdef PRIV_CODE_SYMBOLS
+			db_import_wgt = createViewWidget<DatabaseImportWidget>(ImportView, "db_import_wgt");
+		#endif
+
 		model_export_wgt = createViewWidget<ModelExportWidget>(ExportView, "model_export_wgt");
 		diff_tool_wgt = createViewWidget<DiffToolWidget>(DiffView, "diff_tool_wgt");
 		fix_tools_wgt = createViewWidget<FixToolsWidget>(FixView, "fix_tools_wgt");
@@ -696,15 +693,17 @@ void MainWindow::connectSignalsToSlots()
 		updateConnections(true);
 	});
 
-	connect(db_import_wgt, &DatabaseImportWidget::s_connectionsUpdateRequested, this, [this](){
-		updateConnections(true);
-	});
+	#ifdef PRIV_CODE_SYMBOLS
+		connect(db_import_wgt, &DatabaseImportWidget::s_connectionsUpdateRequested, this, [this](){
+			updateConnections(true);
+		});
 
-	connect(db_import_wgt, &DatabaseImportWidget::s_importStarted, this, [this](){
-		stopSaveTimers(true);
-	});
+		connect(db_import_wgt, &DatabaseImportWidget::s_importStarted, this, [this](){
+			stopSaveTimers(true);
+		});
 
-	connect(db_import_wgt, &DatabaseImportWidget::s_importFinished, this, &MainWindow::handleImportFinished);
+		connect(db_import_wgt, &DatabaseImportWidget::s_importFinished, this, &MainWindow::handleImportFinished);
+	#endif
 
 	connect(diff_tool_wgt, &DiffToolWidget::s_connectionsUpdateRequested, this, [this](){
 		updateConnections(true);
@@ -2531,8 +2530,10 @@ void MainWindow::changeCurrentView(MWViewsId view_id)
 	if(view_id == ExportView)
 		model_export_wgt->updateModels(models);
 
-	if(view_id == ImportView)
-		db_import_wgt->updateModels(models);
+	#ifdef PRIV_CODE_SYMBOLS
+		if(view_id == ImportView)
+			db_import_wgt->updateModels(models);
+	#endif
 
 	if(view_id == FixView)
 		fix_tools_wgt->updateModels(models);
@@ -2848,3 +2849,7 @@ void MainWindow::installPluginWidgets()
 		connect(act_btn, &QPushButton::toggled, this, check_btn_in_group_lmb);
 	}
 }
+
+#ifdef PRIV_CODE_SYMBOLS
+	#include "privmainwindow.cpp"
+#endif

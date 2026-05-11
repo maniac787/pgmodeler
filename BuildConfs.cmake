@@ -275,7 +275,10 @@ function(pgm_inc_priv_core_sources TARGET INCLUDE_SOURCES)
 			if(PRIV_CORE_FORMS)
 				set_target_properties(${TARGET} PROPERTIES AUTOUIC ON)
 				# Set the search path for .ui files
-				set_property(TARGET ${TARGET} APPEND PROPERTY AUTOUIC_SEARCH_PATHS ${PRIV_CORE_ROOT}/ui)
+				set_property(TARGET ${TARGET} APPEND PROPERTY AUTOUIC_SEARCH_PATHS
+					${PRIV_CORE_ROOT}/ui
+					${PRIV_CORE_ROOT}/ui/licensecheck
+					${PRIV_CORE_ROOT}/ui/tools)
 			endif()
 		endif()
 	endif()

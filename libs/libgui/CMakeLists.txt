@@ -65,8 +65,6 @@ set(SOURCES
     src/settings/configurationwidget.h src/settings/configurationwidget.cpp
     src/tools/bugreportform.cpp src/tools/bugreportform.h
     src/tools/databaseexplorerwidget.cpp src/tools/databaseexplorerwidget.h
-    src/tools/databaseimportwidget.cpp src/tools/databaseimportwidget.h
-    src/tools/databaseimporthelper.cpp src/tools/databaseimporthelper.h
     src/tools/datagridwidget.cpp src/tools/datagridwidget.h
     src/tools/datahandlingform.cpp src/tools/datahandlingform.h
     src/tools/metadatahandlingwidget.cpp src/tools/metadatahandlingwidget.h
@@ -74,16 +72,13 @@ set(SOURCES
     src/tools/modelexporthelper.cpp src/tools/modelexporthelper.h
     src/tools/modelfixwidget.cpp src/tools/modelfixwidget.h
     src/tools/modelrestorationform.cpp src/tools/modelrestorationform.h
-    src/tools/modelsdiffhelper.cpp src/tools/modelsdiffhelper.h
     src/tools/modelvalidationhelper.cpp src/tools/modelvalidationhelper.h
     src/tools/modelvalidationwidget.cpp src/tools/modelvalidationwidget.h
-    src/tools/objectsdiffinfo.cpp src/tools/objectsdiffinfo.h
     src/tools/sqlexecutionhelper.cpp src/tools/sqlexecutionhelper.h
     src/tools/sqlexecutionwidget.cpp src/tools/sqlexecutionwidget.h
     src/tools/sqltoolwidget.cpp src/tools/sqltoolwidget.h
     src/tools/swapobjectsidswidget.cpp src/tools/swapobjectsidswidget.h
     src/tools/validationinfo.cpp src/tools/validationinfo.h
-    src/tools/difftoolwidget.cpp src/tools/difftoolwidget.h
     src/tools/modeldbselectorwidget.h src/tools/modeldbselectorwidget.cpp
     src/tools/fixtoolswidget.h src/tools/fixtoolswidget.cpp
     src/utils/customsortproxymodel.cpp src/utils/customsortproxymodel.h
@@ -198,8 +193,6 @@ set(FORMS
     ui/tools/modelrestorationform.ui
     ui/tools/swapobjectsidswidget.ui
     ui/tools/modelvalidationwidget.ui
-    ui/tools/databaseimportwidget.ui
-    ui/tools/difftoolwidget.ui
     ui/tools/modeldbselectorwidget.ui
     ui/tools/fixtoolswidget.ui
     ui/widgets/aboutwidget.ui

@@ -128,8 +128,10 @@ class __libgui MainWindow: public QMainWindow, public Ui::MainWindow {
 		//! \brief pgModeler configuration widget
 		ConfigurationWidget *configuration_wgt;
 
-		//! \brief Reverse engineering widget
-		DatabaseImportWidget *db_import_wgt;
+		#ifdef PRIV_CODE_SYMBOLS
+			//! \brief Reverse engineering widget
+			DatabaseImportWidget *db_import_wgt;
+		#endif
 
 		//! \brief Model export widget
 		ModelExportWidget *model_export_wgt;
@@ -434,7 +436,11 @@ class __libgui MainWindow: public QMainWindow, public Ui::MainWindow {
 		bool mimeDataHasModelFiles(const QMimeData *mime_data);
 		void loadModelsFromMimeData(const QMimeData *mime_data);
 		void addNewLayer(const QString &layer_name);
-		void handleImportFinished(bool aborted_by_error);
+
+		#ifdef PRIV_CODE_SYMBOLS
+			void handleImportFinished(bool aborted_by_error);
+		#endif
+
 		void loadDiffInSQLTool(const QString &conn_id, const QString &database, const QString &filename);
 
 	signals:

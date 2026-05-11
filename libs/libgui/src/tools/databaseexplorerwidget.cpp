@@ -21,7 +21,7 @@
 
 #include "databaseexplorerwidget.h"
 #include "customuistyle.h"
-#include "databaseimportwidget.h"
+#include "tools/databaseimportwidget.h"
 #include "sqlexecutionwidget.h"
 #include "settings/snippetsconfigwidget.h"
 #include "utils/plaintextitemdelegate.h"

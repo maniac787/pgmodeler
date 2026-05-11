@@ -22,8 +22,8 @@
 #include "modeldbselectorwidget.h"
 #include "customuistyle.h"
 #include "settings/connectionsconfigwidget.h"
-#include "databaseimporthelper.h"
-#include "databaseimportwidget.h"
+#include "tools/databaseimporthelper.h"
+#include "tools/databaseimportwidget.h"
 #include "guiutilsns.h"
 
 ModelDbSelectorWidget::ModelDbSelectorWidget(QWidget *parent) : QWidget(parent)

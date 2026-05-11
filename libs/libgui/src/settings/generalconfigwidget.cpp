@@ -250,7 +250,8 @@ void GeneralConfigWidget::loadConfiguration()
 			 !config_params[Attributes::Configuration].count(Attributes::AlertOpenSqlTabs) ||
 			 !config_params[Attributes::Configuration].count(Attributes::UseDefDisambiguation) ||
 			 !config_params[Attributes::Configuration].count(Attributes::AlertApplyMetadata) ||
-			 !config_params[Attributes::Configuration].count(Attributes::AlertDisableQuoting))
+			 !config_params[Attributes::Configuration].count(Attributes::AlertDisableQuoting) ||
+			 !config_params[Attributes::Configuration].count(Attributes::AlertResizeRowsCols))
 			resetAlertChoices();
 
 		oplist_size_spb->setValue((config_params[Attributes::Configuration][Attributes::OpListSize]).toUInt());
