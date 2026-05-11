@@ -348,6 +348,8 @@ void MainWindow::configureMenusActionsWidgets()
 
 	#ifndef PRIV_CODE_SYMBOLS
 		tools_acts_tb->removeAction(action_import);
+		tools_acts_tb->removeAction(action_diff);
+		tools_acts_tb->removeAction(action_manage);
 	#endif
 
 	ToolsActionsCount = tools_acts_tb->actions().size();
@@ -437,15 +439,15 @@ void MainWindow::createMainWidgets()
 		hbox->addWidget(scene_info_wgt);
 
 		welcome_wgt = createViewWidget<WelcomeWidget>(WelcomeView, "welcome_wgt");
-		sql_tool_wgt = createViewWidget<SQLToolWidget>(ManageView, "sql_tool_wgt");
+		model_export_wgt = createViewWidget<ModelExportWidget>(ExportView, "model_export_wgt");
 		configuration_wgt = createViewWidget<ConfigurationWidget>(ConfigureView, "configuration_wgt");
 
 		#ifdef PRIV_CODE_SYMBOLS
+			sql_tool_wgt = createViewWidget<SQLToolWidget>(ManageView, "sql_tool_wgt");
 			db_import_wgt = createViewWidget<DatabaseImportWidget>(ImportView, "db_import_wgt");
+			diff_tool_wgt = createViewWidget<DiffToolWidget>(DiffView, "diff_tool_wgt");
 		#endif
 
-		model_export_wgt = createViewWidget<ModelExportWidget>(ExportView, "model_export_wgt");
-		diff_tool_wgt = createViewWidget<DiffToolWidget>(DiffView, "diff_tool_wgt");
 		fix_tools_wgt = createViewWidget<FixToolsWidget>(FixView, "fix_tools_wgt");
 
 		model_nav_wgt = new ModelNavigationWidget(this);
@@ -689,11 +691,11 @@ void MainWindow::connectSignalsToSlots()
 		updateConnections(true);
 	});
 
-	connect(sql_tool_wgt, &SQLToolWidget::s_connectionsUpdateRequested, this, [this](){
-		updateConnections(true);
-	});
-
 	#ifdef PRIV_CODE_SYMBOLS
+		connect(sql_tool_wgt, &SQLToolWidget::s_connectionsUpdateRequested, this, [this](){
+			updateConnections(true);
+		});
+
 		connect(db_import_wgt, &DatabaseImportWidget::s_connectionsUpdateRequested, this, [this](){
 			updateConnections(true);
 		});
@@ -703,19 +705,21 @@ void MainWindow::connectSignalsToSlots()
 		});
 
 		connect(db_import_wgt, &DatabaseImportWidget::s_importFinished, this, &MainWindow::handleImportFinished);
+
+		connect(diff_tool_wgt, &DiffToolWidget::s_connectionsUpdateRequested, this, [this](){
+			updateConnections(true);
+		});
+
+		connect(diff_tool_wgt, &DiffToolWidget::s_diffStarted, this, [this](){
+			stopSaveTimers(true);
+		});
+
+		connect(diff_tool_wgt, &DiffToolWidget::s_diffCanceled, this, [this](){
+			stopSaveTimers(false);
+		});
+
+		connect(diff_tool_wgt, &DiffToolWidget::s_loadDiffInSQLTool, this, &MainWindow::loadDiffInSQLTool);
 	#endif
-
-	connect(diff_tool_wgt, &DiffToolWidget::s_connectionsUpdateRequested, this, [this](){
-		updateConnections(true);
-	});
-
-	connect(diff_tool_wgt, &DiffToolWidget::s_diffStarted, this, [this](){
-		stopSaveTimers(true);
-	});
-
-	connect(diff_tool_wgt, &DiffToolWidget::s_diffCanceled, this, [this](){
-		stopSaveTimers(false);
-	});
 
 	connect(model_export_wgt, &ModelExportWidget::s_exportStarted, this, [this](){
 		stopSaveTimers(true);
@@ -724,8 +728,6 @@ void MainWindow::connectSignalsToSlots()
 	connect(model_export_wgt, &ModelExportWidget::s_exportFinished, this, [this](){
 		stopSaveTimers(false);
 	});
-
-	connect(diff_tool_wgt, &DiffToolWidget::s_loadDiffInSQLTool, this, &MainWindow::loadDiffInSQLTool);
 
 	connect(fix_tools_wgt, &FixToolsWidget::s_modelLoadRequested,
 					this, qOverload<const QString &>(&MainWindow::loadModel),
@@ -957,10 +959,14 @@ void MainWindow::closeEvent(QCloseEvent *event)
 	 * threaded operations (validation, import, diff, export)
 	 * is still running */
 	if(model_valid_wgt->isThreadRunning() ||
-		 db_import_wgt->isThreadRunning() ||
-		 diff_tool_wgt->isThreadsRunning() ||
 		 model_export_wgt->isThreadRunning() ||
-		 fix_tools_wgt->isToolRunning())
+		 fix_tools_wgt->isToolRunning()
+		 
+		#ifdef PRIV_CODE_SYMBOLS
+		 	|| db_import_wgt->isThreadRunning() 
+			|| diff_tool_wgt->isThreadsRunning()
+		#endif
+		)
 		event->ignore();
 	else
 	{
@@ -1009,22 +1015,9 @@ void MainWindow::closeEvent(QCloseEvent *event)
 		}
 
 		// Warning the user about non empty sql execution panels
-		if(event->isAccepted() && sql_tool_wgt->hasSQLExecutionPanels() &&
-				conf_wgt->getConfigurationParam(Attributes::Configuration, Attributes::AlertOpenSqlTabs) != Attributes::False)
-		{
-			action_manage->trigger();
-			msg_box.setCustomOptionText(tr("Always close without alerting me next time."));
-			msg_box.show(tr("Open SQL execution tab(s)"),
-									 tr("There are one or more SQL execution tabs with typed commands! Do you really want to quit pgModeler?"),
-									 Messagebox::Confirm,Messagebox::YesNoButtons, false);
-
-			conf_wgt->appendConfigurationSection(Attributes::Configuration,
-																					 {{ Attributes::AlertOpenSqlTabs,
-																							msg_box.isCustomOptionChecked() ? Attributes::False : Attributes::True }});
-
-			if(msg_box.isRejected())
-				event->ignore();
-		}
+		#ifdef PRIV_CODE_SYMBOLS
+			checkOpenSQLTabs(event);
+		#endif
 #else
 		showDemoVersionWarning(true);
 #endif
@@ -1107,25 +1100,38 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 void MainWindow::updateConnections(bool force)
 {
-	if(force || (!force && (model_valid_wgt->connections_cmb->count() == 0 ||
-													sql_tool_wgt->connections_cmb->count() == 0 ||
-													db_import_wgt->connections_cmb->count() == 0 ||
-													model_export_wgt->connections_cmb->count() == 0)))
+	bool need_update = force;
+
+	if(!force)
 	{
-		if(sender() != sql_tool_wgt)
-			sql_tool_wgt->updateConnections();
+		need_update = model_valid_wgt->connections_cmb->count() == 0 ||
+		              model_export_wgt->connections_cmb->count() == 0;
+
+		#ifdef PRIV_CODE_SYMBOLS
+			need_update = need_update ||
+			              sql_tool_wgt->connections_cmb->count() == 0 ||
+			              db_import_wgt->connections_cmb->count() == 0;
+		#endif
+	}
+
+	if(need_update)
+	{
+		#ifdef PRIV_CODE_SYMBOLS
+			if(sender() != sql_tool_wgt)
+				sql_tool_wgt->updateConnections();
+
+			if(sender() != db_import_wgt)
+				db_import_wgt->updateConnections();
+
+			if(sender() != diff_tool_wgt)
+				diff_tool_wgt->updateConnections();
+		#endif
 
 		if(sender() != model_valid_wgt)
 			model_valid_wgt->updateConnections();
 
-		if(sender() != db_import_wgt)
-			db_import_wgt->updateConnections();
-
 		if(sender() != model_export_wgt)
 			model_export_wgt->updateConnections();
-
-		if(sender() != diff_tool_wgt)
-			diff_tool_wgt->updateConnections();
 	}
 }
 
@@ -1847,9 +1853,12 @@ void MainWindow::applyConfigurations()
 		setGridOptions();
 
 	updateConnections(true);
-	sql_tool_wgt->configureSnippets();
-	sql_tool_wgt->reloadHighlightConfigs();
-	sql_tool_wgt->updateTabs();
+
+	#ifdef PRIV_CODE_SYMBOLS
+		sql_tool_wgt->configureSnippets();
+		sql_tool_wgt->reloadHighlightConfigs();
+		sql_tool_wgt->updateTabs();
+	#endif
 
 	qApp->restoreOverrideCursor();
 }
@@ -2010,23 +2019,6 @@ void MainWindow::validateBeforeOperation()
 			});
 		}
 	}
-}
-
-void MainWindow::loadDiffInSQLTool(const QString &conn_id, const QString &database, const QString &filename)
-{
-	qApp->setOverrideCursor(Qt::WaitCursor);
-
-	try
-	{
-		action_manage->setChecked(true);
-		sql_tool_wgt->addSQLExecutionTab(conn_id, database, filename);
-	}
-	catch(Exception &e)
-	{
-		Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
-	}
-
-	qApp->restoreOverrideCursor();
 }
 
 void MainWindow::printModel()
@@ -2380,8 +2372,10 @@ void MainWindow::storeDockWidgetsSettings()
 	params.clear();
 
 	params[Attributes::SqlTool]=Attributes::True;
-	params[Attributes::ShowAttributesGrid]=(sql_tool_wgt->attributes_btn->isChecked() ? Attributes::True : "");
-	params[Attributes::ShowSourcePane]=(sql_tool_wgt->source_pane_btn->isChecked() ? Attributes::True : "");
+	#ifdef PRIV_CODE_SYMBOLS
+		params[Attributes::ShowAttributesGrid]=(sql_tool_wgt->attributes_btn->isChecked() ? Attributes::True : "");
+		params[Attributes::ShowSourcePane]=(sql_tool_wgt->source_pane_btn->isChecked() ? Attributes::True : "");
+	#endif
 	conf_wgt->setConfigurationSection(Attributes::SqlTool, params);
 	params.clear();
 
@@ -2414,11 +2408,13 @@ void MainWindow::restoreDockWidgetsSettings()
 		obj_finder_wgt->exact_match_chk->setChecked(confs[Attributes::ObjectFinder][Attributes::ExactMatch]==Attributes::True);
 	}
 
-	if(confs.count(Attributes::SqlTool))
-	{
-		sql_tool_wgt->attributes_btn->setChecked(confs[Attributes::SqlTool][Attributes::ShowAttributesGrid]==Attributes::True);
-		sql_tool_wgt->source_pane_btn->setChecked(confs[Attributes::SqlTool][Attributes::ShowSourcePane]==Attributes::True);
-	}
+	#ifdef PRIV_CODE_SYMBOLS
+		if(confs.count(Attributes::SqlTool))
+		{
+			sql_tool_wgt->attributes_btn->setChecked(confs[Attributes::SqlTool][Attributes::ShowAttributesGrid]==Attributes::True);
+			sql_tool_wgt->source_pane_btn->setChecked(confs[Attributes::SqlTool][Attributes::ShowSourcePane]==Attributes::True);
+		}
+	#endif
 
 	if(confs.count(Attributes::LayersConfig))
 	{
@@ -2524,16 +2520,16 @@ void MainWindow::changeCurrentView(MWViewsId view_id)
 
 	QList<ModelWidget *> models = model_nav_wgt->getModelWidgets();
 
-	if(view_id == DiffView)
-		diff_tool_wgt->updateModels(models);
-
-	if(view_id == ExportView)
-		model_export_wgt->updateModels(models);
-
 	#ifdef PRIV_CODE_SYMBOLS
+		if(view_id == DiffView)
+			diff_tool_wgt->updateModels(models);
+
 		if(view_id == ImportView)
 			db_import_wgt->updateModels(models);
 	#endif
+
+	if(view_id == ExportView)
+		model_export_wgt->updateModels(models);
 
 	if(view_id == FixView)
 		fix_tools_wgt->updateModels(models);
@@ -2689,24 +2685,6 @@ void MainWindow::configureMoreActionsMenu()
 	actions.removeOne(current_model->action_edit);
 	actions.removeOne(current_model->action_source_code);
 	more_actions_menu.addActions(actions);
-}
-
-void MainWindow::addExecTabInSQLTool(const QString &sql_cmd)
-{
-	try
-	{
-		if(sql_tool_wgt->hasDatabasesBrowsed())
-			sql_tool_wgt->addSQLExecutionTab(sql_cmd);
-	}
-	catch(Exception &e)
-	{
-		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
-	}
-}
-
-bool MainWindow::hasDbsListedInSQLTool()
-{
-	return sql_tool_wgt->hasDatabasesBrowsed();
 }
 
 void MainWindow::registerRecentModel(const QString &filename)

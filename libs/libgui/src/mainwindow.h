@@ -44,7 +44,6 @@
 #include "widgets/modeloverviewwidget.h"
 #include "tools/modelvalidationwidget.h"
 #include "widgets/objectsearchwidget.h"
-#include "tools/sqltoolwidget.h"
 #include "widgets/updatenotifierwidget.h"
 #include "widgets/modelnavigationwidget.h"
 #include "widgets/welcomewidget.h"
@@ -53,10 +52,14 @@
 #include "widgets/layersconfigwidget.h"
 #include "widgets/changelogwidget.h"
 #include "settings/configurationwidget.h"
-#include "tools/databaseimportwidget.h"
 #include "tools/modelexportwidget.h"
-#include "tools/difftoolwidget.h"
 #include "tools/fixtoolswidget.h"
+
+#ifdef PRIV_CODE_SYMBOLS
+	#include "tools/sqltoolwidget.h"
+	#include "tools/databaseimportwidget.h"
+	#include "tools/difftoolwidget.h"
+#endif
 
 class __libgui MainWindow: public QMainWindow, public Ui::MainWindow {
 	Q_OBJECT
@@ -92,6 +95,17 @@ class __libgui MainWindow: public QMainWindow, public Ui::MainWindow {
 		//! \brief Store the actions related to views in the main window (Manage, Design, Welcome, etc)
 		static QList<QAction *> view_actions;
 
+		#ifdef PRIV_CODE_SYMBOLS
+			//! \brief Reverse engineering widget
+			DatabaseImportWidget *db_import_wgt;
+
+			//! \brief Diff tool widget
+			DiffToolWidget *diff_tool_wgt;
+
+			//! \brief SQL tool widget widget
+			SQLToolWidget *sql_tool_wgt;
+		#endif
+
 		PendingOpId pending_op;
 
 		//! \brief Timer used for auto saving the model and temporary model.
@@ -122,22 +136,11 @@ class __libgui MainWindow: public QMainWindow, public Ui::MainWindow {
 		//! \brief Model validation widget
 		ModelValidationWidget *model_valid_wgt;
 
-		//! \brief SQL tool widget widget
-		SQLToolWidget *sql_tool_wgt;
-
 		//! \brief pgModeler configuration widget
 		ConfigurationWidget *configuration_wgt;
 
-		#ifdef PRIV_CODE_SYMBOLS
-			//! \brief Reverse engineering widget
-			DatabaseImportWidget *db_import_wgt;
-		#endif
-
 		//! \brief Model export widget
 		ModelExportWidget *model_export_wgt;
-
-		//! \brief Diff tool widget
-		DiffToolWidget *diff_tool_wgt;
 
 		//! \brief Fix tools widget
 		FixToolsWidget *fix_tools_wgt;
@@ -308,13 +311,15 @@ class __libgui MainWindow: public QMainWindow, public Ui::MainWindow {
 		//! \brief Returns the model at given index
 		ModelWidget *getModel(int idx);
 
-		/*! \brief This is a convenience method to make able the addition of execution tabs in SQL tool without
-		 *  expose the SQL Tool widget itself (useful for plugin developers) */
-		void addExecTabInSQLTool(const QString &sql_cmd);
+		#ifdef PRIV_CODE_SYMBOLS
+			/*! \brief This is a convenience method to make able the addition of execution tabs in SQL tool without
+			 *  expose the SQL Tool widget itself (useful for plugin developers) */
+			void addExecTabInSQLTool(const QString &sql_cmd);
 
-		/*! \brief This is a convenience method that returns a true value when there're databases listed in the SQL tool widget without
-		 *  expose the SQL Tool widget itself (useful for plugin developers) */
-		bool hasDbsListedInSQLTool();
+			/*! \brief This is a convenience method that returns a true value when there're databases listed in the SQL tool widget without
+			 *  expose the SQL Tool widget itself (useful for plugin developers) */
+			bool hasDbsListedInSQLTool();
+		#endif
 
 		//! \brief Adds an entry to the recent models menu
 		void registerRecentModel(const QString &filename);
@@ -439,9 +444,9 @@ class __libgui MainWindow: public QMainWindow, public Ui::MainWindow {
 
 		#ifdef PRIV_CODE_SYMBOLS
 			void handleImportFinished(bool aborted_by_error);
+			void loadDiffInSQLTool(const QString &conn_id, const QString &database, const QString &filename);
+			void checkOpenSQLTabs(QCloseEvent *event);
 		#endif
-
-		void loadDiffInSQLTool(const QString &conn_id, const QString &database, const QString &filename);
 
 	signals:
 		void s_currentModelChanged(ModelWidget *model_wgt);

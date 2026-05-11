@@ -64,9 +64,6 @@ set(SOURCES
     src/settings/snippetsconfigwidget.cpp src/settings/snippetsconfigwidget.h
     src/settings/configurationwidget.h src/settings/configurationwidget.cpp
     src/tools/bugreportform.cpp src/tools/bugreportform.h
-    src/tools/databaseexplorerwidget.cpp src/tools/databaseexplorerwidget.h
-    src/tools/datagridwidget.cpp src/tools/datagridwidget.h
-    src/tools/datahandlingform.cpp src/tools/datahandlingform.h
     src/tools/metadatahandlingwidget.cpp src/tools/metadatahandlingwidget.h
     src/tools/modelexportwidget.cpp src/tools/modelexportwidget.h
     src/tools/modelexporthelper.cpp src/tools/modelexporthelper.h
@@ -74,9 +71,6 @@ set(SOURCES
     src/tools/modelrestorationform.cpp src/tools/modelrestorationform.h
     src/tools/modelvalidationhelper.cpp src/tools/modelvalidationhelper.h
     src/tools/modelvalidationwidget.cpp src/tools/modelvalidationwidget.h
-    src/tools/sqlexecutionhelper.cpp src/tools/sqlexecutionhelper.h
-    src/tools/sqlexecutionwidget.cpp src/tools/sqlexecutionwidget.h
-    src/tools/sqltoolwidget.cpp src/tools/sqltoolwidget.h
     src/tools/swapobjectsidswidget.cpp src/tools/swapobjectsidswidget.h
     src/tools/validationinfo.cpp src/tools/validationinfo.h
     src/tools/modeldbselectorwidget.h src/tools/modeldbselectorwidget.cpp
@@ -182,14 +176,9 @@ set(FORMS
     ui/settings/relationshipconfigwidget.ui
     ui/settings/configurationwidget.ui
     ui/tools/bugreportform.ui
-    ui/tools/datagridwidget.ui
-    ui/tools/datahandlingform.ui
     ui/tools/modelexportwidget.ui
-    ui/tools/sqlexecutionwidget.ui
-    ui/tools/databaseexplorerwidget.ui
     ui/tools/metadatahandlingwidget.ui
     ui/tools/modelfixwidget.ui
-    ui/tools/sqltoolwidget.ui
     ui/tools/modelrestorationform.ui
     ui/tools/swapobjectsidswidget.ui
     ui/tools/modelvalidationwidget.ui
