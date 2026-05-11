@@ -22,8 +22,13 @@
 #include "modeldbselectorwidget.h"
 #include "customuistyle.h"
 #include "settings/connectionsconfigwidget.h"
+
+#warning "Fix me: use catalog.h instead of databaseimporthelper.h"
+#ifdef PRIV_CODE_SYMBOLS
 #include "tools/databaseimporthelper.h"
 #include "tools/databaseimportwidget.h"
+#endif
+
 #include "guiutilsns.h"
 
 ModelDbSelectorWidget::ModelDbSelectorWidget(QWidget *parent) : QWidget(parent)
@@ -216,15 +221,18 @@ void ModelDbSelectorWidget::listDatabases()
 
 		if(conn)
 		{
-			DatabaseImportHelper imp_helper;
+			#warning "Fix me: use Catalog instead of DatabaseImportHelper"
+			#ifdef PRIV_CODE_SYMBOLS
+				DatabaseImportHelper imp_helper;
 
-			imp_helper.setConnection(*conn);
-			DatabaseImportWidget::listDatabases(imp_helper, database_cmb);
-			is_srv_supported = imp_helper.getCatalog().isServerSupported();
-			srv_version = imp_helper.getCatalog().getServerVersion();
+				imp_helper.setConnection(*conn);
+				DatabaseImportWidget::listDatabases(imp_helper, database_cmb);
+				is_srv_supported = imp_helper.getCatalog().isServerSupported();
+				srv_version = imp_helper.getCatalog().getServerVersion();
 
-			if(conn->isAutoBrowseDB())
+				if(conn->isAutoBrowseDB())
 				database_cmb->setCurrentText(conn->getConnectionParam(Connection::ParamDbName));
+			#endif
 		}
 		else
 			database_cmb->clear();

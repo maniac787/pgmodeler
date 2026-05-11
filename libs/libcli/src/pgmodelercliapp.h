@@ -36,9 +36,12 @@
 #include "settings/generalconfigwidget.h"
 #include "settings/connectionsconfigwidget.h"
 #include "settings/relationshipconfigwidget.h"
-#include "tools/databaseimporthelper.h"
-#include "tools/modelsdiffhelper.h"
 #include "pgmodelercliplugin.h"
+
+#ifdef PRIV_CODE_SYMBOLS
+	#include "tools/databaseimporthelper.h"
+	#include "tools/modelsdiffhelper.h"
+#endif
 
 class __libcli PgModelerCliApp: public Application {
 	Q_OBJECT
@@ -81,11 +84,13 @@ class __libcli PgModelerCliApp: public Application {
 		//! \brief Export helper object
 		ModelExportHelper *export_hlp;
 
-		//! \brief Import helper object
-		DatabaseImportHelper *import_hlp;
+		#ifdef PRIV_CODE_SYMBOLS
+			//! \brief Import helper object
+			DatabaseImportHelper *import_hlp;
 
-		//! \brief Diff helper object
-		ModelsDiffHelper *diff_hlp;
+			//! \brief Diff helper object
+			ModelsDiffHelper *diff_hlp;
+		#endif
 
 		//! \brief Input database model
 		DatabaseModel *input_model;
@@ -187,7 +192,10 @@ class __libcli PgModelerCliApp: public Application {
 		void fixOpClassesFamiliesReferences(QString &obj_xml);
 
 		void configureConnection(bool extra_conn);
+
+#ifdef PRIV_CODE_SYMBOLS
 		void importDatabase(DatabaseModel *model, Connection conn);
+#endif
 
 		void handleLinuxMimeDatabase(bool uninstall, bool system_wide, bool force);
 		void handleWindowsMimeDatabase(bool uninstall, bool system_wide, bool force);
@@ -342,8 +350,10 @@ class __libcli PgModelerCliApp: public Application {
 	void setParsedOptValue(const QString &opt, const QString &value);
 		void fixModel();
 		void exportModel();
+#ifdef PRIV_CODE_SYMBOLS
 		void importDatabase();
 		void diffModels();
+#endif
 		void updateMimeType();
 		void createConfigurations();
 		void listConnections();

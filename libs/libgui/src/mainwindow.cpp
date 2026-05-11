@@ -22,7 +22,6 @@
 #include "mainwindow.h"
 #include "guiutilsns.h"
 #include "tools/bugreportform.h"
-#include "tools/sqlexecutionwidget.h"
 #include "tools/modelfixwidget.h"
 #include "tools/modelexportwidget.h"
 #include <QMimeData>
@@ -77,7 +76,10 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags) : QMainWindow(par
 	configureSamplesMenu();
 	applyConfigurations();
 
-	SQLExecutionWidget::loadSQLHistory();
+	#ifdef PRIV_CODE_SYMBOLS
+		SQLExecutionWidget::loadSQLHistory();
+	#endif
+
 	GeneralConfigWidget *conf_wgt = configuration_wgt->getConfigurationWidget<GeneralConfigWidget>();
 	std::map<QString, attribs_map >confs = conf_wgt->getConfigurationParams();
 
@@ -1093,7 +1095,10 @@ void MainWindow::closeEvent(QCloseEvent *event)
 		conf_wgt->saveConfiguration();
 		restoration_form->removeTemporaryFiles(true);
 
-		SQLExecutionWidget::saveSQLHistory();
+		#ifdef PRIV_CODE_SYMBOLS
+			SQLExecutionWidget::saveSQLHistory();
+		#endif
+
 		qApp->quit();
 	}
 }

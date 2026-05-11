@@ -26,10 +26,14 @@
 #include "operationlist.h"
 #include "mainwindow.h"
 #include "widgets/numberedtexteditor.h"
-#include "tools/sqlexecutionwidget.h"
-#include "tools/difftoolwidget.h"
-#include "tools/databaseimportwidget.h"
 #include "tools/modelexportwidget.h"
+#include <QRadioButton>
+
+#ifdef PRIV_CODE_SYMBOLS
+	#include "tools/sqlexecutionwidget.h"
+	#include "tools/difftoolwidget.h"
+	#include "tools/databaseimportwidget.h"
+#endif
 
 std::map<QString, GeneralConfigWidget::WidgetState> GeneralConfigWidget::widgets_geom;
 std::map<QString, attribs_map> GeneralConfigWidget::config_params;
@@ -187,9 +191,13 @@ GeneralConfigWidget::GeneralConfigWidget(QWidget * parent) : BaseConfigWidget(pa
 
 	connect(source_editor_sel, &FileSelectorWidget::s_selectorChanged, this, &GeneralConfigWidget::setConfigurationChanged);
 
-	connect(clear_sql_history_btn, &QPushButton::clicked, this, [](){
-		SQLExecutionWidget::destroySQLHistory();
-	});
+	#ifdef PRIV_CODE_SYMBOLS
+		connect(clear_sql_history_btn, &QPushButton::clicked, this, [](){
+			SQLExecutionWidget::destroySQLHistory();
+		});
+	#else
+		clear_sql_history_btn->hide();
+	#endif
 
 	connect(reset_alerts_choices_btn, &QPushButton::clicked, this, &GeneralConfigWidget::resetAlertChoices);
 
@@ -669,9 +677,12 @@ void GeneralConfigWidget::applyConfiguration()
 	BaseObjectView::setPlaceholderEnabled(use_placeholders_chk->isChecked());
 	BaseObjectView::setShadowHidden(hide_obj_shadows_chk->isChecked());
 
-	SQLExecutionWidget::setSQLHistoryMaxLength(history_max_length_spb->value());
-	DiffToolWidget::setLowVerbosity(low_verbosity_chk->isChecked());
-	DatabaseImportWidget::setLowVerbosity(low_verbosity_chk->isChecked());
+	#ifdef PRIV_CODE_SYMBOLS
+		SQLExecutionWidget::setSQLHistoryMaxLength(history_max_length_spb->value());
+		DiffToolWidget::setLowVerbosity(low_verbosity_chk->isChecked());
+		DatabaseImportWidget::setLowVerbosity(low_verbosity_chk->isChecked());
+	#endif
+
 	ModelExportWidget::setLowVerbosity(low_verbosity_chk->isChecked());
 	Connection::setIgnoreDbVersion(old_pgsql_versions_chk->isChecked());
 

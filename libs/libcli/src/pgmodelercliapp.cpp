@@ -246,8 +246,10 @@ PgModelerCliApp::PgModelerCliApp(int argc, char **argv) : Application(argc, argv
 		export_op = false;
 
 		export_hlp = nullptr;
+#ifdef PRIV_CODE_SYMBOLS
 		import_hlp = nullptr;
 		diff_hlp = nullptr;
+#endif
 		conn_conf = nullptr;
 		rel_conf = nullptr;
 		general_conf = nullptr;
@@ -335,12 +337,17 @@ PgModelerCliApp::PgModelerCliApp(int argc, char **argv) : Application(argc, argv
 				extra_connection.setConnectionParam(Connection::ParamDbName, parsed_opts[CompareDb]);
 			}
 
-			if(!silent_mode && export_hlp && import_hlp && diff_hlp)
+			if(!silent_mode && export_hlp)
 			{
 				connect(export_hlp, &ModelExportHelper::s_progressUpdated, this, &PgModelerCliApp::updateProgress);
 				connect(export_hlp, &ModelExportHelper::s_errorIgnored, this,  &PgModelerCliApp::printIgnoredError);
-				connect(import_hlp, &DatabaseImportHelper::s_progressUpdated, this, &PgModelerCliApp::updateProgress);
-				connect(diff_hlp, &ModelsDiffHelper::s_progressUpdated, this, &PgModelerCliApp::updateProgress);
+#ifdef PRIV_CODE_SYMBOLS
+				if(import_hlp && diff_hlp)
+				{
+					connect(import_hlp, &DatabaseImportHelper::s_progressUpdated, this, &PgModelerCliApp::updateProgress);
+					connect(diff_hlp, &ModelsDiffHelper::s_progressUpdated, this, &PgModelerCliApp::updateProgress);
+				}
+#endif
 			}
 		}
 	}
@@ -360,8 +367,10 @@ PgModelerCliApp::~PgModelerCliApp()
 	delete scene;
 	delete input_model;
 	delete export_hlp;
+#ifdef PRIV_CODE_SYMBOLS
 	delete import_hlp;
 	delete diff_hlp;
+#endif
 	delete conn_conf;
 	delete rel_conf;
 	delete general_conf;
@@ -710,42 +719,44 @@ void PgModelerCliApp::showMenu()
 	menu_items.append(MenuItem(InitialDb, "[DBNAME]", tr("Connection's initial database.")));
 	menu_items.append(MenuItem());
 	
-	// Database import options
-	menu_items.append(MenuItem(tr("Database import options")));
-	menu_items.append(MenuItem(IgnoreImportErrors, "", tr("Ignores all errors. Tries to create as many objects as possible.")));
-	menu_items.append(MenuItem(ImportSystemObjs, "", tr("Imports built-in system objects. May increase model size due to unnecessary objects.")));
-	menu_items.append(MenuItem(ImportExtensionObjs, "", tr("Imports extension objects. May increase model size due to unnecessary objects.")));
-	menu_items.append(MenuItem(CommentsAsAliases, "", tr("Uses objects' comments as aliases. Affects objects graphically represented in the model.")));
-	menu_items.append(MenuItem(FilterObjects, "[FILTER]", tr("Imports only objects matching the filter(s). FILTER format: type:pattern:mode.")));
-	menu_items.append(MenuItem(OnlyMatching, "", tr("Imports only objects matching the provided filter(s). Non-matching objects are discarded.")));
-	menu_items.append(MenuItem(MatchByName, "", tr("Performs object matching based on names. Does not use signatures ([schema].[name]).")));
-	menu_items.append(MenuItem(ForceChildren, "[OBJECTS]", tr("Forces importing child objects related to tables/views/foreign tables. Provide comma-separated list of types.")));
-	menu_items.append(MenuItem(DebugMode, "", tr("Executes the import in debug mode. Prints all queries executed on the server.")));
-	menu_items.append(MenuItem());
-	
-	// Diff options
-	menu_items.append(MenuItem(tr("Diff options")));
-	menu_items.append(MenuItem(CompareFile, "[FILE]", tr("The database model file used in the comparison. Implies the use of option %1.").arg(SaveDiff)));
-	menu_items.append(MenuItem(CompareDb, "[DBNAME]", tr("The database used in the comparison. All generated SQL is applied to it.")));
-	menu_items.append(MenuItem(PartialDiff, "", tr("Switches to partial diff operation. Provide object filters using import option %1.").arg(FilterObjects)));
-	menu_items.append(MenuItem(Force, "", tr("Forces a full diff if the provided filters fail. Used for partial diff operations.")));
-	menu_items.append(MenuItem(StartDate, "", tr("Matches model objects with modification dates from the specified date. Only for partial diff.")));
-	menu_items.append(MenuItem(EndDate, "", tr("Matches model objects with modification dates up to the specified date. Only for partial diff.")));
-	menu_items.append(MenuItem(SaveDiff, "", tr("Saves the generated diff code to the output file.")));
-	menu_items.append(MenuItem(ApplyDiff, "", tr("Applies the generated diff code to the database server.")));
-	menu_items.append(MenuItem(NoDiffPreview, "", tr("Skips previewing the generated diff code before applying it to the server.")));
-	menu_items.append(MenuItem(DropClusterObjs, "", tr("Drops cluster-level objects such as roles and tablespaces.")));
-	menu_items.append(MenuItem(RevokePermissions, "", tr("Revokes existing permissions on the database. New permissions from input model are applied.")));
-	menu_items.append(MenuItem(DropMissingObjs, "", tr("Generates DROP commands for objects present in source model. Targets objects missing from compared database.")));
-	menu_items.append(MenuItem(ForceDropColsConstrs, "", tr("Forces dropping missing columns and constraints. Other missing objects are preserved.")));
-	menu_items.append(MenuItem(RenameDb, "", tr("Renames the destination database when the involved databases have different names.")));
-	menu_items.append(MenuItem(NoCascadeDrop, "", tr("Disables cascade mode when dropping objects.")));
-	menu_items.append(MenuItem(NoSequenceReuse, "", tr("Disables sequence reuse on serial columns. Drops existing sequence and creates a new one.")));
-	menu_items.append(MenuItem(RecreateUnmod, "", tr("Recreates unmodifiable objects. These cannot be changed via ALTER command.")));
-	menu_items.append(MenuItem(ReplaceModified, "", tr("Replaces modifiable objects. These support CREATE OR REPLACE command.")));
-	menu_items.append(MenuItem(ForceReCreateObjs, "[OBJECTS]", tr("Uses DROP and CREATE commands to completely modify changed objects. Provide comma-separated list of types.")));
-	menu_items.append(MenuItem());
-	
+	#ifdef PRIV_CODE_SYMBOLS
+		// Database import options
+		menu_items.append(MenuItem(tr("Database import options")));
+		menu_items.append(MenuItem(IgnoreImportErrors, "", tr("Ignores all errors. Tries to create as many objects as possible.")));
+		menu_items.append(MenuItem(ImportSystemObjs, "", tr("Imports built-in system objects. May increase model size due to unnecessary objects.")));
+		menu_items.append(MenuItem(ImportExtensionObjs, "", tr("Imports extension objects. May increase model size due to unnecessary objects.")));
+		menu_items.append(MenuItem(CommentsAsAliases, "", tr("Uses objects' comments as aliases. Affects objects graphically represented in the model.")));
+		menu_items.append(MenuItem(FilterObjects, "[FILTER]", tr("Imports only objects matching the filter(s). FILTER format: type:pattern:mode.")));
+		menu_items.append(MenuItem(OnlyMatching, "", tr("Imports only objects matching the provided filter(s). Non-matching objects are discarded.")));
+		menu_items.append(MenuItem(MatchByName, "", tr("Performs object matching based on names. Does not use signatures ([schema].[name]).")));
+		menu_items.append(MenuItem(ForceChildren, "[OBJECTS]", tr("Forces importing child objects related to tables/views/foreign tables. Provide comma-separated list of types.")));
+		menu_items.append(MenuItem(DebugMode, "", tr("Executes the import in debug mode. Prints all queries executed on the server.")));
+		menu_items.append(MenuItem());
+
+		// Diff options
+		menu_items.append(MenuItem(tr("Diff options")));
+		menu_items.append(MenuItem(CompareFile, "[FILE]", tr("The database model file used in the comparison. Implies the use of option %1.").arg(SaveDiff)));
+		menu_items.append(MenuItem(CompareDb, "[DBNAME]", tr("The database used in the comparison. All generated SQL is applied to it.")));
+		menu_items.append(MenuItem(PartialDiff, "", tr("Switches to partial diff operation. Provide object filters using import option %1.").arg(FilterObjects)));
+		menu_items.append(MenuItem(Force, "", tr("Forces a full diff if the provided filters fail. Used for partial diff operations.")));
+		menu_items.append(MenuItem(StartDate, "", tr("Matches model objects with modification dates from the specified date. Only for partial diff.")));
+		menu_items.append(MenuItem(EndDate, "", tr("Matches model objects with modification dates up to the specified date. Only for partial diff.")));
+		menu_items.append(MenuItem(SaveDiff, "", tr("Saves the generated diff code to the output file.")));
+		menu_items.append(MenuItem(ApplyDiff, "", tr("Applies the generated diff code to the database server.")));
+		menu_items.append(MenuItem(NoDiffPreview, "", tr("Skips previewing the generated diff code before applying it to the server.")));
+		menu_items.append(MenuItem(DropClusterObjs, "", tr("Drops cluster-level objects such as roles and tablespaces.")));
+		menu_items.append(MenuItem(RevokePermissions, "", tr("Revokes existing permissions on the database. New permissions from input model are applied.")));
+		menu_items.append(MenuItem(DropMissingObjs, "", tr("Generates DROP commands for objects present in source model. Targets objects missing from compared database.")));
+		menu_items.append(MenuItem(ForceDropColsConstrs, "", tr("Forces dropping missing columns and constraints. Other missing objects are preserved.")));
+		menu_items.append(MenuItem(RenameDb, "", tr("Renames the destination database when the involved databases have different names.")));
+		menu_items.append(MenuItem(NoCascadeDrop, "", tr("Disables cascade mode when dropping objects.")));
+		menu_items.append(MenuItem(NoSequenceReuse, "", tr("Disables sequence reuse on serial columns. Drops existing sequence and creates a new one.")));
+		menu_items.append(MenuItem(RecreateUnmod, "", tr("Recreates unmodifiable objects. These cannot be changed via ALTER command.")));
+		menu_items.append(MenuItem(ReplaceModified, "", tr("Replaces modifiable objects. These support CREATE OR REPLACE command.")));
+		menu_items.append(MenuItem(ForceReCreateObjs, "[OBJECTS]", tr("Uses DROP and CREATE commands to completely modify changed objects. Provide comma-separated list of types.")));
+		menu_items.append(MenuItem());
+	#endif
+
 	// Model fix options
 	menu_items.append(MenuItem(tr("Model fix options")));
 	menu_items.append(MenuItem(FixTries, "[NUMBER]", tr("Model fix attempts. Invalid objects are discarded when reaching maximum count.")));
@@ -800,71 +811,74 @@ void PgModelerCliApp::showMenu()
 \n   and %3 are specified, the generated files will be named to reflect the correct order.")
 						.arg(DependenciesSql, ChildrenSql, GroupByType));
 	printText();
-	printText(tr("** The FILTER value in the %1 option has the form type:pattern:mode. ").arg(FilterObjects));
-	printText(tr("   * The section `type' is the type of the filtered object being (invalid types are ignored): "));
 
-	QStringList list;
-	QString child_list;
+	#ifdef PRIV_CODE_SYMBOLS
+		printText(tr("** The FILTER value in the %1 option has the form type:pattern:mode. ").arg(FilterObjects));
+		printText(tr("   * The section `type' is the type of the filtered object being (invalid types are ignored): "));
 
-	for(auto &type : BaseObject::getChildObjectTypes(ObjectType::Table))
-	{
-		if(type == ObjectType::Column)
-			continue;
+		QStringList list;
+		QString child_list;
 
-		list.append(BaseObject::getSchemaName(type));
-	}
-
-	list.sort();
-	child_list = list.join(", ");
-
-	QStringList fmt_types, lines, type_list = Catalog::getFilterableObjectNames();
-	int i = 0;
-
-	type_list.prepend(Attributes::Any);
-
-	for(auto &type : type_list)
-	{
-		fmt_types.append(type);
-		i++;
-		if(i % 6 == 0 || i == type_list.size() - 1)
+		for(auto &type : BaseObject::getChildObjectTypes(ObjectType::Table))
 		{
-			lines.append("     > " + fmt_types.join(", "));
-			fmt_types.clear();
-		}
-	}
+			if(type == ObjectType::Column)
+				continue;
 
-	printText(lines.join('\n'));
-	
-	printText();
-	printText(tr("   * The special type `%1' allows writing a single filter that applies to all object types.").arg(Attributes::Any));
-	printText();
-	printText(tr("   * The `pattern' section is the text pattern to match against object names."));
-	printText();
-	printText(tr("   * The `mode' section defines how the pattern matching is performed. It accepts two values:"));
-	printText(tr("     > `%1' treats the pattern as a wildcard string when matching object names.").arg(UtilsNs::FilterWildcard));
-	printText(tr("     > `%1' treats the pattern as a Perl-like regular expression when matching object names.").arg(UtilsNs::FilterRegExp));
-	printText();
-	printText(tr("   * The option %1 takes effect only when used with %2 and prevents discarding\
-\n     children of matched tables. Other tables imported as dependencies of matched objects will have their\
-\n     children discarded. The comma-separated list of table child objects accepts these values:").arg(ForceChildren, OnlyMatching));
-	printText(tr("     > %1").arg(child_list));
-	printText(tr("     > Use the special keyword `%1' to include all child objects.").arg(AllChildren));
-	printText();
-	printText(tr("   * NOTE: All comparisons during filtering are case-insensitive."));
-	printText(tr("     Using filtering options may import additional objects due to automatic dependency resolution."));
-	printText();
-	printText(tr("** The diff process supports all import-related options."));
-	printText(tr("   It also accepts these export operation options:\
-\n   `%1', `%2', and `%3'.").arg(IgnoreDuplicates, IgnoreErrorCodes, NonTransactional));
-	printText();
-	printText(tr("** The partial diff always forces the options %1 and %2 = %3 for better results.").arg(OnlyMatching, ForceChildren, AllChildren));
-	printText(tr("   * The options %1 and %2 accept ISO8601 date/time format: `yyyy-MM-dd hh:mm:ss'.").arg(StartDate, EndDate));
-	printText();
-	printText(tr("** When diffing between two databases (%1 and %2), you can specify separate connections/aliases.").arg(InputDb, CompareDb));
-	printText(tr("   If only one connection is specified, it will be used for both the input database and the comparison database."));
-	printText(tr("   To specify a second connection, append `1' to any connection parameter listed above."));
-	printText(tr("   This associates the connection exclusively with %1.").arg(CompareDb));
-	printText();
+			list.append(BaseObject::getSchemaName(type));
+		}
+
+		list.sort();
+		child_list = list.join(", ");
+
+		QStringList fmt_types, lines, type_list = Catalog::getFilterableObjectNames();
+		int i = 0;
+
+		type_list.prepend(Attributes::Any);
+
+		for(auto &type : type_list)
+		{
+			fmt_types.append(type);
+			i++;
+			if(i % 6 == 0 || i == type_list.size() - 1)
+			{
+				lines.append("     > " + fmt_types.join(", "));
+				fmt_types.clear();
+			}
+		}
+
+		printText(lines.join('\n'));
+
+		printText();
+		printText(tr("   * The special type `%1' allows writing a single filter that applies to all object types.").arg(Attributes::Any));
+		printText();
+		printText(tr("   * The `pattern' section is the text pattern to match against object names."));
+		printText();
+		printText(tr("   * The `mode' section defines how the pattern matching is performed. It accepts two values:"));
+		printText(tr("     > `%1' treats the pattern as a wildcard string when matching object names.").arg(UtilsNs::FilterWildcard));
+		printText(tr("     > `%1' treats the pattern as a Perl-like regular expression when matching object names.").arg(UtilsNs::FilterRegExp));
+		printText();
+		printText(tr("   * The option %1 takes effect only when used with %2 and prevents discarding\
+	\n     children of matched tables. Other tables imported as dependencies of matched objects will have their\
+	\n     children discarded. The comma-separated list of table child objects accepts these values:").arg(ForceChildren, OnlyMatching));
+		printText(tr("     > %1").arg(child_list));
+		printText(tr("     > Use the special keyword `%1' to include all child objects.").arg(AllChildren));
+		printText();
+		printText(tr("   * NOTE: All comparisons during filtering are case-insensitive."));
+		printText(tr("     Using filtering options may import additional objects due to automatic dependency resolution."));
+		printText();
+		printText(tr("** The diff process supports all import-related options."));
+		printText(tr("   It also accepts these export operation options:\
+	\n   `%1', `%2', and `%3'.").arg(IgnoreDuplicates, IgnoreErrorCodes, NonTransactional));
+		printText();
+		printText(tr("** The partial diff always forces the options %1 and %2 = %3 for better results.").arg(OnlyMatching, ForceChildren, AllChildren));
+		printText(tr("   * The options %1 and %2 accept ISO8601 date/time format: `yyyy-MM-dd hh:mm:ss'.").arg(StartDate, EndDate));
+		printText();
+		printText(tr("** When diffing between two databases (%1 and %2), you can specify separate connections/aliases.").arg(InputDb, CompareDb));
+		printText(tr("   If only one connection is specified, it will be used for both the input database and the comparison database."));
+		printText(tr("   To specify a second connection, append `1' to any connection parameter listed above."));
+		printText(tr("   This associates the connection exclusively with %1.").arg(CompareDb));
+		printText();
+	#endif
 
 	if(!plugin_load_errors.isEmpty())
 	{
@@ -933,8 +947,10 @@ void PgModelerCliApp::parseOptions(attribs_map &opts)
 		 opts.count(Diff))
 	{
 		export_hlp = new ModelExportHelper;
+#ifdef PRIV_CODE_SYMBOLS
 		import_hlp = new DatabaseImportHelper;
 		diff_hlp = new ModelsDiffHelper;
+#endif
 	}
 
 	QString curr_op_mode;
@@ -1194,10 +1210,12 @@ int PgModelerCliApp::exec()
 				updateMimeType();
 			else if(create_configs)
 				createConfigurations();
+#ifdef PRIV_CODE_SYMBOLS
 			else if(import_db)
 				importDatabase();
 			else if(diff)
 				diffModels();
+#endif
 			else if(export_op)
 				exportModel();
 			else
@@ -2303,287 +2321,9 @@ void PgModelerCliApp::exportModel()
 	printMessage(tr("Export operation completed successfully!\n"));
 }
 
-void PgModelerCliApp::importDatabase()
-{
-	printMessage(tr("Starting database import operation..."));
-	printMessage(tr("Source database: %1").arg(connection.getConnectionId(true, true)));
-
-	ModelWidget *model_wgt = new ModelWidget;
-
-	importDatabase(model_wgt->getDatabaseModel(), connection);
-	model_wgt->rearrangeSchemasInGrid();
-
-	printMessage(tr("Saving imported database to file..."));
-
-	model_wgt->getDatabaseModel()->saveModel(parsed_opts[Output], SchemaParser::XmlCode);
-
-	printMessage(tr("Import operation completed successfully!\n"));
-
-	delete model_wgt;
-}
-
-void PgModelerCliApp::importDatabase(DatabaseModel *model, Connection conn)
-{
-	try
-	{
-		std::map<ObjectType, std::vector<unsigned>> obj_oids;
-		std::map<unsigned, std::vector<unsigned>> col_oids;
-		Catalog catalog;
-		QString db_oid;
-		QStringList force_tab_objs;
-		bool imp_sys_objs = (parsed_opts.count(ImportSystemObjs) > 0),
-				imp_ext_objs = (parsed_opts.count(ImportExtensionObjs) > 0);
-
-		if(parsed_opts[ForceChildren] == AllChildren)
-		{
-			for(auto &type : BaseObject::getChildObjectTypes(ObjectType::Table))
-			{
-				if(type == ObjectType::Column)
-					continue;
-
-				force_tab_objs.append(BaseObject::getSchemaName(type));
-			}
-		}
-		else
-			force_tab_objs = parsed_opts[ForceChildren].split(',', Qt::SkipEmptyParts);
-
-		Connection::setPrintSQL(parsed_opts.count(DebugMode) > 0);
-
-		catalog.setConnection(conn);
-
-		catalog.setQueryFilter(Catalog::ListAllObjects | Catalog::ExclBuiltinArrayTypes |
-													 Catalog::ExclExtensionObjs | Catalog::ExclSystemObjs);
-
-		catalog.setObjectFilters(obj_filters, parsed_opts.count(OnlyMatching) > 0,
-														 parsed_opts.count(MatchByName) == 0, force_tab_objs);
-
-		catalog.getObjectsOIDs(obj_oids, col_oids, {{Attributes::FilterTableTypes, Attributes::True}});
-
-		db_oid = catalog.getObjectOID(conn.getConnectionParam(Connection::ParamDbName), ObjectType::Database);
-		obj_oids[ObjectType::Database].push_back(db_oid.toUInt());
-		catalog.closeConnection();
-
-		import_hlp->setConnection(conn);
-		import_hlp->setImportOptions(imp_sys_objs,
-																 imp_ext_objs,
-																 true,
-																 parsed_opts.count(IgnoreImportErrors) > 0,
-																 parsed_opts.count(DebugMode) > 0,
-																 !parsed_opts.count(Diff),
-																 !parsed_opts.count(Diff),
-																 parsed_opts.count(CommentsAsAliases) > 0);
-
-		model->createSystemObjects(true);
-		import_hlp->setSelectedOIDs(model, obj_oids, col_oids);
-		import_hlp->importDatabase();
-		import_hlp->closeConnection();
-	}
-	catch(Exception &e)
-	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
-	}
-}
-
-void PgModelerCliApp::diffModels()
-{
-	DatabaseModel *compared_model = new DatabaseModel();
-	QString dbname;
-	std::vector<BaseObject *> filtered_objs;
-	bool is_compare_db = parsed_opts.count(CompareDb);
-
-	try
-	{
-		printMessage(tr("Starting diff operation..."));
-
-		if(!parsed_opts[Input].isEmpty())
-			printMessage(tr("Source model: %1").arg(parsed_opts[Input]));
-		else
-			printMessage(tr("Source database: %1").arg(connection.getConnectionId(true, true)));
-
-		if(is_compare_db)
-		{
-			dbname = extra_connection.getConnectionId(true, true);
-			printMessage(tr("Target database: %1").arg(dbname));
-		}
-		else
-			printMessage(tr("Target model: %1").arg(parsed_opts[CompareFile]));
-
-		if(!parsed_opts[Input].isEmpty())
-		{
-			printMessage(tr("Loading source model..."));
-			loadModel();
-
-			if(parsed_opts.count(PartialDiff))
-			{
-				QString search_attr = parsed_opts.count(MatchByName) ? Attributes::Name : Attributes::Signature;
-
-				// Filtering by modification date always forces the signature matching
-				if(start_date.isValid() || end_date.isValid())
-					obj_filters.append(input_model->getFiltersFromChangelog(start_date, end_date));
-
-				filtered_objs = input_model->findObjects(obj_filters, search_attr);
-
-				/* We need to finish the diff if no object was found based on the filters
-				 * this will avoid the diff between an empty database model and a full database model
-				 * which may produce unexpected results like try to recreate all objects from the database
-				 * model that contains objects */
-				if(filtered_objs.empty())
-				{
-					printMessage(tr("No objects were retrieved using the provided filter(s)."));
-
-					if(!parsed_opts.count(Force))
-					{
-						printMessage(tr("Use the option `%1' to force a full diff in this case.").arg(Force));
-						printMessage(tr("The diff operation will not continue!\n"));
-						return;
-					}
-					
-					printMessage(tr("Switching to full diff operation..."));
-				}
-				else
-				{
-					/* Special case: when performing a partial diff between a model and a database
-					 * and in the set of filtered model objects we have one or more many-to-many, inheritance or partitioning
-					 * relationships we need to inject filters to force the retrieval of the all involved tables in those relationships
-					 * from the destination database,this way we avoid the diff try to create everytime all tables
-					 * in the those relationships. */
-					obj_filters.append(ModelsDiffHelper::getRelationshipFilters(filtered_objs, search_attr == Attributes::Signature));
-				}
-			}
-		}
-		else
-		{
-			printMessage(tr("Importing database `%1'...").arg(connection.getConnectionId(true, true)));
-			importDatabase(input_model, connection);
-		}
-
-		// Importing the compared database
-		if(parsed_opts.count(CompareDb))
-		{
-			printMessage(tr("Importing database `%1'...").arg(dbname));
-			importDatabase(compared_model, extra_connection);
-		}
-		// Otherwise we load the model from file (param CompareFile)
-		else
-		{
-			printMessage(tr("Loading target model..."));
-			compared_model->createSystemObjects(false);
-			compared_model->loadModel(parsed_opts[CompareFile]);
-		}
-
-		diff_hlp->setModels(input_model, compared_model);
-		diff_hlp->setFilteredObjects(filtered_objs);
-		diff_hlp->setDiffOption(ModelsDiffHelper::OptKeepClusterObjs, !parsed_opts.count(DropClusterObjs));
-		diff_hlp->setDiffOption(ModelsDiffHelper::OptCascadeMode, !parsed_opts.count(NoCascadeDrop));
-		diff_hlp->setDiffOption(ModelsDiffHelper::OptRecreateUnmodifiable, parsed_opts.count(RecreateUnmod));
-		diff_hlp->setDiffOption(ModelsDiffHelper::OptReplaceModified, parsed_opts.count(ReplaceModified));
-		diff_hlp->setDiffOption(ModelsDiffHelper::OptKeepObjectPerms, !parsed_opts.count(RevokePermissions));
-		diff_hlp->setDiffOption(ModelsDiffHelper::OptReuseSequences, !parsed_opts.count(NoSequenceReuse));
-		diff_hlp->setDiffOption(ModelsDiffHelper::OptPreserveDbName, !parsed_opts.count(RenameDb));
-		diff_hlp->setDiffOption(ModelsDiffHelper::OptDontDropMissingObjs, !parsed_opts.count(DropMissingObjs));
-		diff_hlp->setDiffOption(ModelsDiffHelper::OptDropMissingColsConstr, parsed_opts.count(ForceDropColsConstrs));
-
-		diff_hlp->setForcedRecreateTypeNames(parsed_opts[ForceReCreateObjs].split(',', Qt::SkipEmptyParts));
-
-		if(!parsed_opts[PgSqlVer].isEmpty())
-			diff_hlp->setPgSQLVersion(parsed_opts[PgSqlVer]);
-		else if(is_compare_db)
-		{
-			extra_connection.connect();
-			diff_hlp->setPgSQLVersion(extra_connection.getPgSQLVersion(true));
-			extra_connection.close();
-		}
-
-		printMessage(tr("Comparing the models..."));
-		diff_hlp->diffModels();
-
-		if(diff_hlp->getDiffDefinition().isEmpty())
-			printMessage(tr("No differences detected."));
-		else
-		{
-			if(parsed_opts.count(SaveDiff))
-			{
-				printMessage(tr("Saving diff to file `%1'").arg(parsed_opts[Output]));
-				UtilsNs::saveFile(parsed_opts[Output], diff_hlp->getDiffDefinition().toUtf8());
-			}
-			else
-			{
-				bool apply_diff = true;
-
-				if(!parsed_opts.count(NoDiffPreview))
-				{
-					QString res, buff, line;
-					QTextStream in(stdin), preview;
-
-					buff += "\n** Press ENTER to scroll the preview **\n";
-					buff += "\n### DIFF PREVIEW ###\n\n";
-					buff += diff_hlp->getDiffDefinition();
-					buff += "\n### END OF PREVIEW  ###\n\n";
-
-					preview.setString(&buff, QIODevice::ReadOnly);
-
-					while(!preview.atEnd())
-					{
-						line = preview.readLine();
-						res.append(line + '\n');
-
-						if(res.count(QChar('\n')) >= 30 || preview.atEnd())
-						{
-							out << res;
-							out.flush();
-							res.clear();
-
-							if(!preview.atEnd())
-								in.readLine();
-						}
-					}
-
-					out << Qt::endl;
-					out << tr("** WARNING: You are about to apply the generated diff code to the server. Data loss may occur!") << Qt::endl;
-
-					do
-					{
-						out << tr("** Proceed with the diff applying? (yes/no) > ");
-						out.flush();
-
-						in.skipWhiteSpace();
-						res = in.readLine();
-					}
-					while(res.toLower() != tr("yes") && res.toLower() != tr("no"));
-
-					if(res.toLower() == tr("no"))
-					{
-						apply_diff = false;
-						printMessage(tr("Diff code not applied to server."));
-					}
-				}
-
-				if(apply_diff)
-				{
-					printMessage(tr("Applying diff to database `%1'...").arg(dbname));
-					export_hlp->setExportToDBMSParams(diff_hlp->getDiffDefinition(),
-													 &extra_connection,
-													 parsed_opts[CompareDb],
-													 parsed_opts.count(IgnoreDuplicates),
-													 !parsed_opts.count(NonTransactional));
-
-					if(parsed_opts.count(IgnoreErrorCodes))
-						export_hlp->setIgnoredErrors(parsed_opts[IgnoreErrorCodes].split(','));
-
-					export_hlp->exportToDBMS();
-				}
-			}
-		}
-
-		printMessage(tr("Diff operation completed successfully!\n"));
-		delete compared_model;
-	}
-	catch(Exception &e)
-	{
-		delete compared_model;
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
-	}
-}
+#ifdef PRIV_CODE_SYMBOLS
+#include "libcli/privpgmodelercliapp.cpp"
+#endif
 
 void PgModelerCliApp::updateMimeType()
 {

@@ -20,7 +20,12 @@
 */
 
 #include "modelobjectswidget.h"
-#include "tools/databaseimportwidget.h"
+
+#warning "Fix me: remove after refactoring ModelObjectsWidget::filter() method"
+#ifdef PRIV_CORE_SYMBOLS
+	#include "tools/databaseimportwidget.h"
+#endif
+
 #include "guiutilsns.h"
 #include "settings/generalconfigwidget.h"
 #include "customtablewidget.h"
@@ -424,7 +429,10 @@ void ModelObjectsWidget::collapseAll()
 
 void ModelObjectsWidget::filterObjects()
 {
-	DatabaseImportWidget::filterObjects(objectstree_tw, filter_edt->text(), (by_id_chk->isChecked() ? 1 : 0), simplified_view);
+	#warning "Fix me: move DatabaseImportWidget::filterObjects to GuiUtilsNs"
+	#ifdef PRIV_CORE_SYMBOLS
+		DatabaseImportWidget::filterObjects(objectstree_tw, filter_edt->text(), (by_id_chk->isChecked() ? 1 : 0), simplified_view);
+	#endif
 }
 
 void ModelObjectsWidget::updateObjectsView()
