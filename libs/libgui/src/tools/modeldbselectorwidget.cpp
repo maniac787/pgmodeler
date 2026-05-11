@@ -25,8 +25,8 @@
 
 #warning "Fix me: use catalog.h instead of databaseimporthelper.h"
 #ifdef PRIV_CODE_SYMBOLS
-#include "tools/databaseimporthelper.h"
-#include "tools/databaseimportwidget.h"
+#include "libgui/tools/databaseimporthelper.h"
+#include "libgui/tools/databaseimportwidget.h"
 #endif
 
 #include "guiutilsns.h"

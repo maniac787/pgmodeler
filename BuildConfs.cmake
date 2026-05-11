@@ -274,11 +274,13 @@ function(pgm_inc_priv_core_sources TARGET INCLUDE_SOURCES)
 			# Enable AUTOUIC for this target if there are UI forms
 			if(PRIV_CORE_FORMS)
 				set_target_properties(${TARGET} PROPERTIES AUTOUIC ON)
-				# Collect all ui/* subdirectories automatically
+				# Collect all ui/* subdirectories automatically (up to 2 levels)
 				file(GLOB _priv_ui_dirs LIST_DIRECTORIES true "${PRIV_CORE_ROOT}/ui/*")
+				file(GLOB _priv_ui_subdirs LIST_DIRECTORIES true "${PRIV_CORE_ROOT}/ui/*/*")
 				set_property(TARGET ${TARGET} APPEND PROPERTY AUTOUIC_SEARCH_PATHS
 					${PRIV_CORE_ROOT}/ui
-					${_priv_ui_dirs})
+					${_priv_ui_dirs}
+					${_priv_ui_subdirs})
 			endif()
 		endif()
 	endif()

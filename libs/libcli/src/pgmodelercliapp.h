@@ -39,8 +39,8 @@
 #include "pgmodelercliplugin.h"
 
 #ifdef PRIV_CODE_SYMBOLS
-	#include "tools/databaseimporthelper.h"
-	#include "tools/modelsdiffhelper.h"
+	#include "libgui/tools/databaseimporthelper.h"
+	#include "libgui/tools/modelsdiffhelper.h"
 #endif
 
 class __libcli PgModelerCliApp: public Application {
