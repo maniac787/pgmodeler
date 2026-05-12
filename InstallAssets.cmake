@@ -19,12 +19,8 @@ foreach(sch_dir ${sch_dirs})
     endif()
 endforeach()
 
-# Copying private schema folders (alter/ and catalog/) from priv-core — PLUS builds only
+# Copying private schema folders (catalog/) from priv-core — PLUS builds only
 if(PLUS_VERSION OR BUILD_PRIV_ASSETS)
-    install(DIRECTORY ${PRIV_CORE_ROOT}/assets/schemas/alter
-            DESTINATION ${PGM_SCHEMASDIR}
-            USE_SOURCE_PERMISSIONS)
-
     install(DIRECTORY ${PRIV_CORE_ROOT}/assets/schemas/catalog
             DESTINATION ${PGM_SCHEMASDIR}
             USE_SOURCE_PERMISSIONS)
