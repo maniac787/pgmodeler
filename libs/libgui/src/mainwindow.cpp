@@ -1725,13 +1725,6 @@ void MainWindow::applyConfigurations()
 		setGridOptions();
 
 	updateConnections(true);
-
-	/* #ifdef PRIV_CODE_SYMBOLS
-		sql_tool_wgt->configureSnippets();
-		sql_tool_wgt->reloadHighlightConfigs();
-		sql_tool_wgt->updateTabs();
-	#endif */
-
 	qApp->restoreOverrideCursor();
 }
 
@@ -2236,14 +2229,6 @@ void MainWindow::storeDockWidgetsSettings()
 	params[Attributes::ExactMatch]=(obj_finder_wgt->exact_match_chk->isChecked() ? Attributes::True : "");
 	conf_wgt->setConfigurationSection(Attributes::ObjectFinder, params);
 	params.clear();
-
-	/* params[Attributes::SqlTool]=Attributes::True;
-	#ifdef PRIV_CODE_SYMBOLS
-		params[Attributes::ShowAttributesGrid]=(sql_tool_wgt->attributes_btn->isChecked() ? Attributes::True : "");
-		params[Attributes::ShowSourcePane]=(sql_tool_wgt->source_pane_btn->isChecked() ? Attributes::True : "");
-	#endif
-	conf_wgt->setConfigurationSection(Attributes::SqlTool, params);
-	params.clear(); */
 
 	params[Attributes::LayersConfig] = Attributes::True;
 	params[Attributes::RelsFollowTabsVisibility] = layers_cfg_wgt->rels_tabs_visibility_chk->isChecked() ? Attributes::True : "";

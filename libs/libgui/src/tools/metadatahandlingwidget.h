@@ -31,7 +31,7 @@
 #include "ui_metadatahandlingwidget.h"
 #include "widgets/modelwidget.h"
 #include "widgets/fileselectorwidget.h"
-#include "tools/modeldbselectorwidget.h"
+#include "tools/modelselectorwidget.h"
 
 class __libgui MetadataHandlingWidget: public QWidget, public Ui::MetadataHandlingWidget {
 	Q_OBJECT
@@ -41,7 +41,7 @@ class __libgui MetadataHandlingWidget: public QWidget, public Ui::MetadataHandli
 
 		FileSelectorWidget *backup_file_sel;
 
-		ModelDbSelectorWidget *extract_model_sel, *apply_model_sel;
+		ModelSelectorWidget *extract_model_sel, *apply_model_sel;
 
 		enum MetaOpType {
 			OpExtractRestore,

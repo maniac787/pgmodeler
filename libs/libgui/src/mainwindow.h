@@ -55,12 +55,6 @@
 #include "tools/modelexportwidget.h"
 #include "tools/fixtoolswidget.h"
 
-//#ifdef PRIV_CODE_SYMBOLS
-//	#include "tools/sqltoolwidget.h"
-//	#include "tools/databaseimportwidget.h"
-//	#include "tools/difftoolwidget.h"
-//#endif
-
 class __libgui MainWindow: public QMainWindow, public Ui::MainWindow {
 	Q_OBJECT
 
@@ -94,17 +88,6 @@ class __libgui MainWindow: public QMainWindow, public Ui::MainWindow {
 
 		//! \brief Store the actions related to views in the main window (Manage, Design, Welcome, etc)
 		static QMap<MainWindow::MWViewsId, QAction *> view_actions;
-
-		//#ifdef PRIV_CODE_SYMBOLS
-			//! \brief Reverse engineering widget
-		//	DatabaseImportWidget *db_import_wgt;
-
-			//! \brief Diff tool widget
-		//	DiffToolWidget *diff_tool_wgt;
-
-			//! \brief SQL tool widget widget
-		//	SQLToolWidget *sql_tool_wgt;
-		//#endif
 
 		MWViewsId curr_view;
 
@@ -432,12 +415,6 @@ class __libgui MainWindow: public QMainWindow, public Ui::MainWindow {
 		bool mimeDataHasModelFiles(const QMimeData *mime_data);
 		void loadModelsFromMimeData(const QMimeData *mime_data);
 		void addNewLayer(const QString &layer_name);
-
-		/* #ifdef PRIV_CODE_SYMBOLS
-			void handleImportFinished(bool aborted_by_error);
-			void loadDiffInSQLTool(const QString &conn_id, const QString &database, const QString &filename);
-			void checkOpenSQLTabs(QCloseEvent *event);
-		#endif */
 
 	signals:
 		void s_currentModelChanged(ModelWidget *model_wgt);

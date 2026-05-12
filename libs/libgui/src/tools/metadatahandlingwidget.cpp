@@ -42,14 +42,14 @@ MetadataHandlingWidget::MetadataHandlingWidget(QWidget *parent) : QWidget(parent
 	backup_file_sel->setWindowTitle(tr("Select backup file"));
 	settings_grid->addWidget(backup_file_sel, 3, 1);
 
-	extract_model_sel = new ModelDbSelectorWidget(this);
+	extract_model_sel = new ModelSelectorWidget(this);
 	settings_grid->addWidget(extract_model_sel, 1, 1);
 
-	apply_model_sel = new ModelDbSelectorWidget(this);
+	apply_model_sel = new ModelSelectorWidget(this);
 	settings_grid->addWidget(apply_model_sel, 2, 1);
 
-	connect(extract_model_sel, &ModelDbSelectorWidget::s_selectionChanged, this, &MetadataHandlingWidget::enableMetadataHandling);
-	connect(apply_model_sel, &ModelDbSelectorWidget::s_selectionChanged, this, &MetadataHandlingWidget::enableMetadataHandling);
+	connect(extract_model_sel, &ModelSelectorWidget::s_selectionChanged, this, &MetadataHandlingWidget::enableMetadataHandling);
+	connect(apply_model_sel, &ModelSelectorWidget::s_selectionChanged, this, &MetadataHandlingWidget::enableMetadataHandling);
 	connect(backup_file_sel, &FileSelectorWidget::s_selectorChanged, this, &MetadataHandlingWidget::enableMetadataHandling);
 	connect(operation_cmb, &QComboBox::activated, this, &MetadataHandlingWidget::enableMetadataHandling);
 	connect(operation_cmb, &QComboBox::activated, this, &MetadataHandlingWidget::configureSelector);

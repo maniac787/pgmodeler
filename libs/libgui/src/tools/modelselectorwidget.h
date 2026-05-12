@@ -21,62 +21,41 @@
 
 /**
 \ingroup libgui
-\class ModelDbSelectorWidget
-\brief Implements the widget that allows user to choose the model or database to be used in a operation
+\class ModelSelectorWidget
+\brief Implements the widget that allows user to choose the model to be used in a operation
 */
 
-#ifndef MODEL_DB_SELECTOR_WIDGET_H
-#define MODEL_DB_SELECTOR_WIDGET_H
+#ifndef MODEL_SELECTOR_WIDGET_H
+#define MODEL_SELECTOR_WIDGET_H
 
 #include <QWidget>
-#include "ui_modeldbselectorwidget.h"
-#include "connection.h"
+#include "ui_modelselectorwidget.h"
 #include "widgets/modelwidget.h"
 
-class ModelDbSelectorWidget : public QWidget, public Ui::ModelDbSelectorWidget {
+class ModelSelectorWidget : public QWidget, public Ui::ModelSelectorWidget {
 	Q_OBJECT
 
 	public:
-		enum SelectMode {
-			SelectModel,
-			SelectDatabase
-		};
+		explicit ModelSelectorWidget(QWidget *parent = nullptr);
 
-		explicit ModelDbSelectorWidget(QWidget *parent = nullptr);
+		~ModelSelectorWidget() override = default;
 
-		~ModelDbSelectorWidget() override = default;
-
-		void setSelectMode(SelectMode sel_mode);
-		void setSelectedDatabase(const QString &db_name);
-		void setSelectedConnection(const QString &conn_id);
-
-		Connection getSelectedConnection();
-		QString getSelectedDatabase();
-		unsigned getSelectedDatabaseOid();
 		ModelWidget *getSelectedModel();
 
-		bool isDatabaseSelected();
 		bool isModelSelected();
 
-		void clearSelection();
+		virtual void clearSelection();
 
 		//! \brief Returns wheter the selector has a valid selection (database or model)
-		bool hasSelection();
-
-		/*! \brief Updates the combo of connections with the models in the list.
-		 *  The parameter def_conn_op selects by default the first connection in which
-		 *  is the default for the provided operation */
-		void updateConnections(Connection::ConnOperation def_conn_op = Connection::OpNone);
+		virtual bool hasSelection();
 
 		//! \brief Updates the combo of database models with the models in the list
 		void updateModels(const QList<ModelWidget *> &models);
 
 	public slots:
-		void listDatabases();
 		void updateModelFilename();
 
 	signals:
-		void s_connectionsUpdateRequested();
 		void s_selectionChanged();
 };
 

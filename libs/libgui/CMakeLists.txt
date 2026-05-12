@@ -73,7 +73,7 @@ set(SOURCES
     src/tools/modelvalidationwidget.cpp src/tools/modelvalidationwidget.h
     src/tools/swapobjectsidswidget.cpp src/tools/swapobjectsidswidget.h
     src/tools/validationinfo.cpp src/tools/validationinfo.h
-    src/tools/modeldbselectorwidget.h src/tools/modeldbselectorwidget.cpp
+		src/tools/modelselectorwidget.h src/tools/modelselectorwidget.cpp
     src/tools/fixtoolswidget.h src/tools/fixtoolswidget.cpp
     src/utils/customsortproxymodel.cpp src/utils/customsortproxymodel.h
     src/utils/deletableitemdelegate.cpp src/utils/deletableitemdelegate.h
@@ -180,7 +180,7 @@ set(FORMS
     ui/tools/modelrestorationform.ui
     ui/tools/swapobjectsidswidget.ui
     ui/tools/modelvalidationwidget.ui
-    ui/tools/modeldbselectorwidget.ui
+		ui/tools/modelselectorwidget.ui
     ui/tools/fixtoolswidget.ui
     ui/widgets/aboutwidget.ui
     ui/widgets/customtablewidget.ui

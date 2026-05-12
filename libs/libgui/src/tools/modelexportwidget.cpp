@@ -40,7 +40,7 @@ ModelExportWidget::ModelExportWidget(QWidget *parent) : QWidget(parent)
 	installEventFilter(new TabOrderManager(this));
 
 	alert_frm->setVisible(false);
-	model_sel_wgt = new ModelDbSelectorWidget(this);
+	model_sel_wgt = new ModelSelectorWidget(this);
 	input_model_gb->layout()->addWidget(model_sel_wgt);
 
 	sql_file_sel = new FileSelectorWidget(this);
@@ -93,7 +93,7 @@ ModelExportWidget::ModelExportWidget(QWidget *parent) : QWidget(parent)
 	GuiUtilsNs::configureBuddyWidgets(export_to_img_wgt);
 	GuiUtilsNs::configureBuddyWidgets(export_to_dict_wgt);
 
-	connect(model_sel_wgt, &ModelDbSelectorWidget::s_selectionChanged, this, [this](){
+	connect(model_sel_wgt, &ModelSelectorWidget::s_selectionChanged, this, [this](){
 		model_wgt = model_sel_wgt->getSelectedModel();
 		enableExport();
 	});
