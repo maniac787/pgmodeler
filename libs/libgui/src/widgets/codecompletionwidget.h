@@ -33,15 +33,11 @@ the syntax highlighter installed on it.
 #include <QListWidget>
 #include "utils/syntaxhighlighter.h"
 #include "databasemodel.h"
-//#include "catalog.h"
-#include "connection.h"
 
 class __libgui CodeCompletionWidget: public QWidget {
 	Q_OBJECT
 
 	protected:
-		static const QString special_chars;
-
 		//! \brief A timer that controls the completion popup
 		QTimer popup_timer;
 		
@@ -116,52 +112,14 @@ class __libgui CodeCompletionWidget: public QWidget {
 		//! \brief Configures the current qualifying level according to the passed object
 		void setQualifyingLevel(BaseObject *obj);
 
-		/*! \brief If a connection is configured, populates the list with the columns of
-		 *  tables, tables, schemas and functions listed in FROM/JOIN clauses */
-		[[deprecated("this method belogs to PrivCodeCompletion")]]
 		virtual bool updateObjectsList() { return false; };
 
-		virtual bool filterCurrentItems() { return false; };
+		virtual bool filterCurrentItems(QTextCursor) { return false; };
 
-		virtual bool selectCustomItem() { return false; };
+		virtual bool selectCustomItem(QListWidgetItem *) { return false; };
 
 		//! \brief Adjusts the position and size of the widget after listing items
 		void updateWidgetPosSize();
-
-		//! \brief Reset the DML keywords positions in the current typed code
-		[[deprecated("this method belogs to PrivCodeCompletion")]]
-		void resetKeywordsPos();
-
-		/*! \brief Retrieve the column names from the database based on the current
-		 *  typed DML command (SELECT, UPDATE, DELETE) and the position of the cursor */
-		[[deprecated("this method belogs to PrivCodeCompletion")]]
-		bool retrieveColumnNames();
-
-		/*! \brief Retrive the names of tables, views, foreign tables, functions, procedures and aggregates
-		 *  depending o the current position of the cursor in the typed DML command */
-		[[deprecated("this method belogs to PrivCodeCompletion")]]
-		bool retrieveObjectNames();
-
-		//! \brief Parses the entire command in order to extract the table names and aliases
-		[[deprecated("this method belogs to PrivCodeCompletion")]]
-		void extractTableNames();
-
-		/*! \brief Returns a list of extracted table names based upon the start_pos (cursor position).
-		 *  The stop_pos forces the method to return the list once the position of any searched table
-		 *  exceeds the specified value */
-		[[deprecated("this method belogs to PrivCodeCompletion")]]
-		QStringList getTableNames(int start_pos, int stop_pos);
-
-		[[deprecated("this method belogs to PrivCodeCompletion")]]
-		int getTablePosition(const QString &name);
-
-		[[deprecated("this method belogs to PrivCodeCompletion")]]
-		QStringList getTableAliases(const QString &name);
-
-		/*! \brief Returns the ObjectType based on the sequential keywords type in the current text cursor position
-		 *  This is used by updateObjectsList() when triggering the completion on ALTER/DROP commandas */
-		[[deprecated("this method belogs to PrivCodeCompletion")]]
-		ObjectType identifyObjectType(QTextCursor tc);
 
 		//! \brief Set the provided item as the one selected in the name list
 		void setCurrentItem(QListWidgetItem *item);
@@ -186,10 +144,6 @@ class __libgui CodeCompletionWidget: public QWidget {
 		//! \brief Clear the custom added items
 		void clearCustomItems();
 
-		//! \brief Sets the connection params used to retrive column names
-		[[deprecated("this method belogs to PrivCodeCompletion")]]
-		void setConnection(Connection conn);
-		
 	public slots:
 		//! \brief Updates the completion list based upon the typed word
 		void updateList();
