@@ -33,46 +33,13 @@ the syntax highlighter installed on it.
 #include <QListWidget>
 #include "utils/syntaxhighlighter.h"
 #include "databasemodel.h"
-#include "catalog.h"
+//#include "catalog.h"
+#include "connection.h"
 
 class __libgui CodeCompletionWidget: public QWidget {
 	Q_OBJECT
 
-	private:
-		/*! \brief This enums is used to determine DML keywords
-		 * positions in the parsed SQL command. This one is used
-		 * together with dml_kwords_pos and dml_keywords, and the
-		 * order of the items in this enums MUST have the same order
-		 * of the elements in dml_keywords string list */
-		enum DmlKeywordId: unsigned{
-			Select, Insert, Update, Delete,
-			Truncate, Alter, Drop,	From,
-			Join, Into,	As, Set, Table,
-			Only,	Where, Exists, Partition,
-			Like, Inherits, On, By,
-
-			Inner, Outer, Left,	Right,
-			Full, Union, Intersect,
-			Except, Distinct,	Values, All
-		};
-
-		ObjectType filter_obj_type;
-
-		int filter_kw_pos;
-
-		/*! \brief Stores the first occurency of the DML keywords in the current typed command.
-		 *  This is used to help pgModeler retrieve columns/objects names from the database */
-		int dml_kwords_pos[All + 1];
-
-		/*! \brief Stores the extracted table aliases where the key is the alias and the
-		 * value the schema-qualified table name */
-		attribs_map tab_aliases;
-
-		//! \brief Stores the extracted table names and the position in the command they were found
-		std::map<int, QString> tab_names_pos;
-
-		static const QStringList dml_keywords;
-
+	protected:
 		static const QString special_chars;
 
 		//! \brief A timer that controls the completion popup
@@ -118,9 +85,6 @@ class __libgui CodeCompletionWidget: public QWidget {
 		//! \brief Stores the database model used to search for objects and list them on completion
 		DatabaseModel *db_model;
 		
-		//! \brief Catalog object used to retrieve object names from the database system catalogs
-		Catalog catalog;
-
 		/*! \brief This is used to simulate an history of selected object
 		whenever the user types the completion trigger char. An example of qualifying is access a column
 		of a table by typing the full path to it: public[0].table[1].column[2]. The numbers between brace
@@ -132,12 +96,14 @@ class __libgui CodeCompletionWidget: public QWidget {
 
 		enable_snippets;
 		
-	//! \brief Store the objects selected for each qualifying level
-	std::vector<BaseObject *> sel_objects;
-	
-	std::map<QString, QIcon> custom_items;
-	
-	attribs_map custom_items_tips;		//! \brief Puts the selected object name on the current cursor position.
+		//! \brief Store the objects selected for each qualifying level
+		std::vector<BaseObject *> sel_objects;
+
+		std::map<QString, QIcon> custom_items;
+
+		attribs_map custom_items_tips;
+
+		//! \brief Puts the selected object name on the current cursor position.
 		void insertObjectName(BaseObject *obj);
 		
 		//! \brief Filters the necessary events to trigger the completion as well to control/select items
@@ -152,36 +118,49 @@ class __libgui CodeCompletionWidget: public QWidget {
 
 		/*! \brief If a connection is configured, populates the list with the columns of
 		 *  tables, tables, schemas and functions listed in FROM/JOIN clauses */
-		bool updateObjectsList();
+		[[deprecated("this method belogs to PrivCodeCompletion")]]
+		virtual bool updateObjectsList() { return false; };
+
+		virtual bool filterCurrentItems() { return false; };
+
+		virtual bool selectCustomItem() { return false; };
 
 		//! \brief Adjusts the position and size of the widget after listing items
 		void updateWidgetPosSize();
 
 		//! \brief Reset the DML keywords positions in the current typed code
+		[[deprecated("this method belogs to PrivCodeCompletion")]]
 		void resetKeywordsPos();
 
 		/*! \brief Retrieve the column names from the database based on the current
 		 *  typed DML command (SELECT, UPDATE, DELETE) and the position of the cursor */
+		[[deprecated("this method belogs to PrivCodeCompletion")]]
 		bool retrieveColumnNames();
 
 		/*! \brief Retrive the names of tables, views, foreign tables, functions, procedures and aggregates
 		 *  depending o the current position of the cursor in the typed DML command */
+		[[deprecated("this method belogs to PrivCodeCompletion")]]
 		bool retrieveObjectNames();
 
 		//! \brief Parses the entire command in order to extract the table names and aliases
+		[[deprecated("this method belogs to PrivCodeCompletion")]]
 		void extractTableNames();
 
 		/*! \brief Returns a list of extracted table names based upon the start_pos (cursor position).
 		 *  The stop_pos forces the method to return the list once the position of any searched table
 		 *  exceeds the specified value */
+		[[deprecated("this method belogs to PrivCodeCompletion")]]
 		QStringList getTableNames(int start_pos, int stop_pos);
 
+		[[deprecated("this method belogs to PrivCodeCompletion")]]
 		int getTablePosition(const QString &name);
 
+		[[deprecated("this method belogs to PrivCodeCompletion")]]
 		QStringList getTableAliases(const QString &name);
 
 		/*! \brief Returns the ObjectType based on the sequential keywords type in the current text cursor position
 		 *  This is used by updateObjectsList() when triggering the completion on ALTER/DROP commandas */
+		[[deprecated("this method belogs to PrivCodeCompletion")]]
 		ObjectType identifyObjectType(QTextCursor tc);
 
 		//! \brief Set the provided item as the one selected in the name list
@@ -193,19 +172,22 @@ class __libgui CodeCompletionWidget: public QWidget {
 		/*! \brief Configures the completion. If an syntax highlighter is specified, the completion widget will
 		retrive the keywords and the trigger char from it. The keyword group name can be also specified in case the
 		highlighter uses an different configuration */
-		void configureCompletion(DatabaseModel *db_model, SyntaxHighlighter *syntax_hl=nullptr, const QString &keywords_grp="keywords");
+		virtual void configureCompletion(DatabaseModel *db_model, SyntaxHighlighter *syntax_hl = nullptr, const QString &keywords_grp = "keywords");
 		
-	//! \brief Inserts a custom named item on the list with a custom icon. Custom item will always appear at the beggining of the list
-	void insertCustomItem(const QString &name, const QString &tooltip, const QIcon &icon);
-	
-	//! \brief Inserts several custom named item on the list with a custom icon. Custom item will always appear at the beggining of the list
-	void insertCustomItems(const QStringList &names, const QStringList &tooltips, const QIcon &icon);		//! \brief Inserts several custom named items on the list with an icon related to the obj_type. Custom item will always appear at the beggining of the list
+		//! \brief Inserts a custom named item on the list with a custom icon. Custom item will always appear at the beggining of the list
+		void insertCustomItem(const QString &name, const QString &tooltip, const QIcon &icon);
+
+		//! \brief Inserts several custom named item on the list with a custom icon. Custom item will always appear at the beggining of the list
+		void insertCustomItems(const QStringList &names, const QStringList &tooltips, const QIcon &icon);
+
+		//! \brief Inserts several custom named items on the list with an icon related to the obj_type. Custom item will always appear at the beggining of the list
 		void insertCustomItems(const QStringList &names, const QString &tooltip, ObjectType obj_type);
 		
 		//! \brief Clear the custom added items
 		void clearCustomItems();
 
 		//! \brief Sets the connection params used to retrive column names
+		[[deprecated("this method belogs to PrivCodeCompletion")]]
 		void setConnection(Connection conn);
 		
 	public slots:
