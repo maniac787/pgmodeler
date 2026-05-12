@@ -329,9 +329,6 @@ void MainWindow::configureMenusActionsWidgets()
 		if(!btn)
 			continue;
 
-		font = btn->font();
-		font.setWeight(QFont::Medium);
-		btn->setFont(font);
 		GuiUtilsNs::configureWidgetFont(btn, GuiUtilsNs::MediumFontFactor);
 
 		/* Setting a name for the action's tool button so it can

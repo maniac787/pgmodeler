@@ -22,12 +22,6 @@
 #include "tabledatawidget.h"
 #include "customuistyle.h"
 #include "messagebox.h"
-
-#warning "Fix me: remove after moving copySelection to GuiUtils"
-#ifdef PRIV_CODE_SYMBOLS
-#include "tools/sqlexecutionwidget.h"
-#endif
-
 #include "guiutilsns.h"
 #include "csvparser.h"
 #include "utils/plaintextitemdelegate.h"
@@ -102,12 +96,7 @@ TableDataWidget::TableDataWidget(QWidget *parent): BaseObjectWidget(parent, Obje
 	});
 
 	connect(copy_tb, &QToolButton::clicked, this, [this](){
-
-		#warning "Fix me: move copySelection to GuiUtilsNs"
-		#ifdef PRIV_CODE_SYMBOLS
-			SQLExecutionWidget::copySelection(data_tbw, false, true);
-		#endif
-
+		GuiUtilsNs::copySelection(data_tbw, false, true);
 		paste_tb->setEnabled(qApp->clipboard()->ownsClipboard());
 	});
 

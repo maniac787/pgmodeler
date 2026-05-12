@@ -196,7 +196,7 @@ GeneralConfigWidget::GeneralConfigWidget(QWidget * parent) : BaseConfigWidget(pa
 			SQLExecutionWidget::destroySQLHistory();
 		});
 	#else
-		clear_sql_history_btn->hide();
+		clear_sql_history_btn->setVisible(false);
 	#endif
 
 	connect(reset_alerts_choices_btn, &QPushButton::clicked, this, &GeneralConfigWidget::resetAlertChoices);

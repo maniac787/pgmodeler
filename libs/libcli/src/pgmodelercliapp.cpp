@@ -206,15 +206,17 @@ std::map<QString, QStringList> PgModelerCliApp::accepted_opts {
 												DropDatabase, DropObjects, Simulate, UseTmpNames, Force,
 												NonTransactional }},
 
-	{{ ImportDb }, { InputDb, Output, IgnoreImportErrors, ImportSystemObjs, ImportExtensionObjs,
-										FilterObjects, OnlyMatching, MatchByName, ForceChildren, DebugMode, ConnAlias,
-										Host, Port, User, Passwd, InitialDb, CommentsAsAliases }},
+	#ifdef PRIV_CODE_SYMBOLS
+		{{ ImportDb }, { InputDb, Output, IgnoreImportErrors, ImportSystemObjs, ImportExtensionObjs,
+											FilterObjects, OnlyMatching, MatchByName, ForceChildren, DebugMode, ConnAlias,
+											Host, Port, User, Passwd, InitialDb, CommentsAsAliases }},
 
-	{{ Diff }, { Input, PgSqlVer, IgnoreDuplicates, IgnoreErrorCodes, CompareDb, CompareFile,
-							 PartialDiff, Force, StartDate, EndDate, SaveDiff, ApplyDiff, NoDiffPreview,
-							 DropClusterObjs, RevokePermissions, DropMissingObjs, ForceDropColsConstrs,
-							 RenameDb, NoCascadeDrop, NoSequenceReuse, RecreateUnmod, ReplaceModified,
-							 ForceReCreateObjs, NonTransactional }},
+		{{ Diff }, { Input, PgSqlVer, IgnoreDuplicates, IgnoreErrorCodes, CompareDb, CompareFile,
+								 PartialDiff, Force, StartDate, EndDate, SaveDiff, ApplyDiff, NoDiffPreview,
+								 DropClusterObjs, RevokePermissions, DropMissingObjs, ForceDropColsConstrs,
+								 RenameDb, NoCascadeDrop, NoSequenceReuse, RecreateUnmod, ReplaceModified,
+								 ForceReCreateObjs, NonTransactional }},
+	#endif
 
 	{{ DbmMimeType }, { SystemWide, Force }},
 	{{ FixModel },	{ Input, Output, FixTries }},
@@ -225,6 +227,11 @@ std::map<QString, QStringList> PgModelerCliApp::accepted_opts {
 
 PgModelerCliApp::PgModelerCliApp(int argc, char **argv) : Application(argc, argv)
 {
+	#ifdef PRIV_CODE_SYMBOLS
+		import_hlp = nullptr;
+		diff_hlp = nullptr;
+	#endif
+
 	try
 	{
 		QString op, value, orig_op;
@@ -246,10 +253,6 @@ PgModelerCliApp::PgModelerCliApp(int argc, char **argv) : Application(argc, argv
 		export_op = false;
 
 		export_hlp = nullptr;
-#ifdef PRIV_CODE_SYMBOLS
-		import_hlp = nullptr;
-		diff_hlp = nullptr;
-#endif
 		conn_conf = nullptr;
 		rel_conf = nullptr;
 		general_conf = nullptr;
@@ -341,13 +344,14 @@ PgModelerCliApp::PgModelerCliApp(int argc, char **argv) : Application(argc, argv
 			{
 				connect(export_hlp, &ModelExportHelper::s_progressUpdated, this, &PgModelerCliApp::updateProgress);
 				connect(export_hlp, &ModelExportHelper::s_errorIgnored, this,  &PgModelerCliApp::printIgnoredError);
-#ifdef PRIV_CODE_SYMBOLS
-				if(import_hlp && diff_hlp)
-				{
-					connect(import_hlp, &DatabaseImportHelper::s_progressUpdated, this, &PgModelerCliApp::updateProgress);
-					connect(diff_hlp, &ModelsDiffHelper::s_progressUpdated, this, &PgModelerCliApp::updateProgress);
-				}
-#endif
+
+				#ifdef PRIV_CODE_SYMBOLS
+					if(import_hlp && diff_hlp)
+					{
+						connect(import_hlp, &DatabaseImportHelper::s_progressUpdated, this, &PgModelerCliApp::updateProgress);
+						connect(diff_hlp, &ModelsDiffHelper::s_progressUpdated, this, &PgModelerCliApp::updateProgress);
+					}
+				#endif
 			}
 		}
 	}
@@ -367,13 +371,14 @@ PgModelerCliApp::~PgModelerCliApp()
 	delete scene;
 	delete input_model;
 	delete export_hlp;
-#ifdef PRIV_CODE_SYMBOLS
-	delete import_hlp;
-	delete diff_hlp;
-#endif
 	delete conn_conf;
 	delete rel_conf;
 	delete general_conf;
+
+	#ifdef PRIV_CODE_SYMBOLS
+		delete import_hlp;
+		delete diff_hlp;
+	#endif
 
 	while(!plugins.empty())
 	{
@@ -946,11 +951,12 @@ void PgModelerCliApp::parseOptions(attribs_map &opts)
 		 opts.count(ExportToDict) || opts.count(ImportDb) ||
 		 opts.count(Diff))
 	{
+		#ifdef PRIV_CODE_SYMBOLS
+			import_hlp = new DatabaseImportHelper;
+			diff_hlp = new ModelsDiffHelper;
+		#endif
+
 		export_hlp = new ModelExportHelper;
-#ifdef PRIV_CODE_SYMBOLS
-		import_hlp = new DatabaseImportHelper;
-		diff_hlp = new ModelsDiffHelper;
-#endif
 	}
 
 	QString curr_op_mode;
@@ -1210,12 +1216,14 @@ int PgModelerCliApp::exec()
 				updateMimeType();
 			else if(create_configs)
 				createConfigurations();
-#ifdef PRIV_CODE_SYMBOLS
-			else if(import_db)
-				importDatabase();
-			else if(diff)
-				diffModels();
-#endif
+
+			#ifdef PRIV_CODE_SYMBOLS
+				else if(import_db)
+					importDatabase();
+				else if(diff)
+					diffModels();
+			#endif
+
 			else if(export_op)
 				exportModel();
 			else
@@ -2322,7 +2330,7 @@ void PgModelerCliApp::exportModel()
 }
 
 #ifdef PRIV_CODE_SYMBOLS
-#include "privpgmodelercliapp.cpp"
+	#include "privpgmodelercliapp.cpp"
 #endif
 
 void PgModelerCliApp::updateMimeType()

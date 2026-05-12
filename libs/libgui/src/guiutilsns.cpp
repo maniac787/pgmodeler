@@ -34,6 +34,7 @@
 #include "objectslistmodel.h"
 #include "customsortproxymodel.h"
 #include <unordered_map>
+#include <QClipboard>
 
 namespace GuiUtilsNs {
 	NumberedTextEditor *createNumberedTextEditor(QWidget *parent, bool act_btns_enabled, qreal custom_fnt_size)
@@ -1204,5 +1205,174 @@ namespace GuiUtilsNs {
 
 		tree_wgt->setUpdatesEnabled(true);
 		tree_wgt->blockSignals(false);
+	}
+
+	void copySelection(QTableView *results_tbw, bool use_popup, bool csv_is_default, bool incl_col_names)
+	{
+		if(!results_tbw)
+			return;
+
+		try
+		{
+			QItemSelectionModel *selection = results_tbw->selectionModel();
+
+			if(selection && (!use_popup || (use_popup && QApplication::mouseButtons()==Qt::RightButton)))
+			{
+				QMenu copy_menu, copy_mode_menu, save_menu;
+				QAction *act = nullptr, *act_csv = nullptr, *act_txt = nullptr,
+								*act_save = nullptr, *act_save_txt = nullptr, *act_save_csv = nullptr;
+
+				if(use_popup)
+				{
+					act = copy_mode_menu.menuAction();
+					act->setText(QT_TR_NOOP("Selection"));
+					act->setIcon(GuiUtilsNs::getIcon("selection"));
+
+					act_txt = copy_mode_menu.addAction(QT_TR_NOOP("Copy as text"));
+					act_txt->setIcon(GuiUtilsNs::getIcon("txtfile"));
+
+					act_csv = copy_mode_menu.addAction(QT_TR_NOOP("Copy as CSV"));
+					act_csv->setIcon(GuiUtilsNs::getIcon("csvfile"));
+
+					act_save = save_menu.menuAction();
+					act_save->setText(QT_TR_NOOP("Save as..."));
+					act_save->setIcon(GuiUtilsNs::getIcon("saveas"));
+					copy_mode_menu.addAction(act_save);
+
+					act_save_txt = save_menu.addAction(QT_TR_NOOP("Text file"));
+					act_save_txt->setIcon(GuiUtilsNs::getIcon("txtfile"));
+
+					act_save_csv = save_menu.addAction(QT_TR_NOOP("CSV file"));
+					act_save_csv->setIcon(GuiUtilsNs::getIcon("csvfile"));
+
+					copy_menu.addAction(act);
+					act = copy_menu.exec(QCursor::pos());
+				}
+
+				if(!use_popup || act)
+				{
+					QByteArray buffer;
+
+					bool is_csv = ((!use_popup && csv_is_default) ||
+												 (use_popup && (act == act_csv || act == act_save_csv))),
+
+							is_save = (use_popup && (act == act_save_txt || act == act_save_csv));
+
+					buffer = is_csv ?
+										generateCSVBuffer(results_tbw, incl_col_names) :
+										generateTextBuffer(results_tbw, incl_col_names);
+
+					if(!is_save)
+						qApp->clipboard()->setText(buffer);
+					else
+					{
+						GuiUtilsNs::selectAndSaveFile(buffer,
+																					 QT_TR_NOOP("Save file"),
+																					 QFileDialog::AnyFile,
+																					 { is_csv ? QT_TR_NOOP("CSV file (*.csv)") :
+																											QT_TR_NOOP("Text file (*.txt)"),
+																						 QT_TR_NOOP("All files (*.*)") },
+																					 {}, is_csv ? "csv" : "txt");
+					}
+				}
+			}
+		}
+		catch(Exception &e)
+		{
+			Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
+		}
+	}
+
+	QByteArray generateCSVBuffer(QTableView *results_tbw, bool inc_col_names)
+	{
+		return generateBuffer(results_tbw, CsvDocument::Separator, inc_col_names, true);
+	}
+
+	QByteArray generateTextBuffer(QTableView *results_tbw, bool inc_col_names)
+	{
+		return generateBuffer(results_tbw, QChar('\t'), inc_col_names, false);
+	}
+
+	QByteArray generateBuffer(QTableView *results_tbw, QChar separator, bool incl_col_names, bool csv_format)
+	{
+		if(!results_tbw)
+			throw Exception(ErrorCode::OprNotAllocatedObject ,PGM_FUNC,PGM_FILE,PGM_LINE);
+
+		if((results_tbw->model() && results_tbw->model()->rowCount() == 0) ||
+			 !results_tbw->selectionModel())
+			return {};
+
+		QAbstractItemModel *model = results_tbw->model();
+		QModelIndexList sel_indexes;
+		QByteArray buf;
+		QStringList line;
+		QModelIndex index;
+		QString str_pattern = csv_format ?
+														QString("%1%2%1").arg(CsvDocument::TextDelimiter).arg("%1") :
+														QString("%1"),
+				value;
+		int start_row = -1, start_col = -1,
+				row_cnt = 0, col_cnt = 0;
+
+		sel_indexes = results_tbw->selectionModel()->selectedIndexes();
+		start_row = sel_indexes.at(0).row();
+		start_col = sel_indexes.at(0).column();
+		row_cnt = (sel_indexes.last().row() - start_row) + 1;
+		col_cnt = (sel_indexes.last().column() - start_col) + 1;
+
+		int col=0, row=0,
+				max_col=start_col + col_cnt,
+				max_row=start_row + row_cnt;
+
+		if(incl_col_names)
+		{
+			//Creating the header
+			for(col=start_col; col < max_col; col++)
+			{
+				if(results_tbw->isColumnHidden(col))
+					continue;
+
+				value = model->headerData(col, Qt::Horizontal).toString().trimmed();
+
+				if(csv_format)
+					value.replace(CsvDocument::TextDelimiter, QString("%1%1").arg(CsvDocument::TextDelimiter));
+
+				line.append(str_pattern.arg(value));
+			}
+
+			buf.append(line.join(separator).toUtf8());
+			buf.append(CsvDocument::LineBreak.unicode());
+			line.clear();
+		}
+
+		//Creating the content
+		for(row=start_row; row < max_row; row++)
+		{
+			for(col=start_col; col < max_col; col++)
+			{
+				if(results_tbw->isColumnHidden(col))
+					continue;
+
+				index = model->index(row, col);
+				value = index.data().toString();
+
+				/* If the index value is empty but it has a check state value
+				 * we assume the value of the columns as true/false to reflect
+				 * the check state of the item */
+				if(value.isEmpty() && !index.data(Qt::CheckStateRole).isNull())
+					value = index.data(Qt::CheckStateRole) == Qt::Checked ? Attributes::True : Attributes::False;
+
+				if(csv_format)
+					value.replace(CsvDocument::TextDelimiter, QString("%1%1").arg(CsvDocument::TextDelimiter));
+
+				line.append(str_pattern.arg(value));
+			}
+
+			buf.append(line.join(separator).toUtf8());
+			line.clear();
+			buf.append(CsvDocument::LineBreak.unicode());
+		}
+
+		return buf;
 	}
 }
