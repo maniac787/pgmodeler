@@ -1128,4 +1128,81 @@ namespace GuiUtilsNs {
 	{
 		return createLayout<QGridLayout>(lt_margins, lt_spacing, parent);
 	}
+
+	void filterObjects(QTreeWidget *tree_wgt, const QString &pattern, int search_column, bool sel_single_leaf)
+	{
+		if(!tree_wgt)
+			throw Exception(ErrorCode::OprNotAllocatedObject, PGM_FUNC, PGM_FILE, PGM_LINE);
+
+		QList<QTreeWidgetItem*> items;
+		QTreeWidgetItemIterator it(tree_wgt);
+		QTreeWidgetItem *item = nullptr;
+		QString text, data;
+
+		while(*it)
+		{
+			item = *it;
+			text = item->text(search_column);
+			data = item->data(search_column, Qt::UserRole).toString();
+
+			// We operate over the item only if it is not forcibly hidden
+			if(!item->data(ItemHiddenCol, Qt::UserRole).toBool())
+			{
+				if(!pattern.isEmpty() &&
+					 (text.startsWith(pattern, Qt::CaseInsensitive) ||
+						data.startsWith(pattern, Qt::CaseInsensitive)))
+					items.append(item);
+				else
+					item->setHidden(!pattern.isEmpty());
+			}
+
+			++it;
+		}
+
+		tree_wgt->blockSignals(true);
+		tree_wgt->setUpdatesEnabled(false);
+		tree_wgt->collapseAll();
+		tree_wgt->clearSelection();
+
+		if(pattern.isEmpty())
+		{
+			tree_wgt->topLevelItem(0)->setExpanded(true);
+		}
+		else
+		{
+			QTreeWidgetItem *parent=nullptr, *item = nullptr, *leaf = nullptr;
+			int leaf_count = 0;
+
+			for(auto &item : items)
+			{
+				item->setExpanded(true);
+				item->setHidden(false);
+				parent = item->parent();
+
+				while(parent)
+				{
+					parent->setHidden(false);
+					parent->setExpanded(true);
+					parent = parent->parent();
+				}
+
+				//Counting the leaf items found so far
+				if(sel_single_leaf && item->childCount() == 0 && item->parent())
+				{
+					leaf_count++;
+					leaf = item;
+				}
+			}
+
+			//Selecting the single leaf item
+			if(sel_single_leaf && leaf_count == 1 && leaf)
+			{
+				leaf->setSelected(true);
+				tree_wgt->setCurrentItem(leaf);
+			}
+		}
+
+		tree_wgt->setUpdatesEnabled(true);
+		tree_wgt->blockSignals(false);
+	}
 }

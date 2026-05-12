@@ -61,7 +61,12 @@ namespace GuiUtilsNs {
 	constexpr char FontAdjustedProp[] { "font-adjusted" };
 
 	constexpr int LtMargin = 5,
-	LtSpacing = 5;
+	LtSpacing = 5,
+
+	/*! \brief This const is used to flag a QTreeWidgetItem a the column
+	 * #100 (setData()) that it is forcibly hidden or not. This
+	 * const is read by the filterObject() function below */
+	ItemHiddenCol = 100;
 
 	static const QMargins LtMargins { LtMargin, LtMargin, LtMargin, LtMargin };
 
@@ -396,6 +401,11 @@ namespace GuiUtilsNs {
 	//! \brief Creates a layout that contains a label and a widget arranged vertically
 	__libgui QLayout *createBuddyWidgetLayout(QLabel *label, QWidget *widget, QWidget *append_widget = nullptr,
 																						 int margin = 0, int spacing = 0);
+
+	/*! \brief Filters an tree widget using a pattern. The 'search_column' indicates in
+	 * which column the pattern is applied. The paramenter 'sel_single_leaf' indicates
+	 * if the single leaf (resulting from filtering) must be selected. */
+	__libgui void filterObjects(QTreeWidget *tree_wgt, const QString &pattern, int search_column, bool sel_single_leaf);
 }
 
 #endif
