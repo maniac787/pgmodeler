@@ -70,6 +70,21 @@ install(DIRECTORY assets/conf/
         PATTERN "themes" EXCLUDE
         PATTERN "dtd" EXCLUDE)
 
+# Copying private conf files (diff-presets.*) from priv-core — PLUS builds only
+if(PLUS_VERSION OR BUILD_PRIV_ASSETS)
+    install(FILES ${PRIV_CORE_ROOT}/assets/conf/diff-presets.conf
+            DESTINATION ${PGM_CONFDIR})
+
+    install(FILES ${PRIV_CORE_ROOT}/assets/conf/diff-presets.conf
+            DESTINATION ${PGM_CONFDIR}/defaults)
+
+    install(FILES ${PRIV_CORE_ROOT}/assets/conf/dtd/diff-presets.dtd
+            DESTINATION ${PGM_CONFDIR}/dtd)
+
+    install(FILES ${PRIV_CORE_ROOT}/assets/conf/schemas/diff-presets.sch
+            DESTINATION ${PGM_CONFDIR}/schemas)
+endif()
+
 # Copying doc files
 install(FILES
         README.md
