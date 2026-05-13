@@ -2166,6 +2166,8 @@ int ModelWidget::openEditingForm(WidgetClass *widget, Messagebox::ButtonsId butt
 		editing_form.setMainWidget(widget);
 
 	editing_form.setButtonConfiguration(button_conf);
+	editing_form.enableTrackChanges(true, { "inc_indirect_links_chk", "unique_results_chk",
+																					"version_cmb", "code_options_cmb" });
 
 	GeneralConfigWidget::restoreWidgetGeometry(&editing_form, class_name);
 	res = editing_form.exec();

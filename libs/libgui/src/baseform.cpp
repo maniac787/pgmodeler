@@ -25,6 +25,7 @@
 
 BaseForm::BaseForm(QWidget *parent, Qt::WindowFlags f) : QDialog(parent, f)
 {
+	track_changes = has_changes = false;
 	main_wgt = nullptr;
 	tab_order_mng = nullptr;
 	setupUi(this);
@@ -170,9 +171,92 @@ void BaseForm::resizeForm(QWidget *widget)
 		resize(curr_w, curr_h);
 }
 
-void BaseForm::closeEvent(QCloseEvent *)
+void BaseForm::reject()
+{
+	if(track_changes && has_changes)
+	{
+		int res = Messagebox::confirm(tr("Some fields in the form were modified! Do you really want to close and discard changes?"));
+
+		if(res == QDialog::Rejected)
+		{
+			setResult(-1);
+			return;
+		}
+	}
+
+	QDialog::reject();
+}
+
+void BaseForm::closeEvent(QCloseEvent *event)
 {
 	this->reject();
+
+	if(result() < 0)
+	{
+		event->ignore();
+		return;
+	}
+}
+
+void BaseForm::enableTrackChanges(bool enable, QStringList excl_wgts)
+{
+	QLineEdit *edt = nullptr;
+	QPlainTextEdit *txt = nullptr;
+	QAbstractButton *btn = nullptr;
+	QSpinBox *spb = nullptr;
+	CustomTableWidget *ctab = nullptr;
+	QComboBox *cmb = nullptr;
+	ObjectSelectorWidget *sel = nullptr;
+
+	track_changes = enable;
+	has_changes = false;
+
+	for(auto &wgt : findChildren<QWidget *>())
+	{
+		if(excl_wgts.contains(wgt->objectName()))
+			continue;
+
+		edt = qobject_cast<QLineEdit *>(wgt);
+		txt = qobject_cast<QPlainTextEdit *>(wgt);
+		btn = qobject_cast<QAbstractButton *>(wgt);
+		spb = qobject_cast<QSpinBox *>(wgt);
+		ctab = qobject_cast<CustomTableWidget *>(wgt);
+		cmb = qobject_cast<QComboBox *>(wgt);
+		sel = qobject_cast<ObjectSelectorWidget *>(wgt);
+
+		if(edt || txt || btn ||
+			 spb || ctab || cmb || sel)
+		{
+			if(!enable)
+				disconnect(spb, nullptr, this, nullptr);
+			else
+			{
+				if(edt && !edt->isReadOnly())
+					connect(edt, &QLineEdit::textChanged, this, &BaseForm::setFieldChanged);
+				else if(txt && !txt->isReadOnly())
+					connect(txt, &QPlainTextEdit::textChanged, this, &BaseForm::setFieldChanged);
+				else if(btn && btn->isCheckable())
+					connect(btn, &QAbstractButton::toggled, this, &BaseForm::setFieldChanged);
+				else if(spb)
+					connect(spb, &QSpinBox::valueChanged, this, &BaseForm::setFieldChanged);
+				else if(cmb)
+					connect(cmb, &QComboBox::currentIndexChanged, this, &BaseForm::setFieldChanged);
+				else if(ctab)
+				{
+					connect(ctab, &CustomTableWidget::s_cellChanged, this, &BaseForm::setFieldChanged);
+					connect(ctab, &CustomTableWidget::s_rowCountChanged, this, &BaseForm::setFieldChanged);
+					connect(ctab, &CustomTableWidget::s_rowsMoved, this, &BaseForm::setFieldChanged);
+				}
+				else if(sel)
+					connect(sel, &ObjectSelectorWidget::s_selectorChanged, this, &BaseForm::setFieldChanged);
+			}
+		}
+	}
+}
+
+void BaseForm::setFieldChanged()
+{
+	has_changes = true;
 }
 
 void BaseForm::setMainWidget(QWidget *widget)

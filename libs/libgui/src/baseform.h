@@ -37,6 +37,8 @@ class __libgui BaseForm: public QDialog, public Ui::BaseForm {
 	Q_OBJECT
 
 	private:
+		bool track_changes, has_changes;
+
 		//! \brief Store the reference to the main widget
 		QWidget *main_wgt;
 
@@ -50,12 +52,19 @@ class __libgui BaseForm: public QDialog, public Ui::BaseForm {
 				try to preserve the minimum width */
 		void resizeForm(QWidget *widget);
 
-		void closeEvent(QCloseEvent *) override;
+		void closeEvent(QCloseEvent *event) override;
 
 	public:
 		BaseForm(QWidget * parent = nullptr, Qt::WindowFlags f = Qt::Widget);
 
 		void setButtonConfiguration(Messagebox::ButtonsId button_conf = Messagebox::OkCancelButtons);
+
+		/*! \brief Toggles the fields' change statuses. If a single field is changed
+		 *  and the user hits ESC or tries to close the form, a confirmation message
+		 *  will appear. This avoids data loss by accidental closing.
+		 *  A list of excluded widget names can be provided. If those widget names
+		 *  are found they will not have changes tracked */
+		void enableTrackChanges(bool enable, QStringList excl_wgts = {});
 
 		//! \brief Sets the current form size as the minimum size
 		void adjustMinimumSize();
@@ -111,6 +120,12 @@ class __libgui BaseForm: public QDialog, public Ui::BaseForm {
 			connect(apply_ok_btn, &QPushButton::clicked, widget, __slot(widget, Class::applyConfiguration));
 			connect(widget, &BaseObjectWidget::s_closeRequested, this, &BaseForm::accept);
 		}
+
+	private slots:
+		void setFieldChanged();
+
+	public slots:
+		void reject() override;
 };
 
 template <class Class, typename Slot>
