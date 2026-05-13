@@ -2629,7 +2629,7 @@ void MainWindow::installPluginWidgets()
 		{
 			welc_wgt_btn->setToolButtonStyle(welcome_wgt->new_tb->toolButtonStyle());
 			welc_wgt_btn->setIconSize(welcome_wgt->new_tb->iconSize());
-			welc_wgt_btn->setFont(welcome_wgt->new_tb->font());
+			GuiUtilsNs::__configureWidgetFont(welc_wgt_btn, WelcomeWidget::BtnFontFactor);
 			welcome_wgt->buttons_lt->insertWidget(p_wgt.w_wgt_btn_id, welc_wgt_btn);
 		}
 
