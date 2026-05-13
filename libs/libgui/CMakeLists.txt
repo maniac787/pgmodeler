@@ -190,7 +190,6 @@ set(FORMS
     ui/widgets/objectsearchwidget.ui
     ui/widgets/objecttypeslistwidget.ui
     ui/widgets/searchreplacewidget.ui
-
     ui/widgets/codepreviewwidget.ui
     ui/widgets/fileselectorwidget.ui
     ui/widgets/modeloverviewwidget.ui
@@ -209,7 +208,7 @@ set(FORMS
     ui/widgets/modelnavigationwidget.ui
     ui/widgets/sceneinfowidget.ui
     ui/widgets/welcomewidget.ui
-    ui/widgets/objectassociationswidget.ui)
+		ui/widgets/objectassociationswidget.ui)
 
 set(RESOURCES res/resources.qrc)
 

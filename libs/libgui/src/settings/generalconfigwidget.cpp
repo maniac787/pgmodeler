@@ -196,7 +196,10 @@ GeneralConfigWidget::GeneralConfigWidget(QWidget * parent) : BaseConfigWidget(pa
 			SQLExecutionWidget::destroySQLHistory();
 		});
 	#else
-		clear_sql_history_btn->setVisible(false);
+		sql_tool_gb->setVisible(false);
+		sql_tool_gb->setEnabled(false);
+		printing_gb->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+		printing_spc->changeSize(10, 10, QSizePolicy::Expanding, QSizePolicy::Expanding);
 	#endif
 
 	connect(reset_alerts_choices_btn, &QPushButton::clicked, this, &GeneralConfigWidget::resetAlertChoices);

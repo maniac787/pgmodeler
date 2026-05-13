@@ -101,7 +101,7 @@ if(USE_ADDR_SANITIZER)
 	add_link_options(-fsanitize=address)
 endif()
 
-if(NOT DEFINED NO_CHECK_CURR_VER)
+if(NOT PLUS_VERSION)
     add_compile_definitions(CHECK_CURR_VER)
 endif()
 

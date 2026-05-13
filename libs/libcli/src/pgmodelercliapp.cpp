@@ -655,8 +655,12 @@ void PgModelerCliApp::showMenu()
 	menu_items.append(MenuItem(ExportToDict, "", tr("Exports the input model to a data dictionary in HTML format.")));
 	menu_items.append(MenuItem(ExportToDbms, "", tr("Exports the input model directly to a PostgreSQL server.")));
 	menu_items.append(MenuItem(ListConns, "", tr("Lists the available connections. File location: %1.").arg(GlobalAttributes::ConnectionsConf + GlobalAttributes::ConfigurationExt)));
-	menu_items.append(MenuItem(ImportDb, "", tr("Imports a database to an output file.")));
-	menu_items.append(MenuItem(Diff, "", tr("Compares a model and a database or two databases. Generates an SQL script to synchronize the latter with the former.")));
+
+	#ifdef PRIV_CODE_SYMBOLS
+		menu_items.append(MenuItem(ImportDb, "", tr("Imports a database to an output file.")));
+		menu_items.append(MenuItem(Diff, "", tr("Compares a model and a database or two databases. Generates an SQL script to synchronize the latter with the former.")));
+	#endif
+
 	menu_items.append(MenuItem(FixModel, "", tr("Tries to fix the structure of the input model file to make it loadable again.")));
 	menu_items.append(MenuItem(CreateConfigs, "", tr("Creates pgModeler's configuration folder and files. Stored in the user's local storage.")));
 	
