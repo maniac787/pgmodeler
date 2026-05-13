@@ -90,10 +90,6 @@ std::vector<BaseObject *> ModelWidget::cut_objects;
 
 ModelWidget::ModelWidget(QWidget *parent) : QWidget(parent)
 {
-	#ifdef DEMO_VERSION
-		obj_actions_cnt = 0;
-	#endif
-
 	QFont font;
 	QLabel *label=nullptr;
 	QAction *action=nullptr;
@@ -1248,12 +1244,6 @@ void ModelWidget::handleObjectsMovement(bool end_moviment)
 
 void ModelWidget::handleObjectModification(BaseGraphicObject *object)
 {
-	#ifdef DEMO_VERSION
-		#warning "DEMO VERSION: limiting the user interaction over objects."
-		if(updateObjActionCounter())
-			return;
-	#endif
-
 	op_list->registerObject(object, Operation::ObjModified);
 	setModified(true);
 	emit s_objectModified();
@@ -2278,12 +2268,6 @@ void ModelWidget::configurePluginsActions()
 
 void ModelWidget::showObjectForm(ObjectType obj_type, BaseObject *object, BaseObject *parent_obj, const QPointF &pos)
 {
-	#ifdef DEMO_VERSION
-		#warning "DEMO VERSION: limiting the user interaction over objects."
-		if(updateObjActionCounter())
-			return;
-	#endif
-
 	try
 	{
 		BaseRelationship::RelType rel_type = BaseRelationship::Relationship11;
@@ -2864,12 +2848,6 @@ void ModelWidget::protectObject()
 
 void ModelWidget::cutObjects(bool copy_deps)
 {
-	#ifdef DEMO_VERSION
-		#warning "DEMO VERSION: limiting the user interaction over objects."
-		if(updateObjActionCounter())
-			return;
-	#endif
-
 	//Set the flag indicating that a cut operation started
 	ModelWidget::cut_operation=true;
 	copyObjects(false, copy_deps);
@@ -2877,12 +2855,6 @@ void ModelWidget::cutObjects(bool copy_deps)
 
 void ModelWidget::copyObjects(bool duplicate_mode, bool copy_deps)
 {
-	#ifdef DEMO_VERSION
-		#warning "DEMO VERSION: limiting the user interaction over objects."
-		if(updateObjActionCounter())
-			return;
-	#endif
-
 	std::map<unsigned, BaseObject *> objs_map;
 	std::vector<BaseObject *> sel_obj_deps, deps;
 	BaseObject *object = nullptr;
@@ -3357,12 +3329,6 @@ void ModelWidget::pasteObjects(bool duplicate_mode)
 
 void ModelWidget::duplicateObject()
 {
-	#ifdef DEMO_VERSION
-		#warning "DEMO VERSION: limiting the user interaction over objects."
-		if(updateObjActionCounter())
-			return;
-	#endif
-
 	int op_id = -1;
 
 	try

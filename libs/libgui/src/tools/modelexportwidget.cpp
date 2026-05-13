@@ -197,30 +197,6 @@ void ModelExportWidget::updateModels(const QList<ModelWidget *> &models)
 	model_sel_wgt->updateModels(models);
 	ConnectionsConfigWidget::fillConnectionsComboBox(connections_cmb, true, Connection::OpExport);
 	selectExportMode();
-
-#ifdef DEMO_VERSION
-	#warning "DEMO VERSION: export to DBMS is disabled in demo version."
-	export_to_dbms_tb->blockSignals(true);
-	export_to_dbms_tb->setEnabled(false);
-	export_to_dbms_gb->setEnabled(false);
-	export_to_dbms_tb->setChecked(false);
-	export_to_dbms_tb->blockSignals(false);
-
-	#warning "DEMO VERSION: export to data dictionary is disabled in demo version."
-	export_to_dict_tb->blockSignals(true);
-	export_to_dict_tb->setEnabled(false);
-	export_to_dict_gb->setEnabled(false);
-	export_to_dict_tb->blockSignals(false);
-
-	#warning "DEMO VERSION: export to data PNG limited to zoom factor of 50%."
-	zoom_cmb->setCurrentText("30%");
-	zoom_cmb->setEnabled(false);
-
-	#warning "DEMO VERSION: export to data SVG is disabled in demo version."
-	img_fmt_cmb->setEnabled(false);
-
-	export_to_file_tb->setChecked(true);
-#endif
 }
 
 bool ModelExportWidget::isThreadRunning()

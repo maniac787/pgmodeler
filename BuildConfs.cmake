@@ -42,16 +42,7 @@ set(PRIV_PLUGINS_RES ${PRIV_PLUGINS_ROOT}/res)
 set(PRIV_CORE_DIR priv-core)
 set(PRIV_CORE_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/${PRIV_CORE_DIR})
 
-# Check if we are building DEMO version with PLUS resources
-# DEMO_VERSION: only includes priv-core assets (logoicons.qrc and resources.qrc)
-#               but NO license checking code - no OpenSSL needed
-if(DEMO_VERSION AND EXISTS ${PRIV_CORE_ROOT})
-	# Enabling only priv-core assets (logo and icons) for demo
-	set(BUILD_PRIV_ASSETS ON)
-	set(PRIV_CORE_SRC ${PRIV_CORE_ROOT}/src)
-	# NO license checking symbols for demo version
-	# NO OpenSSL for demo version
-elseif(NOT DEMO_VERSION AND PLUS_VERSION AND EXISTS ${PRIV_PLUGINS_ROOT})
+if(PLUS_VERSION AND EXISTS ${PRIV_PLUGINS_ROOT})
 	# PLUS version: include full private code and resources
 	# Specific logic to add OpenSSL support on macOS
 	# We expect that the the library and its headers is on the
@@ -107,10 +98,6 @@ endif()
 
 if(SNAPSHOT_BUILD)
     add_compile_definitions(SNAPSHOT_BUILD)
-endif()
-
-if(DEMO_VERSION)
-    add_compile_definitions(DEMO_VERSION)
 endif()
 
 if(NO_UPDATE_CHECK)
@@ -243,7 +230,6 @@ endfunction()
 #   TARGET - The target to add sources/includes to
 #   INCLUDE_SOURCES - If ON, adds sources and UI forms (needed by libgui)
 #                     If OFF, adds only include directories (executables/plugins)
-# Note: In DEMO_VERSION mode, only assets (resources) are included, no license code
 function(pgm_inc_priv_core_sources TARGET INCLUDE_SOURCES)
 	if(NOT BUILD_PRIV_ASSETS)
 		return()
