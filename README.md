@@ -80,5 +80,3 @@ The pgModeler Community Edition is free software distributed under the terms of 
 See the [LICENSE](https://github.com/pgmodeler/pgmodeler/blob/main/LICENSE) file for complete details.
 
 The names **pgModeler**, **Nullptr Labs**, and their associated logos and visual identities are registered trademarks and intellectual property of Nullptr Labs. Forks and redistributed versions derived from the open-source codebase must adopt distinct branding and may not present themselves as official pgModeler distributions without prior authorization.
-
----
