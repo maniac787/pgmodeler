@@ -1,6 +1,74 @@
 Changelog
 ---------
 
+v2.0.0-beta
+------
+*Release date: May 20, 2026*
+
+* [New] Added `BaseForm::enableTrackChanges` to monitor unsaved changes in editing forms and prompt confirmation before discarding them on Esc.
+* [New] Added custom UI font support in Appearance Settings (Exo 2 as default); font family and size persist in appearance.conf.
+* [New] Improved SQL result grid: cancellable loading with progress bar; corner button menu with select-all and column/row resize actions; resize warning on large grids (> 10000 rows).
+* [New] Added `WidgetDockMode` enum to `PgModelerGuiPlugin` to control where plugin widgets are docked: side bar, SQL execution panel, or not docked.
+* [New] Added an option in `DataGridWidget` to toggle `ON CONFLICT DO NOTHING` on insert operations.
+* [New] Added server encoding display to the connection testing dialog and to the SQL execution and data handling info panels.
+* [New] Added `GroupBoxFrmHint` and `TabBarFrmHint` style hints to `CustomUiStyle`, replacing `AltDefaultFrmHint` for more granular frame rendering.
+* [New] Added `MenuBoxFrmHint` style hint for popup/menu-like frame rendering in CustomUiStyle.
+* [New] Added support for plugins to integrate buttons directly into WelcomeWidget.
+* [New] Added `MainWindow::reloadModel()` to reload a model file in place at its original tab position.
+* [New] Added optional `confirm` parameter to `MainWindow::closeModel()` for programmatic closure without a confirmation prompt.
+* [New] Added `CustomTableWidget::setCellColors` and `setCellTextAlignment` for per-cell color and text alignment overrides.
+* [New] Registered `attribs_map` as a Qt MetaType so it can be stored in `QVariant` and passed through signal parameters.
+* [New] Added `accept_on_return` parameter to `BaseForm::setMainWidget`: when `true`, the form auto-accepts after the apply slot succeeds.
+* [New] Integrated `TabOrderManager` into `BaseForm` so all editing forms get correct tab-key navigation regardless of widget visual order.
+* [New] Added `extra_wgt` field to `PluginWidgets` struct in `PgModelerGuiPlugin` API for attaching an auxiliary widget for general purpose usage.
+* [New] Added dynamic default-suffix to `GuiUtilsNs::selectFiles()`: the file extension updates automatically when the user switches filters.
+* [New] Added `UtilsNs::getTemporaryFilePath()` utility and auto-directory creation in `UtilsNs::saveFile()` via `QDir::mkpath()`.
+* [New] Added `ensure_ln_start` parameter to `DebugOutputWidget::logMessage()` to reset horizontal scroll after each message.
+* [New] Added `Messagebox::confirm()` overload accepting a `MessageType` icon to display warning, error, or info icons in confirmation dialogs.
+* [New] Added `GuiUtilsNs::configureBuddyWidgets(QWidgetList)` batch overload for configuring multiple buddy label-widget pairs in a single call.
+* [New] Added `CustomTableWidget::setAutoScroll` as a public interface to `QTableWidget::setAutoScroll`.
+* [New] Added `CustomUiStyle::getAdjustedColor` for theme-adaptive color adjustment (lighter/darker) usable in custom styles and plugins.
+* [New] Added configurable highlight color for line numbers (`line-numbers-hl-color`) in `AppearanceConfigWidget` and all built-in themes.
+* [Change] Refreshed application icons, logo assets and splash screen across all platforms (Windows ICO, macOS ICNS, PNG). and all related code restrictions. Only community and Plus Edition builds are now supported.
+* [Change] Refactored `MainWindow` into an extensible base class; removed all conditional compile guards; private features moved exclusively to `PrivMainWindow` in priv-core.
+* [Change] Split `ModelDbSelectorWidget` into `ModelSelectorWidget` (model selection only); catalog and database-listing features moved to priv-core.
+* [Change] Moved `Catalog` to priv-core; `CodeCompletionWidget` now uses protected virtual hooks overridden in priv-core for database-driven completion.
+* [Change] Moved database import/diff tool, SQL tool, data grid, data handling, and database explorer widgets from libgui to priv-core.
+* [Change] Moved `ResultSetModel`, `ObjectsFilterWidget`, and diff-presets/catalog schema assets to priv-core.
+* [Change] Moved `filterObjects()` to `GuiUtilsNs`; added `ItemHiddenCol` constant to permanently hide specific tree nodes from filter results.
+* [Change] Moved `copySelection()` and `generateBuffer()` to `GuiUtilsNs`; priv-only toolbar actions (Import, Diff, Manage) relocated to `PrivMainWindow`.
+* [Change] Visual redesign: Montserrat replaces Noto Sans as the default canvas font; refreshed color scheme for table elements, column types (PK, FK, NN, UQ), and constraints.
+* [Change] BREAKING: `UtilsNs::DataSeparator` changed from bullet (•) to middle dot (·) for LATIN1 encoding compatibility in catalog queries.
+* [Change] Enhanced `ModelRestorationForm::removeTemporaryFiles()` to also remove temporary sub-directories recursively on application exit.
+* [Change] Added `model_idx` parameter to `MainWindow::addModel()` to insert a model at a specific tab position.
+* [Change] Renamed `AltDefaultFrmHint` to `GroupBoxFrmHint` and added `TabBarFrmHint` in `CustomUiStyle`; updated all usages across editing forms.
+* [Change] Reworked `DonateWidget` into a Plus offer widget with pgModeler Plus logo and "Learn more", "Upgrade", "Cancel" action buttons.
+* [Change] Changed `CustomTableWidget::addCustomButton` to accept button attributes directly instead of a pre-configured button object.
+* [Change] `NumberedTextEditor` action buttons now switch between icon-only and text+icon style based on available width.
+* [Change] Fixed `TaskProgressWidget::setNoProgressState(bool)` to correctly toggle between indeterminate `(0,0)` and determinate `(0,100)` ranges.
+* [Change] Removed redundant "All files (*.*)" filter from all file dialogs; the correct file extension is now always appended when saving.
+* [Change] `PgModelerGuiPlugin` get method signatures adjusted for improved API consistency across Plus and community plugin builds.
+* [Change] Added `format_msg` parameter to `Messagebox::show()` to toggle HTML formatting; static convenience methods default to `true` for backward compatibility.
+* [Change] Added themed `QMenu` background, border and separator stylesheet rules to inksaver, light and dark themes.
+* [Change] `CustomTableWidget::addCustomButton` now appends the keyboard shortcut to the button tooltip for easier discoverability.
+* [Change] Added `keep_tab` parameter to `MainWindow::closeModel()` to close the model widget without removing the parent tab.
+* [Change] Extended the side bar background stylesheet to all themes so plugin dock panels blend correctly with the tool-button bar.
+* [Change] Unified title label font sizing in `ModelObjectsWidget`/`OperationListWidget` via `GuiUtilsNs::configureWidgetFont` with `SmallFontFactor`.
+* [Change] Moved private-only icons (diff, import, manage-db) from libgui to priv-core to avoid exposing Plus-only assets in community builds.
+* [Change] Recent model file actions now show the full file path in the tooltip instead of just the filename.
+* [Fix] Fixed a crash when closing the app after a diff, caused by iterator invalidation in `BaseObject::clearReferences()` when `unsetDependency` mutated `object_refs` mid-iteration.
+* [Fix] Fixed model validation skipping extension-owned types during broken reference checks, causing false negatives.
+* [Fix] Fixed `ChangelogWidget` unconditionally marking the model as modified when toggling the "Persist changelog" checkbox.
+* [Fix] Fixed `ModelNavigationWidget` inserting newly opened models before the last entry instead of at the end of the list.
+* [Fix] Fixed "Results" button in `SQLExecutionWidget` being enabled even when the query returned no rows, causing a crash on import attempt.
+* [Fix] Fixed custom font (Exo 2) loading and rendering issues on macOS and Windows.
+* [Fix] Fixed font configuration race conditions by deferring `GuiUtilsNs::configureWidgetFont()` calls via `QTimer::singleShot(0)`.
+* [Fix] Fixed a performance regression in `CustomTableWidget::addRow` that was triggering redundant layout recalculations on each row insertion.
+* [Fix] Fixed encoding errors in `extractObjectXML` when exporting against LATIN1 databases caused by the bullet separator (•, U+2022) being incompatible with LATIN1.
+* [Fix] Fixed `DataGridWidget::clearChangedRows` not resetting the modified rows info frame after discarding row edits.
+* [Fix] Fixed `ConfigurationWidget` not resetting the `ConnectionsConfigWidget` state when the user discarded configuration changes.
+* [Fix] Fixed `ConfigurationWidget` incorrectly resetting the selected settings tab when the main window was hidden and then shown again.
+
 v2.0.0-alpha1
 ------
 *Release date: February 13, 2026*
