@@ -1,4 +1,4 @@
-![pgmodeler_mainwindow](https://github.com/user-attachments/assets/0022f022-8412-491c-9155-8b84abf837ef)
+![pgmodeler_mainwindow](https://github.com/user-attachments/assets/6bdfc952-edb2-45aa-9a70-386075152538)
 
 [![Linux build](https://github.com/pgmodeler/pgmodeler/workflows/Linux%20build/badge.svg)](https://github.com/pgmodeler/pgmodeler/actions?query=workflow%3A%22Linux+build%22)
 [![Windows build](https://github.com/pgmodeler/pgmodeler/workflows/Windows%20build/badge.svg)](https://github.com/pgmodeler/pgmodeler/actions?query=workflow%3A%22Windows+build%22)
