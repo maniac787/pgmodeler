@@ -53,6 +53,10 @@ Application::Application(int &argc, char **argv) : QApplication(argc,argv)
 	 * via CustomUiStyle so additional UI effects can be applied */
 	if(!arguments().contains(GlobalAttributes::UiStyleOption))
 		setStyle(new CustomUiStyle(GlobalAttributes::DefaultQtStyle));
+
+#ifdef	Q_OS_MAC
+	setAttribute(Qt::AA_DontShowIconsInMenus, false);
+#endif
 }
 
 void Application::loadTranslation(const QString &lang_id, const QString &directory)
@@ -79,12 +83,16 @@ void Application::loadCustomFonts(const QString &def_font_attr, const QString &d
 void Application::loadCustomFonts(const QString &def_font, double def_size)
 {
 	//Install the custom fonts in .qrc file(s)
-	QFontDatabase::addApplicationFont(":fonts/fonts/exo2.ttf");
-	QFontDatabase::addApplicationFont(":fonts/fonts/exo2-italic.ttf");
-	QFontDatabase::addApplicationFont(":fonts/fonts/montserrat.ttf");
-	QFontDatabase::addApplicationFont(":fonts/fonts/montserrat-italic.ttf");
-	QFontDatabase::addApplicationFont(":fonts/fonts/source-code.ttf");
-	QFontDatabase::addApplicationFont(":fonts/fonts/source-code-italic.ttf");
+	static const QStringList font_names { "exo2", "montserrat", "source-code-pro" };
+	static const QString path { QString(":fonts/fonts/%1%2.ttf") };
+
+	for(auto &f_name : font_names)
+	{
+		QFontDatabase::addApplicationFont(path.arg(f_name, ""));
+		QFontDatabase::addApplicationFont(path.arg(f_name, "-bold"));
+		QFontDatabase::addApplicationFont(path.arg(f_name, "-italic"));
+		QFontDatabase::addApplicationFont(path.arg(f_name, "-bold-italic"));
+	}
 
 	// Checking if the provided default font name exists in the font database
 	QStringList families = QFontDatabase::families();
@@ -99,9 +107,9 @@ void Application::loadCustomFonts(const QString &def_font, double def_size)
 
 		QFont custom_fnt(def_font, def_size);
 
-// Workaround on Windows to avoid distorted fonts on some resolutions
-custom_fnt.setHintingPreference(QFont::PreferNoHinting);
-custom_fnt.setStyleStrategy(QFont::PreferAntialias);
+		// Workaround on Windows to avoid distorted fonts on some resolutions
+		custom_fnt.setHintingPreference(QFont::PreferNoHinting);
+		custom_fnt.setStyleStrategy(QFont::PreferAntialias);
 
 		/* We save the custom font in the original-font property
 		 * of the application instance so it can be retrieved

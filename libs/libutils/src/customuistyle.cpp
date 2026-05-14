@@ -884,10 +884,8 @@ void CustomUiStyle::polish(QWidget *widget)
 		widget->installEventFilter(const_cast<CustomUiStyle *>(this));
 	}
 
-	/* Forcing QMenu to have the same font as the global one
-	 * defined in qApp */
-	if(qobject_cast<QMenu *>(widget))
-		widget->setFont(qApp->font());
+	//Forcing widget to have the same font as the global one defined in qApp
+	widget->setFont(qApp->font());
 }
 
 QPolygonF CustomUiStyle::rotatePolygon(const QPolygonF &polygon, qreal degrees)

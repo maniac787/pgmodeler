@@ -309,9 +309,15 @@
     <qresource prefix="/fonts">
         <file>fonts/exo2.ttf</file>
         <file>fonts/exo2-italic.ttf</file>
-        <file>fonts/source-code.ttf</file>
-        <file>fonts/source-code-italic.ttf</file>
+        <file>fonts/exo2-bold.ttf</file>
+        <file>fonts/exo2-bold-italic.ttf</file>
+        <file>fonts/source-code-pro.ttf</file>
+        <file>fonts/source-code-pro-italic.ttf</file>
+        <file>fonts/source-code-pro-bold.ttf</file>
+        <file>fonts/source-code-pro-bold-italic.ttf</file>
         <file>fonts/montserrat.ttf</file>
         <file>fonts/montserrat-italic.ttf</file>
+        <file>fonts/montserrat-bold.ttf</file>
+        <file>fonts/montserrat-bold-italic.ttf</file>
     </qresource>
 </RCC>
