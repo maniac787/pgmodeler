@@ -99,6 +99,10 @@ void Application::loadCustomFonts(const QString &def_font, double def_size)
 
 		QFont custom_fnt(def_font, def_size);
 
+// Workaround on Windows to avoid distorted fonts on some resolutions
+custom_fnt.setHintingPreference(QFont::PreferNoHinting);
+custom_fnt.setStyleStrategy(QFont::PreferAntialias);
+
 		/* We save the custom font in the original-font property
 		 * of the application instance so it can be retrieved
 		 * when needed, e.g., during on-the-fly UI font preview */
