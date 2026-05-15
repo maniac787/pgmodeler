@@ -34,15 +34,15 @@
 #include <vector>
 #include <QFileInfo>
 
-#if !defined(PGM_FILE)
+#ifndef PGM_FILE
 	#define PGM_FILE QFileInfo(__FILE__).fileName()
 #endif
 
-#if !defined(PGM_LINE)
+#ifndef PGM_LINE
 	#define PGM_LINE __LINE__
 #endif
 
-#if !defined(PGM_FUNC)
+#ifndef PGM_FUNC
 	#define PGM_FUNC __PRETTY_FUNCTION__
 #endif
 

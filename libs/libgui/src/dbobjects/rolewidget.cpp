@@ -193,17 +193,14 @@ void RoleWidget::showSelectedRoleData()
 {
 	try
 	{
-		unsigned idx_tab = 0;
 		int row = 0, idx_row = -1;
 		BaseObject *obj_sel = nullptr;
 		CustomTableWidget *role_tab = member_roles_tabs[members_twg->currentWidget()];
-		Role::RoleType rl_type = members_twg->currentWidget() == members_tab ? Role::MemberRole : Role::AdminRole;
 
 		//Get the selected role
 		obj_sel = object_selection_wgt->getSelectedObject();
 
 		//Gets the index of the table where the role data is displayed
-		idx_tab = members_twg->currentIndex();
 		row = role_tab->getSelectedRow();
 
 		if(obj_sel)

@@ -74,7 +74,7 @@ class __libutils Application: public QApplication {
 		void s_messageLogged(QtMsgType, const QMessageLogContext &, const QString &);
 };
 
-#if !defined(pgApp)
+#ifndef pgApp
 	/*! \brief A constant similar to qApp to reference a instance of Application
 	 *  class to give quick access to the signal s_messageLogged */
 	#define pgApp (static_cast<Application *>(Application::instance()))
