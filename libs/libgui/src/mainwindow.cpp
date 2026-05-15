@@ -43,7 +43,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags) : QMainWindow(par
 
 void MainWindow::initMainWindow()
 {
-	window_title = TmplWindowTitle.arg("", GlobalAttributes::PgModelerVersion);
+	window_title = TmplWindowTitle.arg("Community", GlobalAttributes::PgModelerVersion);
 	recent_models_menu = new QMenu(this);
 	recent_models_menu->setObjectName("recent_models_menu");
 
