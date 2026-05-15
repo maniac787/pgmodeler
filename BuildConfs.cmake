@@ -243,20 +243,13 @@ function(pgm_inc_priv_core_sources TARGET INCLUDE_SOURCES)
 		if(INCLUDE_SOURCES)
 			target_sources(${TARGET} PRIVATE ${PRIV_CORE_SOURCES} ${PRIV_CORE_FORMS})
 
-			# Hide only priv-core symbols on release builds while preserving
-			# symbol visibility for the remaining project code (stacktrace reports).
-			if(CMAKE_BUILD_TYPE STREQUAL Release)
+			# Hiding key symbols of priv-core. 
+			# This is important to avoid ODR violation when the same symbols are 
+			# defined in plugins or other libs
+			if(CMAKE_BUILD_TYPE STREQUAL Release AND UNIX)
 				target_compile_definitions(${TARGET} PRIVATE PRIV_CORE_HIDE_INTERNAL_SYMBOLS)
-
-				# On UNIX (Linux/macOS), force hidden visibility only for priv-core units.
-				# On Windows we don't set extra flags here because symbol export is already
-				# controlled by Q_DECL_EXPORT/Q_DECL_IMPORT used in privcoreglobal.h.
-				if(UNIX)
-					set_source_files_properties(${PRIV_CORE_SOURCES} PROPERTIES
-						COMPILE_OPTIONS "-fvisibility=hidden;-fvisibility-inlines-hidden")
-				endif()
 			endif()
-			
+
 			# Enable AUTOUIC for this target if there are UI forms
 			if(PRIV_CORE_FORMS)
 				set_target_properties(${TARGET} PROPERTIES AUTOUIC ON)
