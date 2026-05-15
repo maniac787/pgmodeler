@@ -11,10 +11,10 @@ if(APPLE)
     install(FILES res/Info.plist res/PkgInfo
             DESTINATION ${PGM_PREFIX})
 
-    set(BUNDLE_RES_DIR ${PRIV_PLUGINS_RES}/${PGM_TARGET}/Resources)
+		set(BUNDLE_RES_DIR ${PRIV_CORE_ROOT}/res/${PGM_TARGET}/Resources)
 
     if(PLUS_VERSION AND EXISTS ${BUNDLE_RES_DIR})
-        install(DIRECTORY ${BUNDLE_RES_DIR}
+				install(DIRECTORY ${BUNDLE_RES_DIR}
         DESTINATION ${PGM_PREFIX})
     else()
         install(DIRECTORY res/Resources
