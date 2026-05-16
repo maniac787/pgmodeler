@@ -123,6 +123,9 @@ endfunction()
 # This function configures the deployment settings
 # of the plugin library.
 function(pgm_install_plugin TARGET)
+    set_target_properties(${TARGET} PROPERTIES
+        INSTALL_RPATH "${PGM_PLUGIN_INSTALL_RPATH}")
+
     install(TARGETS ${TARGET}
         LIBRARY DESTINATION ${PGM_PLUGINSDIR}/${TARGET}
         FRAMEWORK DESTINATION ${PGM_PLUGINSDIR}/${TARGET}

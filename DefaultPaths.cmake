@@ -90,8 +90,17 @@ set(LIBCLI_INC ${LIBCLI_ROOT}/src)
 # First we determine the relative path between BINDIR e PRIVATELIBDIR
 file(RELATIVE_PATH RELATIVE_PRIVATELIBDIR ${PGM_BINDIR} ${PGM_PRIVATELIBDIR})
 
+# Relative path from PLUGINSDIR (one plugin subdir deep) to PRIVATELIBDIR
+# e.g. build/plugins/backuputils -> build/lib = ../..
+# A plugin is installed one level below PGM_PLUGINSDIR, so we append
+# a dummy subdir to simulate the actual plugin install location
+file(RELATIVE_PATH RELATIVE_PLUGINLIBDIR "${PGM_PLUGINSDIR}/plugin" ${PGM_PRIVATELIBDIR})
+
 # Setting the RPATH to including $ORIGIN and $ORIGIN/relative_path
 set(CMAKE_INSTALL_RPATH "\$ORIGIN;\$ORIGIN/${RELATIVE_PRIVATELIBDIR}")
+
+# RPATH for plugin targets: resolved relative to the plugin's own directory
+set(PGM_PLUGIN_INSTALL_RPATH "\$ORIGIN;\$ORIGIN/${RELATIVE_PLUGINLIBDIR}")
 
 # Making sure that RPATH is used during install
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH ON)
