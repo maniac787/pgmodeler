@@ -37,7 +37,6 @@ link_libraries(
 # include private code and resources
 set(PRIV_PLUGINS_DIR priv-plugins)
 set(PRIV_PLUGINS_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/${PRIV_PLUGINS_DIR})
-set(PRIV_PLUGINS_RES ${PRIV_PLUGINS_ROOT}/res)
 
 set(PRIV_CORE_DIR priv-core)
 set(PRIV_CORE_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/${PRIV_CORE_DIR})
@@ -120,7 +119,7 @@ function(pgm_add_executable TARGET)
   list(APPEND _SOURCES ${ARGN})
 
   if(WIN32)
-    set(PRIV_ICO_RES ${PRIV_PLUGINS_RES}/${TARGET}/windows_ico.rc)
+		set(PRIV_ICO_RES ${PRIV_CORE_RES}/${TARGET}/windows_ico.rc)
 
 		if((PLUS_VERSION OR BUILD_PRIV_ASSETS) AND EXISTS ${PRIV_ICO_RES})
       set(EXEC_ICO_RES ${PRIV_ICO_RES})
