@@ -125,16 +125,20 @@ QList<QToolButton *> PgModelerGuiPlugin::getPluginsToolButtons()
 	return buttons;
 }
 
-QList<PgModelerGuiPlugin::PluginWidgets> PgModelerGuiPlugin::getPluginsWidgets(QWidget *parent)
+QList<PgModelerGuiPlugin::PluginWidgets> PgModelerGuiPlugin::getPluginsWidgets(QWidget *parent, PgModelerGuiPlugin::WidgetDockMode parent_id)
 {
 	QList<PluginWidgets> widgets;
 	PluginWidgets p_wgt;
 
 	for(auto &plug : reg_plugins)
 	{
+		if(plug->getWidgetDockMode() == NoDock ||
+			 plug->getWidgetDockMode() != parent_id)
+			continue;
+
 		p_wgt = plug->createWidgets(parent);
 
-		if(!p_wgt.button && !p_wgt.widget)
+		if(!p_wgt.action_btn && !p_wgt.main_wgt)
 			continue;
 
 		widgets.append(p_wgt);
@@ -176,17 +180,22 @@ void PgModelerGuiPlugin::showPluginInfo()
 	plugin_info_frm->show();
 }
 
-QString PgModelerGuiPlugin::getPluginIconPath(const QString &icon_name)
+PgModelerGuiPlugin::WidgetDockMode PgModelerGuiPlugin::getWidgetDockMode() const
+{
+	return NoDock;
+}
+
+QString PgModelerGuiPlugin::getPluginIconPath(const QString &icon_name) const
 {
 	return QString(":/%1/%2.png").arg(getPluginName(), icon_name);
 }
 
-QIcon PgModelerGuiPlugin::getPluginIcon(const QString &icon_name)
+QIcon PgModelerGuiPlugin::getPluginIcon(const QString &icon_name) const
 {
 	return { QIcon(getPluginIconPath(icon_name)) };
 }
 
-QPixmap PgModelerGuiPlugin::getPluginPixmap(const QString &icon_name)
+QPixmap PgModelerGuiPlugin::getPluginPixmap(const QString &icon_name) const
 {
 	return { QPixmap(getPluginIconPath(icon_name)) };
 }

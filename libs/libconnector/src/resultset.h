@@ -44,11 +44,11 @@ class __libconnector ResultSet {
 
 		int validateColumnName(const QString &column_name);
 
-        void initResultSet(PGresult *sql_res);
+		void initResultSet(PGresult *sql_res);
 
-        void clearResultSet();
+		void clearResultSet();
 
-    protected:
+	protected:
 		//! \brief Stores the current tuple index, just for navigation
 		int current_tuple;
 
@@ -59,12 +59,12 @@ class __libconnector ResultSet {
 		//! \brief Stores the result object of a SQL command
 		PGresult *sql_result;
 
-        /*! \brief This class may be constructed from a
-         * result of SQL command generated in Connection class.
-         * The ResultSet takes the ownership of the provided sql_result,
-         * so there's no need to call PQclear() over it after instantiate
-         * an object of this class. When destroyed, the instance will
-         * free the PGresult. (see clearResultSet) */
+		/*! \brief This class may be constructed from a
+		 * result of SQL command generated in Connection class.
+		 * The ResultSet takes the ownership of the provided sql_result,
+		 * so there's no need to call PQclear() over it after instantiate
+		 * an object of this class. When destroyed, the instance will
+		 * free the PGresult. (see clearResultSet) */
 		ResultSet(PGresult *sql_result);
 
 	public:
@@ -78,8 +78,8 @@ class __libconnector ResultSet {
 
 		ResultSet();
 
-         /*! \brief Destroys the result set using clearResultSet.
-          * The internal PostgreSQL result set (sql_result) is automatically freed */
+		/*! \brief Destroys the result set using clearResultSet.
+					* The internal PostgreSQL result set (sql_result) is automatically freed */
 		~ResultSet();
 
 		//! \brief Returns the value of a column (searching by name or index)
@@ -93,9 +93,9 @@ class __libconnector ResultSet {
 		//! \brief Returns all the column names / values for the current tuple.
 		attribs_map getTupleValues();
 
-        /*! \brief Returns the number of rows affected by the command that generated
-         * the result if it is an INSERT, DELETE, UPDATE or the number of
-         * tuples returned if the command was a SELECT */
+		/*! \brief Returns the number of rows affected by the command that generated
+				 * the result if it is an INSERT, DELETE, UPDATE or the number of
+				 * tuples returned if the command was a SELECT */
 		int getTupleCount();
 
 		//! \brief Returns the column count present in one tuple

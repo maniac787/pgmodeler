@@ -59,7 +59,10 @@ class __libgui LineNumbersWidget : public QWidget {
 		static QColor font_color,
 
 		//! \brief Widget's background color
-		bg_color;
+		bg_color,
+
+		//! \brief Font color when the line is selected
+		hl_color;
 
 	protected:
 		void paintEvent(QPaintEvent *event) override;
@@ -77,7 +80,7 @@ class __libgui LineNumbersWidget : public QWidget {
 		void drawLineNumbers(int first_line, int line_count, int dy, int blk_height);
 
 		//! \brief Configures the lines for both font and widget's background
-		static void setColors(const QColor &font_color, const QColor &bg_color);
+		static void setColors(const QColor &font_color, const QColor &bg_color, const QColor &hl_color);
 
 		static QColor getBackgroundColor();
 

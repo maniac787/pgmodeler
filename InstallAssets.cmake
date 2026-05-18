@@ -19,6 +19,13 @@ foreach(sch_dir ${sch_dirs})
     endif()
 endforeach()
 
+# Copying private schema folders (catalog/) from priv-core — PLUS builds only
+if(PLUS_VERSION OR BUILD_PRIV_ASSETS)
+    install(DIRECTORY ${PRIV_CORE_ROOT}/assets/schemas/catalog
+            DESTINATION ${PGM_SCHEMASDIR}
+            USE_SOURCE_PERMISSIONS)
+endif()
+
 # Copying all template configs from assets/conf
 install(DIRECTORY assets/conf/
         DESTINATION ${PGM_CONFDIR}
@@ -58,6 +65,21 @@ install(DIRECTORY assets/conf/
         PATTERN "schemas" EXCLUDE
         PATTERN "themes" EXCLUDE
         PATTERN "dtd" EXCLUDE)
+
+# Copying private conf files (diff-presets.*) from priv-core — PLUS builds only
+if(PLUS_VERSION OR BUILD_PRIV_ASSETS)
+    install(FILES ${PRIV_CORE_ROOT}/assets/conf/diff-presets.conf
+            DESTINATION ${PGM_CONFDIR})
+
+    install(FILES ${PRIV_CORE_ROOT}/assets/conf/diff-presets.conf
+            DESTINATION ${PGM_CONFDIR}/defaults)
+
+    install(FILES ${PRIV_CORE_ROOT}/assets/conf/dtd/diff-presets.dtd
+            DESTINATION ${PGM_CONFDIR}/dtd)
+
+    install(FILES ${PRIV_CORE_ROOT}/assets/conf/schemas/diff-presets.sch
+            DESTINATION ${PGM_CONFDIR}/schemas)
+endif()
 
 # Copying doc files
 install(FILES

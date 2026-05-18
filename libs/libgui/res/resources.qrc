@@ -76,7 +76,6 @@
         <file>icons/delrows.png</file>
         <file>icons/depsrefs.png</file>
         <file>icons/design.png</file>
-        <file>icons/diff.png</file>
         <file>icons/disablesql.png</file>
         <file>icons/disconnect.png</file>
         <file>icons/dl_binary.png</file>
@@ -116,7 +115,6 @@
         <file>icons/help.png</file>
         <file>icons/hidepwd.png</file>
         <file>icons/ignore.png</file>
-        <file>icons/import.png</file>
         <file>icons/indent.png</file>
         <file>icons/index.png</file>
         <file>icons/info.png</file>
@@ -133,7 +131,6 @@
         <file>icons/locker.png</file>
         <file>icons/magnifier.png</file>
         <file>icons/mainmenu.png</file>
-        <file>icons/managedb.png</file>
         <file>icons/metatoescaped.png</file>
         <file>icons/modified.png</file>
         <file>icons/moreactions.png</file>
@@ -203,6 +200,7 @@
         <file>icons/resetalerts.png</file>
         <file>icons/resetsizes.png</file>
         <file>icons/resizecols.png</file>
+        <file>icons/resizerows.png</file>
         <file>icons/restore.png</file>
         <file>icons/resultset.png</file>
         <file>icons/role.png</file>
@@ -214,6 +212,7 @@
         <file>icons/saveas.png</file>
         <file>icons/schema.png</file>
         <file>icons/schemarect.png</file>
+        <file>icons/selalldata.png</file>
         <file>icons/selection.png</file>
         <file>icons/selectmove.png</file>
         <file>icons/sendtoback.png</file>
@@ -283,12 +282,11 @@
         <file>icons/about.png</file>
         <file>icons/closetab.png</file>
         <file>icons/closetab1.png</file>
-        <file>icons/diff_dbs.png</file>
-        <file>icons/diff_models.png</file>
         <file>icons/success.png</file>
         <file>icons/browsedata1.png</file>
         <file>icons/duplicategrid.png</file>
         <file>icons/associations.png</file>
+        <file>icons/encoding.png</file>
     </qresource>
     <qresource prefix="/images">
         <file>images/brazil_flag.png</file>
@@ -306,5 +304,20 @@
         <file>images/conn_tabedges.png</file>
         <file>images/nullptrlabs_dark.png</file>
         <file>images/nullptrlabs_light.png</file>
+        <file>images/pgmodeler_plus.png</file>
+    </qresource>
+    <qresource prefix="/fonts">
+        <file>fonts/exo2.ttf</file>
+        <file>fonts/exo2-italic.ttf</file>
+        <file>fonts/exo2-bold.ttf</file>
+        <file>fonts/exo2-bold-italic.ttf</file>
+        <file>fonts/source-code-pro.ttf</file>
+        <file>fonts/source-code-pro-italic.ttf</file>
+        <file>fonts/source-code-pro-bold.ttf</file>
+        <file>fonts/source-code-pro-bold-italic.ttf</file>
+        <file>fonts/montserrat.ttf</file>
+        <file>fonts/montserrat-italic.ttf</file>
+        <file>fonts/montserrat-bold.ttf</file>
+        <file>fonts/montserrat-bold-italic.ttf</file>
     </qresource>
 </RCC>

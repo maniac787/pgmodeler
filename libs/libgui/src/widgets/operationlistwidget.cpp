@@ -27,13 +27,10 @@ OperationListWidget::OperationListWidget(QWidget *parent) : QWidget(parent)
 {
 	setupUi(this);
 
-	CustomUiStyle::setStyleHint(CustomUiStyle::AltDefaultFrmHint, content_frm);
+	CustomUiStyle::setStyleHint(CustomUiStyle::GroupBoxFrmHint, content_frm);
+	GuiUtilsNs::configureWidgetFont(title_lbl, GuiUtilsNs::SmallFontFactor, true);
 
 	setModel(nullptr);
-
-	QFont fnt = title_lbl->font();
-	fnt.setPointSizeF(fnt.pointSizeF() * 0.85);
-	title_lbl->setFont(fnt);
 
 	operations_tw->headerItem()->setHidden(true);
 	connect(undo_tb, &QToolButton::clicked, this, &OperationListWidget::undoOperation);

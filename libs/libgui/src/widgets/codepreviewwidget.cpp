@@ -56,7 +56,7 @@ CodePreviewWidget::CodePreviewWidget(QWidget *parent): QWidget(parent)
 
 	GuiUtilsNs::configureBuddyWidgets(this);
 
-	CustomUiStyle::setStyleHint(CustomUiStyle::DefaultFrmHint,
+	CustomUiStyle::setStyleHint(CustomUiStyle::TabBarFrmHint,
 															{ obj_name_frm, separator_ln,
 																separator2_ln, code_opts_frm });
 
@@ -80,18 +80,6 @@ void CodePreviewWidget::generateSQLCode()
 																												true));
 	}
 
-#ifdef DEMO_VERSION
-	if(!sqlcode_txt->toPlainText().isEmpty())
-	{
-		QString code = tr("/*******************************************************/\n\
-/* ATTENTION: The SQL code of the objects is purposely */\n\
-/* truncated in the demo version!                      */\n\
-/*******************************************************/\n\n") +
-		sqlcode_txt->toPlainText();
-		sqlcode_txt->setPlainText(code);
-	}
-#endif
-
 	if(sqlcode_txt->toPlainText().isEmpty())
 		sqlcode_txt->setPlainText(tr("-- SQL code unavailable for this type of object --"));
 }
@@ -100,17 +88,12 @@ void CodePreviewWidget::generateXMLCode()
 {
 	xmlcode_txt->clear();
 
-#ifdef DEMO_VERSION
-#warning "DEMO VERSION: XML code preview disabled."
-	xmlcode_txt->setPlainText(tr("<!-- XML code preview disabled in demonstration version -->"));
-#else
 	QString xml_code;
 
 	for(auto &obj : objects)
 		xml_code.append(obj->getSourceCode(SchemaParser::XmlCode));
 
 	xmlcode_txt->setPlainText(xml_code);
-#endif
 }
 
 void CodePreviewWidget::generateSourceCode(int def_type)
@@ -192,11 +175,6 @@ void CodePreviewWidget::setAttributes(DatabaseModel *model, const std::vector<Ba
 						 obj->getObjectType() != ObjectType::BaseRelationship &&
 						 obj->getObjectType() != ObjectType::Relationship;
 		}));
-
-#ifdef DEMO_VERSION
-#warning "DEMO VERSION: SQL code display options disabled."
-		code_options_cmb->setEnabled(false);
-#endif
 
 		if(!hl_sqlcode->isConfigurationLoaded())
 			hl_sqlcode->loadConfiguration(GlobalAttributes::getSQLHighlightConfPath());

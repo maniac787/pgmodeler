@@ -37,21 +37,11 @@ link_libraries(
 # include private code and resources
 set(PRIV_PLUGINS_DIR priv-plugins)
 set(PRIV_PLUGINS_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/${PRIV_PLUGINS_DIR})
-set(PRIV_PLUGINS_RES ${PRIV_PLUGINS_ROOT}/res)
 
 set(PRIV_CORE_DIR priv-core)
 set(PRIV_CORE_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/${PRIV_CORE_DIR})
 
-# Check if we are building DEMO version with PLUS resources
-# DEMO_VERSION: only includes priv-core assets (logoicons.qrc and resources.qrc)
-#               but NO license checking code - no OpenSSL needed
-if(DEMO_VERSION AND EXISTS ${PRIV_CORE_ROOT})
-	# Enabling only priv-core assets (logo and icons) for demo
-	set(BUILD_PRIV_ASSETS ON)
-	set(PRIV_CORE_SRC ${PRIV_CORE_ROOT}/src)
-	# NO license checking symbols for demo version
-	# NO OpenSSL for demo version
-elseif(NOT DEMO_VERSION AND PLUS_VERSION AND EXISTS ${PRIV_PLUGINS_ROOT})
+if(PLUS_VERSION AND EXISTS ${PRIV_PLUGINS_ROOT})
 	# PLUS version: include full private code and resources
 	# Specific logic to add OpenSSL support on macOS
 	# We expect that the the library and its headers is on the
@@ -101,16 +91,12 @@ if(USE_ADDR_SANITIZER)
 	add_link_options(-fsanitize=address)
 endif()
 
-if(NOT DEFINED NO_CHECK_CURR_VER)
+if(NOT PLUS_VERSION)
     add_compile_definitions(CHECK_CURR_VER)
 endif()
 
 if(SNAPSHOT_BUILD)
     add_compile_definitions(SNAPSHOT_BUILD)
-endif()
-
-if(DEMO_VERSION)
-    add_compile_definitions(DEMO_VERSION)
 endif()
 
 if(NO_UPDATE_CHECK)
@@ -133,7 +119,7 @@ function(pgm_add_executable TARGET)
   list(APPEND _SOURCES ${ARGN})
 
   if(WIN32)
-    set(PRIV_ICO_RES ${PRIV_PLUGINS_RES}/${TARGET}/windows_ico.rc)
+		set(PRIV_ICO_RES ${PRIV_CORE_RES}/${TARGET}/windows_ico.rc)
 
 		if((PLUS_VERSION OR BUILD_PRIV_ASSETS) AND EXISTS ${PRIV_ICO_RES})
       set(EXEC_ICO_RES ${PRIV_ICO_RES})
@@ -146,11 +132,11 @@ function(pgm_add_executable TARGET)
 
   add_executable(${TARGET} ${_SOURCES})
 
-  # Strip symbols in release builds for security
-  if(CMAKE_BUILD_TYPE STREQUAL Release)
-    set_target_properties(${TARGET} PROPERTIES
-                          LINK_FLAGS_RELEASE "-s")
-  endif()
+	# Strip symbols in release builds for security
+	if(CMAKE_BUILD_TYPE STREQUAL Release AND NOT WIN32)
+		set_target_properties(${TARGET} PROPERTIES
+													LINK_FLAGS_RELEASE "-s")
+	endif()
 
   if(WIN32)
     set_target_properties(${TARGET} PROPERTIES
@@ -197,11 +183,11 @@ function(pgm_add_library TARGET)
 
   add_library(${TARGET} SHARED ${ARGN})
 
-  # Strip symbols in release builds for security
-  if(CMAKE_BUILD_TYPE STREQUAL Release)
-    set_target_properties(${TARGET} PROPERTIES
-                          LINK_FLAGS_RELEASE "-s")
-  endif()
+	# Strip symbols in release builds for security
+	if(CMAKE_BUILD_TYPE STREQUAL Release AND NOT WIN32)
+		set_target_properties(${TARGET} PROPERTIES
+							  LINK_FLAGS_RELEASE "-s")
+	endif()
 
 	if(APPLE)
 		set_target_properties(${TARGET} PROPERTIES
@@ -243,7 +229,6 @@ endfunction()
 #   TARGET - The target to add sources/includes to
 #   INCLUDE_SOURCES - If ON, adds sources and UI forms (needed by libgui)
 #                     If OFF, adds only include directories (executables/plugins)
-# Note: In DEMO_VERSION mode, only assets (resources) are included, no license code
 function(pgm_inc_priv_core_sources TARGET INCLUDE_SOURCES)
 	if(NOT BUILD_PRIV_ASSETS)
 		return()
@@ -256,12 +241,24 @@ function(pgm_inc_priv_core_sources TARGET INCLUDE_SOURCES)
 		# Only add sources if INCLUDE_SOURCES is ON (to avoid ODR violation)
 		if(INCLUDE_SOURCES)
 			target_sources(${TARGET} PRIVATE ${PRIV_CORE_SOURCES} ${PRIV_CORE_FORMS})
-			
+
+			# Hiding key symbols of priv-core. 
+			# This is important to avoid ODR violation when the same symbols are 
+			# defined in plugins or other libs
+			if(CMAKE_BUILD_TYPE STREQUAL Release AND UNIX)
+				target_compile_definitions(${TARGET} PRIVATE PRIV_CORE_HIDE_INTERNAL_SYMBOLS)
+			endif()
+
 			# Enable AUTOUIC for this target if there are UI forms
 			if(PRIV_CORE_FORMS)
 				set_target_properties(${TARGET} PROPERTIES AUTOUIC ON)
-				# Set the search path for .ui files
-				set_property(TARGET ${TARGET} APPEND PROPERTY AUTOUIC_SEARCH_PATHS ${PRIV_CORE_ROOT}/ui)
+				# Collect all ui/* subdirectories automatically (up to 2 levels)
+				file(GLOB _priv_ui_dirs LIST_DIRECTORIES true "${PRIV_CORE_ROOT}/ui/*")
+				file(GLOB _priv_ui_subdirs LIST_DIRECTORIES true "${PRIV_CORE_ROOT}/ui/*/*")
+				set_property(TARGET ${TARGET} APPEND PROPERTY AUTOUIC_SEARCH_PATHS
+					${PRIV_CORE_ROOT}/ui
+					${_priv_ui_dirs}
+					${_priv_ui_subdirs})
 			endif()
 		endif()
 	endif()

@@ -36,12 +36,7 @@ WelcomeWidget::WelcomeWidget(QWidget *parent): QWidget(parent)
 		fnt = btn->font();
 		fnt.setWeight(QFont::Normal);
 		btn->setFont(fnt);
-
-#ifdef Q_OS_LINUX
-		GuiUtilsNs::__configureWidgetFont(btn, 1.20);
-#else
-		GuiUtilsNs::__configureWidgetFont(btn, 1.40);
-#endif
+		GuiUtilsNs::__configureWidgetFont(btn, BtnFontFactor);
 	}
 }
 

@@ -47,7 +47,6 @@ class __libgui ConfigurationWidget: public QWidget, public Ui::ConfigurationWidg
 		SnippetsConfigWidget *snippets_conf;
 		PluginsConfigWidget *plugins_conf;
 
-		void hideEvent(QHideEvent *) override;
 		void showEvent(QShowEvent *) override;
 
 	public:

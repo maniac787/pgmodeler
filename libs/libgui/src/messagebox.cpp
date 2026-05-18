@@ -112,8 +112,9 @@ bool Messagebox::isCustomOptionChecked()
 	return custom_option_chk->isChecked();
 }
 
-int Messagebox::show(Exception e, const QString &msg, MessageType icon_type, ButtonsId buttons, const QString &yes_lbl, const QString &no_lbl, const QString &cancel_lbl,
-											const QString &yes_ico, const QString &no_ico, const QString &cancel_ico)
+int Messagebox::show(Exception e, const QString &msg, MessageType icon_type, ButtonsId buttons,
+										 const QString &yes_lbl, const QString &no_lbl, const QString &cancel_lbl,
+										 const QString &yes_ico, const QString &no_ico, const QString &cancel_ico)
 {
 	QString fmt_msg, title;
 
@@ -121,7 +122,7 @@ int Messagebox::show(Exception e, const QString &msg, MessageType icon_type, But
 	{
 		raw_stack_txt = GuiUtilsNs::createNumberedTextEditor(stacktrace_tbw->widget(2), true);
 		raw_stack_txt->setReadOnly(true);
-		raw_stack_txt->setLineNumbersVisible(false);
+		raw_stack_txt->showLineNumbers(false);
 		raw_stack_txt->setWordWrap(true);
 		GuiUtilsNs::configureTextEditFont(raw_stack_txt, font().pointSizeF());
 		stacktrace_tbw->widget(2)->layout()->setContentsMargins(GuiUtilsNs::LtMargins);
@@ -135,29 +136,34 @@ int Messagebox::show(Exception e, const QString &msg, MessageType icon_type, But
 	exceptions_trw->expandAll();
 	exceptions_trw->scrollToTop();
 
-	if(msg.isEmpty())
-		fmt_msg = UtilsNs::formatMessage(e.getErrorMessage());
-	else
-		fmt_msg = UtilsNs::formatMessage(msg);
-
-	return show(title, fmt_msg, icon_type, buttons, yes_lbl, no_lbl, cancel_lbl, yes_ico, no_ico, cancel_ico);
+	return show(title,
+							msg.isEmpty() ? e.getErrorMessage() : msg,
+							icon_type, buttons,
+							yes_lbl, no_lbl, cancel_lbl,
+							yes_ico, no_ico, cancel_ico, true);
 }
 
-int Messagebox::show(const QString &msg, MessageType icon_type, ButtonsId buttons)
+int Messagebox::show(const QString &title, const QString &msg, MessageType icon_type, ButtonsId buttons, bool format_msg)
 {
-	return show("", msg,  icon_type, buttons);
+	return show(title, msg, icon_type, buttons,
+							"", "", "", "", "", "", format_msg);
+}
+
+int Messagebox::show(const QString &msg, MessageType icon_type, ButtonsId buttons, bool format_msg)
+{
+	return show("", msg, icon_type, buttons, format_msg);
 }
 
 void Messagebox::error(const QString &title, const QString &msg)
 {
 	Messagebox msgbox;
-	msgbox.show(title, msg, Error);
+	msgbox.show(title, msg, Error, OkButton, true);
 }
 
 void Messagebox::error(const QString &msg)
 {
 	Messagebox msgbox;
-	msgbox.show(msg, Error);
+	msgbox.show(msg, Error, OkButton, true);
 }
 
 void Messagebox::error(const QString &msg, ErrorCode error_code, const QString &method, const QString &file, int line, Exception *e)
@@ -185,7 +191,7 @@ void Messagebox::error(Exception &e, const QString &method, const QString &file,
 void Messagebox::alert(const QString &title, const QString &msg)
 {
 	Messagebox msgbox;
-	msgbox.show(title, msg, Alert);
+	msgbox.show(title, msg, Alert, OkButton, true);
 }
 
 void Messagebox::alert(const QString &msg, Exception *ex)
@@ -195,19 +201,19 @@ void Messagebox::alert(const QString &msg, Exception *ex)
 	if(ex)
 		msgbox.show(*ex, msg, Alert);
 	else
-		msgbox.show(msg, Alert);
+		msgbox.show(msg, Alert, OkButton, true);
 }
 
 void Messagebox::info(const QString &msg)
 {
 	Messagebox msgbox;
-	msgbox.show(msg, Info);
+	msgbox.show(msg, Info, OkButton, true);
 }
 
 void Messagebox::success(const QString &msg)
 {
 	Messagebox msgbox;
-	msgbox.show(msg, Success);
+	msgbox.show(msg, Success, OkButton, true);
 }
 
 int Messagebox::confirm(const QString &msg, ButtonsId btns_id,
@@ -217,20 +223,33 @@ int Messagebox::confirm(const QString &msg, ButtonsId btns_id,
 	Messagebox msgbox;
 	return msgbox.show("", msg, Confirm, btns_id,
 										 yes_lbl, no_lbl, cancel_lbl,
-										 yes_ico, no_ico, cancel_ico);
+										 yes_ico, no_ico, cancel_ico, true);
 }
 
-int Messagebox::confirm(const QString &title, const QString &msg, ButtonsId btns_id, const QString &yes_lbl, const QString &no_lbl, const QString &cancel_lbl, const QString &yes_ico, const QString &no_ico, const QString &cancel_ico)
+int Messagebox::confirm(const QString &title, const QString &msg, ButtonsId btns_id,
+												const QString &yes_lbl, const QString &no_lbl, const QString &cancel_lbl,
+												const QString &yes_ico, const QString &no_ico, const QString &cancel_ico)
 {
 	Messagebox msgbox;
 	return msgbox.show(title, msg, Confirm, btns_id,
 										 yes_lbl, no_lbl, cancel_lbl,
-										 yes_ico, no_ico, cancel_ico);
+										 yes_ico, no_ico, cancel_ico, true);
+}
+
+int Messagebox::confirm(const QString &msg, MessageType icon_type, ButtonsId btns_id,
+												const QString &yes_lbl, const QString &no_lbl, const QString &cancel_lbl,
+												const QString &yes_ico, const QString &no_ico, const QString &cancel_ico)
+{
+	Messagebox msgbox;
+	return msgbox.show("", msg, icon_type, btns_id,
+										 yes_lbl, no_lbl, cancel_lbl,
+										 yes_ico, no_ico, cancel_ico, true);
 }
 
 int Messagebox::show(const QString &title, const QString &msg, MessageType icon_type, ButtonsId buttons,
 										 const QString &yes_lbl, const QString &no_lbl, const QString &cancel_lbl,
-										 const QString &yes_ico, const QString &no_ico, const QString &cancel_ico)
+										 const QString &yes_ico, const QString &no_ico, const QString &cancel_ico,
+										 bool format_msg)
 {
 	QString icon_name, aux_title;
 	QWidgetList btns = { yes_ok_btn, no_btn, cancel_btn, show_errors_btn };
@@ -315,7 +334,7 @@ int Messagebox::show(const QString &title, const QString &msg, MessageType icon_
 	if(!icon_name.isEmpty())
 		icon_lbl->setPixmap(GuiUtilsNs::getPixmap(icon_name));
 
-	msg_lbl->setText(msg);
+	msg_lbl->setText(format_msg ? UtilsNs::formatMessage(msg) : msg);
 
 	setWindowTitle(aux_title);
 	objs_group_wgt->setCurrentIndex(0);
@@ -330,9 +349,10 @@ int Messagebox::show(const QString &title, const QString &msg, MessageType icon_
 
 	setMinimumHeight(sz.height() * h_factor);
 
-	int ln_cnt = QString(msg).replace(QRegularExpression("(<)(br)(/)?(>)",
-																		QRegularExpression::CaseInsensitiveOption),
-																		"\n").count('\n');
+	int ln_cnt = QString(msg_lbl->text())
+							 .replace(QRegularExpression("(<)(br)(/)?(>)",
+																					 QRegularExpression::CaseInsensitiveOption),
+												"\n").count('\n');
 
 	if(ln_cnt > 0)
 		adjustSize();

@@ -53,6 +53,7 @@
 #include <QSpinBox>
 #include <QDoubleSpinBox>
 #include <QGroupBox>
+#include <QMenu>
 #include <cmath>
 
 QMap<QStyle::PixelMetric, int> CustomUiStyle::pixel_metrics;
@@ -882,6 +883,9 @@ void CustomUiStyle::polish(QWidget *widget)
 		widget->setAttribute(Qt::WA_Hover);
 		widget->installEventFilter(const_cast<CustomUiStyle *>(this));
 	}
+
+	//Forcing widget to have the same font as the global one defined in qApp
+	widget->setFont(qApp->font());
 }
 
 QPolygonF CustomUiStyle::rotatePolygon(const QPolygonF &polygon, qreal degrees)
@@ -1332,8 +1336,10 @@ void CustomUiStyle::drawPEHintFramePanel(PrimitiveElement element, const QStyleO
 		if(hint == DefaultFrmHint)
 			bg_color = getStateColor(isDarkPalette() ? QPalette::Midlight : QPalette::Light, option);
 		// For AltDefFrmHint we use the same background as QGroupBox
-		else if(hint == AltDefaultFrmHint)
+		else if(hint == GroupBoxFrmHint || hint == MenuBoxFrmHint)
 			bg_color = getAdjustedColor(getStateColor(QPalette::Dark, option), XMinFactor, MinFactor);
+		else if(hint == TabBarFrmHint)
+			bg_color = getAdjustedColor(getStateColor(QPalette::Dark, option), MinFactor, MinFactor);
 		else
 		{
 			if(isDarkPalette())
@@ -1351,7 +1357,8 @@ void CustomUiStyle::drawPEHintFramePanel(PrimitiveElement element, const QStyleO
 	}
 
 	// Create the shape with frame radius plus one pixel for a better context
-	QPainterPath shape = createControlShape(option->rect, HintFrameRadius, AllCorners);
+	QPainterPath shape = createControlShape(option->rect, HintFrameRadius,
+																					hint != MenuBoxFrmHint ? AllCorners : NoCorners);
 
 	painter->save();
 	painter->setRenderHint(QPainter::Antialiasing, true);
@@ -1388,14 +1395,16 @@ void CustomUiStyle::drawPEGenericElemFrame(PrimitiveElement element, const QStyl
 			if(hint == DefaultFrmHint)
 				border_color = getStateColor(isDarkPalette() ? QPalette::Light : QPalette::Midlight, option);
 			// For AltDefFrmHint we use the same border color as QGroupBox
-			else if(hint == AltDefaultFrmHint)
+			else if(hint == GroupBoxFrmHint || hint == MenuBoxFrmHint)
 				border_color = getAdjustedColor(getStateColor(QPalette::Mid, option), XMinFactor, -XMinFactor);
+			else if(hint == TabBarFrmHint)
+				border_color = getAdjustedColor(getStateColor(QPalette::Mid, option),  XMinFactor - 5, -XMinFactor + 5);
 			else
 				// For other hints, use the custom color with slight adjustments
 				border_color = getAdjustedColor(widget->property(StyleHintColor).value<QColor>(), XMinFactor, -XMinFactor);
 		}
 
-		border_radius = HintFrameRadius;
+		border_radius = (hint == MenuBoxFrmHint ? 0 : HintFrameRadius);
 	}
 
 	if(wgt_st.is_enabled)
@@ -1422,10 +1431,10 @@ void CustomUiStyle::drawPEGenericElemFrame(PrimitiveElement element, const QStyl
 		else if(wgt_st.is_focused && !wgt_st.is_default && !is_edit_frm && !is_basic_frm)
 			border_color = getStateColor(QPalette::Highlight, option);
 		// Handle hover state for buttons
-		else if(wgt_st.is_hovered && !is_edit_frm && !is_basic_frm)
+		else if(wgt_st.is_hovered && !is_edit_frm && !is_basic_frm && hint == NoHint)
 			border_color = getAdjustedColor(getStateColor(QPalette::Light, option), MinFactor, -XMinFactor);
 		// Handle hover state for edit fields and frames (lighter border) but not when focused
-		else if(wgt_st.is_hovered && !wgt_st.is_focused && (is_edit_frm || is_basic_frm))
+		else if(wgt_st.is_hovered && !wgt_st.is_focused && (is_edit_frm || is_basic_frm) && hint == NoHint)
 			border_color = border_color.lighter(MaxFactor);
 		// Handle focused state for edit fields and frames
 		else if(wgt_st.is_focused)
@@ -1435,11 +1444,15 @@ void CustomUiStyle::drawPEGenericElemFrame(PrimitiveElement element, const QStyl
 	QPainterPath shape;
 
 	if(border_radius > 0)
+	{
 		shape = createControlShape(option->rect, border_radius,
 						CustomUiStyle::AllCorners, 0.5, 0.5, -0.5, -0.5);
+	}
 	else
+	{
 		shape = createControlShape(option->rect, 0,
 						CustomUiStyle::NoCorners, 1, 1, -1, -1);
+	}
 
 	painter->save();
 	painter->setRenderHint(QPainter::Antialiasing, true);
@@ -1832,7 +1845,7 @@ void CustomUiStyle::drawCEHeaderSection(ControlElement element, const QStyleOpti
 	}
 
 	// Try to determine column information from the header widget
-	const QHeaderView *header_view = qobject_cast<const QHeaderView *>(widget);
+	// const QHeaderView *header_view = qobject_cast<const QHeaderView *>(widget);
 
 	painter->save();
 
@@ -2472,7 +2485,9 @@ void CustomUiStyle::setStyleHint(StyleHint hint, QFrame *frame)
 
 	QColor hint_color;
 	bool is_def_hint = (hint == DefaultFrmHint ||
-											hint == AltDefaultFrmHint);
+											hint == GroupBoxFrmHint ||
+											hint == MenuBoxFrmHint ||
+											hint == TabBarFrmHint);
 
 	if(!is_def_hint)
 		hint_color = frm_colors.at(hint);
@@ -2485,7 +2500,13 @@ void CustomUiStyle::setStyleHint(StyleHint hint, QFrame *frame)
 	// For HLine/VLine frames, apply border color via stylesheet
 	if(shape == QFrame::HLine || shape == QFrame::VLine)
 	{
-		QString color_role = is_def_hint ? "light" : "midlight";
+		QString color_role;
+
+		if(is_def_hint)
+			color_role = (hint != TabBarFrmHint ? "light" : "mid");
+		else
+			color_role = "midlight";
+
 		frame->setStyleSheet(QString("QFrame { border: %1px solid palette(%2); }")
 												 .arg(PenWidth)
 												 .arg(color_role));

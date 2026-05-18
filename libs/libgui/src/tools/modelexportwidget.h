@@ -34,7 +34,7 @@
 #include "modelexporthelper.h"
 #include "utils/htmlitemdelegate.h"
 #include "widgets/fileselectorwidget.h"
-#include "modeldbselectorwidget.h"
+#include "modelselectorwidget.h"
 
 class __libgui ModelExportWidget: public QWidget, public Ui::ModelExportWidget {
 	Q_OBJECT
@@ -62,7 +62,7 @@ class __libgui ModelExportWidget: public QWidget, public Ui::ModelExportWidget {
 		//! \brief Auxiliary viewport passed to export helper when dealing with PNG export
 		QGraphicsView *viewp;
 
-		ModelDbSelectorWidget *model_sel_wgt;
+		ModelSelectorWidget *model_sel_wgt;
 
 		FileSelectorWidget *sql_file_sel,
 		*img_file_sel,

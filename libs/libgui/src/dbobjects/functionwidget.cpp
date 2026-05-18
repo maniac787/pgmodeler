@@ -27,7 +27,7 @@ FunctionWidget::FunctionWidget(QWidget *parent): BaseFunctionWidget(parent, Obje
 {
 	Ui_FunctionWidget::setupUi(this);
 
-	CustomUiStyle::setStyleHint(CustomUiStyle::AltDefaultFrmHint, func_opts_frm);
+	CustomUiStyle::setStyleHint(CustomUiStyle::GroupBoxFrmHint, func_opts_frm);
 
 	ret_type = GuiUtilsNs::createWidgetInParent<PgSQLTypeWidget>(0, ret_type_parent, tr("Return type"));
 	ret_type_parent->layout()->addItem(new QSpacerItem(10, 10, QSizePolicy::Fixed, QSizePolicy::Expanding));

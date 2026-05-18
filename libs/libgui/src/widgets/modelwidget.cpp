@@ -73,7 +73,6 @@
 #include "styledtextboxview.h"
 #include "tableview.h"
 #include "pgmodelerguiplugin.h"
-#include <QTemporaryFile>
 #include <QScrollBar>
 
 QList<const PgModelerGuiPlugin *> ModelWidget::plugins;
@@ -91,10 +90,6 @@ std::vector<BaseObject *> ModelWidget::cut_objects;
 
 ModelWidget::ModelWidget(QWidget *parent) : QWidget(parent)
 {
-	#ifdef DEMO_VERSION
-		obj_actions_cnt = 0;
-	#endif
-
 	QFont font;
 	QLabel *label=nullptr;
 	QAction *action=nullptr;
@@ -117,13 +112,8 @@ ModelWidget::ModelWidget(QWidget *parent) : QWidget(parent)
 	new_obj_type = ObjectType::BaseObject;
 
 	//Generating a temporary file name for the model
-	QTemporaryFile tmp_file;
-
-	//Configuring the template mask which includes the full path to temporary dir
-	tmp_file.setFileTemplate(GlobalAttributes::getTemporaryFilePath("model_XXXXXX" + GlobalAttributes::DbModelExt));
-	tmp_file.open();
-	tmp_filename=tmp_file.fileName();
-	tmp_file.close();
+	tmp_filename = UtilsNs::getTemporaryFilePath(
+									 GlobalAttributes::getTemporaryFilePath("model_XXXXXX" + GlobalAttributes::DbModelExt));
 
 	protected_model_frm = new QFrame(this);
 	protected_model_frm->setObjectName("protected_model_frm");
@@ -1254,12 +1244,6 @@ void ModelWidget::handleObjectsMovement(bool end_moviment)
 
 void ModelWidget::handleObjectModification(BaseGraphicObject *object)
 {
-	#ifdef DEMO_VERSION
-		#warning "DEMO VERSION: limiting the user interaction over objects."
-		if(updateObjActionCounter())
-			return;
-	#endif
-
 	op_list->registerObject(object, Operation::ObjModified);
 	setModified(true);
 	emit s_objectModified();
@@ -1622,7 +1606,7 @@ void ModelWidget::convertRelationshipNN()
 					{
 						aux_constr = new Constraint;
 
-						for(QString pk_col : pk_cols)
+						for(auto &pk_col : pk_cols)
 							aux_constr->addColumn(tab->getColumn(pk_col), Constraint::SourceCols);
 
 						aux_constr->setName(CoreUtilsNs::generateUniqueName(tab, *tab->getObjectList(ObjectType::Constraint), false, "_pk"));
@@ -2092,22 +2076,17 @@ void ModelWidget::saveModel(const QString &filename)
 		 * data loss so we can recover it in case of saving failures */
 		if(fi.exists())
 		{
-			QTemporaryFile tmpfile;
-
-			// Generate a temporary backup filename
-			tmpfile.setFileTemplate(fi.absolutePath() +
-															GlobalAttributes::DirSeparator +
-															QString("%1_XXXXXX%2").arg(db_model->getName(), GlobalAttributes::DbModelBkpExt));
-			tmpfile.open();
-			bkpfile = tmpfile.fileName();
-			tmpfile.close();
-			tmpfile.remove();
+			bkpfile = UtilsNs::getTemporaryFilePath(fi.absolutePath() +
+																							GlobalAttributes::DirSeparator +
+																							QString("%1_XXXXXX%2").arg(db_model->getName(), GlobalAttributes::DbModelBkpExt));
 
 			/* Trying to rename the original model to the backup filename so
 			 * we can write the new one in its place */
 			if(!QFile::rename(filename, bkpfile))
+			{
 				throw Exception(Exception::getErrorMessage(ErrorCode::FileDirectoryNotWritten).arg(bkpfile),
 												ErrorCode::FileDirectoryNotWritten,PGM_FUNC,PGM_FILE,PGM_LINE);
+			}
 
 			has_bkp_file = true;
 		}
@@ -2146,7 +2125,7 @@ void ModelWidget::saveModel(const QString &filename)
 			QFile::remove(filename);
 			QFile::copy(bkpfile, filename);
 
-			throw Exception(Exception::getErrorMessage(ErrorCode::ModelFileSaveFailure).arg(filename).arg(bkpfile),
+			throw Exception(Exception::getErrorMessage(ErrorCode::ModelFileSaveFailure).arg(filename, bkpfile),
 											ErrorCode::ModelFileSaveFailure,PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 		}
 
@@ -2187,6 +2166,8 @@ int ModelWidget::openEditingForm(WidgetClass *widget, Messagebox::ButtonsId butt
 		editing_form.setMainWidget(widget);
 
 	editing_form.setButtonConfiguration(button_conf);
+	editing_form.enableTrackChanges(true, { "inc_indirect_links_chk", "unique_results_chk",
+																					"version_cmb", "code_options_cmb" });
 
 	GeneralConfigWidget::restoreWidgetGeometry(&editing_form, class_name);
 	res = editing_form.exec();
@@ -2289,12 +2270,6 @@ void ModelWidget::configurePluginsActions()
 
 void ModelWidget::showObjectForm(ObjectType obj_type, BaseObject *object, BaseObject *parent_obj, const QPointF &pos)
 {
-	#ifdef DEMO_VERSION
-		#warning "DEMO VERSION: limiting the user interaction over objects."
-		if(updateObjActionCounter())
-			return;
-	#endif
-
 	try
 	{
 		BaseRelationship::RelType rel_type = BaseRelationship::Relationship11;
@@ -2639,8 +2614,7 @@ void ModelWidget::changeOwner()
 			{
 				if(obj->isSystemObject())
 					throw Exception(Exception::getErrorMessage(ErrorCode::OprReservedObject)
-									.arg(obj->getName())
-									.arg(obj->getTypeName()),
+									.arg(obj->getName(), obj->getTypeName()),
 									ErrorCode::OprReservedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 				//Register an operation only if the object is not the database itself
@@ -2823,7 +2797,7 @@ void ModelWidget::protectObject()
 					if(tab_obj->isAddedByRelationship())
 					{
 						throw Exception(Exception::getErrorMessage(ErrorCode::OprRelationshipAddedObject)
-										.arg(object->getName()).arg(object->getTypeName()),
+										.arg(object->getName(), object->getTypeName()),
 										ErrorCode::OprRelationshipAddedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 					}
 				}
@@ -2876,12 +2850,6 @@ void ModelWidget::protectObject()
 
 void ModelWidget::cutObjects(bool copy_deps)
 {
-	#ifdef DEMO_VERSION
-		#warning "DEMO VERSION: limiting the user interaction over objects."
-		if(updateObjActionCounter())
-			return;
-	#endif
-
 	//Set the flag indicating that a cut operation started
 	ModelWidget::cut_operation=true;
 	copyObjects(false, copy_deps);
@@ -2889,12 +2857,6 @@ void ModelWidget::cutObjects(bool copy_deps)
 
 void ModelWidget::copyObjects(bool duplicate_mode, bool copy_deps)
 {
-	#ifdef DEMO_VERSION
-		#warning "DEMO VERSION: limiting the user interaction over objects."
-		if(updateObjActionCounter())
-			return;
-	#endif
-
 	std::map<unsigned, BaseObject *> objs_map;
 	std::vector<BaseObject *> sel_obj_deps, deps;
 	BaseObject *object = nullptr;
@@ -2913,7 +2875,7 @@ void ModelWidget::copyObjects(bool duplicate_mode, bool copy_deps)
 		if(selected_objects[0]->isSystemObject())
 		{
 			throw Exception(Exception::getErrorMessage(ErrorCode::OprReservedObject)
-											.arg(selected_objects[0]->getName()).arg(selected_objects[0]->getTypeName()),
+											.arg(selected_objects[0]->getName(), selected_objects[0]->getTypeName()),
 											ErrorCode::OprReservedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 		}
 	}
@@ -3032,8 +2994,7 @@ void ModelWidget::pasteObjects(bool duplicate_mode)
 		itr++;
 		pos++;
 		task_prog_wgt.updateProgress((pos/static_cast<double>(copied_objects.size()))*100,
-									 tr("Validating object: `%1' (%2)").arg(object->getName())
-									 .arg(object->getTypeName()),
+									 tr("Validating object: `%1' (%2)").arg(object->getName(), object->getTypeName()),
 									 enum_t(object->getObjectType()));
 
 		if(!tab_obj || ((sel_table || sel_view) && tab_obj))
@@ -3166,8 +3127,8 @@ void ModelWidget::pasteObjects(bool duplicate_mode)
 
 		pos++;
 		task_prog_wgt.updateProgress((pos/static_cast<double>(copied_objects.size()))*100,
-									 tr("Generating XML for: `%1' (%2)").arg(object->getName())
-									 .arg(object->getTypeName()),
+									 tr("Generating XML for: `%1' (%2)")
+									 .arg(object->getName(), object->getTypeName()),
 									 enum_t(object->getObjectType()));
 
 		if(!tab_obj)
@@ -3268,8 +3229,8 @@ void ModelWidget::pasteObjects(bool duplicate_mode)
 			{
 				pos++;
 				task_prog_wgt.updateProgress((pos/static_cast<double>(copied_objects.size()))*100,
-											 tr("Pasting object: `%1' (%2)").arg(object->getName())
-											 .arg(object->getTypeName()),
+											 tr("Pasting object: `%1' (%2)")
+											 .arg(object->getName(), object->getTypeName()),
 											 enum_t(object->getObjectType()));
 
 				//Creates the object from the XML
@@ -3370,12 +3331,6 @@ void ModelWidget::pasteObjects(bool duplicate_mode)
 
 void ModelWidget::duplicateObject()
 {
-	#ifdef DEMO_VERSION
-		#warning "DEMO VERSION: limiting the user interaction over objects."
-		if(updateObjActionCounter())
-			return;
-	#endif
-
 	int op_id = -1;
 
 	try
@@ -3682,15 +3637,14 @@ void ModelWidget::removeObjects(bool cascade)
 					//Raises an error if the user try to remove a reserved object
 					if(object->isSystemObject())
 						throw Exception(Exception::getErrorMessage(ErrorCode::OprReservedObject)
-														.arg(object->getName()).arg(object->getTypeName()),
+														.arg(object->getName(), object->getTypeName()),
 														ErrorCode::OprReservedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 					//Raises an error if the user try to remove a protected object
 					if(object->isProtected())
 					{
 						throw Exception(Exception::getErrorMessage(ErrorCode::RemProtectedObject)
-														.arg(object->getName(true))
-														.arg(object->getTypeName()),
+														.arg(object->getName(true), object->getTypeName()),
 														ErrorCode::RemProtectedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 					}
 
@@ -3701,8 +3655,7 @@ void ModelWidget::removeObjects(bool cascade)
 						if(tab_obj->isAddedByRelationship())
 						{
 							throw Exception(Exception::getErrorMessage(ErrorCode::RemProtectedObject)
-															.arg(tab_obj->getName(true))
-															.arg(tab_obj->getTypeName()),
+															.arg(tab_obj->getName(true), tab_obj->getTypeName()),
 															ErrorCode::RemProtectedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 						}
 

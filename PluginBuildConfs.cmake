@@ -76,6 +76,7 @@ endfunction()
 # parent scope that registers the name of the plugin
 function(pgm_add_cli_plugin TARGET IS_PRIV_PLUGIN)
     pgm_add_plugin(${TARGET} ${IS_PRIV_PLUGIN} ON)
+		pgm_inc_priv_core_sources(${TARGET} OFF)
     set(PGM_TARGET ${PGM_TARGET} PARENT_SCOPE)
 endfunction()
 
@@ -122,6 +123,9 @@ endfunction()
 # This function configures the deployment settings
 # of the plugin library.
 function(pgm_install_plugin TARGET)
+    set_target_properties(${TARGET} PROPERTIES
+        INSTALL_RPATH "${PGM_PLUGIN_INSTALL_RPATH}")
+
     install(TARGETS ${TARGET}
         LIBRARY DESTINATION ${PGM_PLUGINSDIR}/${TARGET}
         FRAMEWORK DESTINATION ${PGM_PLUGINSDIR}/${TARGET}

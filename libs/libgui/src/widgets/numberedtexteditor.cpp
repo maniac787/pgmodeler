@@ -23,7 +23,6 @@
 #include <QTextBlock>
 #include <QScrollBar>
 #include <QFileDialog>
-#include <QTemporaryFile>
 #include "customuistyle.h"
 #include "guiutilsns.h"
 #include <QMenu>
@@ -65,7 +64,6 @@ NumberedTextEditor::NumberedTextEditor(QWidget * parent, bool act_btns_enabled, 
 
 	if(act_btns_enabled)
 	{
-		//QPalette pal = this->palette();
 		QFont font = this->font();
 
 		show_act_btns = true;
@@ -137,7 +135,7 @@ NumberedTextEditor::NumberedTextEditor(QWidget * parent, bool act_btns_enabled, 
 		copy_btn->setDisabled(true);
 		copy_btn->setText(tr("Copy"));
 		copy_btn->setShortcut(QKeySequence("Ctrl+C"));
-		copy_btn->setToolTip(tr("Copy the whole text to the clipboard (%1)")
+		copy_btn->setToolTip(tr("Copy a text to the clipboard (%1)")
 												 .arg(copy_btn->shortcut().toString()));
 		copy_btn->setFont(font);
 		copy_btn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
@@ -541,20 +539,16 @@ void NumberedTextEditor::editSource()
 	QStringList args;
 
 	if(tmp_src_file.isEmpty())
-	{
-		QTemporaryFile tmp_file;
-		tmp_file.setFileTemplate(GlobalAttributes::getTemporaryFilePath("source_XXXXXX.sql"));
-		tmp_file.open();
-		tmp_src_file = tmp_file.fileName();
-		tmp_file.close();
-	}
+		tmp_src_file = UtilsNs::getTemporaryFilePath(GlobalAttributes::getTemporaryFilePath("source_XXXXXX.sql"));
 
 	input.setFileName(tmp_src_file);
 
 	if(!input.open(QFile::WriteOnly | QFile::Truncate))
+	{
 		throw Exception(Exception::getErrorMessage(ErrorCode::FileDirectoryNotAccessed)
 										.arg(tmp_src_file),
 										ErrorCode::FileDirectoryNotAccessed ,PGM_FUNC,PGM_FILE,PGM_LINE);
+	}
 
 	buffer.append(this->toPlainText().toUtf8());
 	input.write(buffer);
@@ -778,6 +772,21 @@ void NumberedTextEditor::resizeWidgets()
 		
 		top_widget->setGeometry(lt_margin, rect.top(),
 														width, top_widget->height());
+
+		/* Adjusting the action button styles
+		 * if the top_widget width is to low to fit all buttons. */
+		Qt::ToolButtonStyle style = Qt::ToolButtonIconOnly;
+
+		/* We define a base width that is close to the
+		 * sum of the widths of the visible buttons either
+		 * in read-only and read/write mode */
+		int base_width = isReadOnly() ? 350 : 600;
+
+		if(top_widget->width() > base_width)
+			style = Qt::ToolButtonTextBesideIcon;
+
+		for(auto &btn : top_widget->findChildren<QToolButton *>())
+			btn->setToolButtonStyle(style);
 	}
 
 	QString border_pal = CustomUiStyle::isDarkPalette() ? "dark" : "mid",

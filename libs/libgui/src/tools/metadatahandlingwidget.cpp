@@ -24,7 +24,6 @@
 #include "guiutilsns.h"
 #include "utilsns.h"
 #include "settings/generalconfigwidget.h"
-#include <QTemporaryFile>
 
 MetadataHandlingWidget::MetadataHandlingWidget(QWidget *parent) : QWidget(parent)
 {
@@ -39,18 +38,18 @@ MetadataHandlingWidget::MetadataHandlingWidget(QWidget *parent) : QWidget(parent
 	output_trw->setItemDelegateForColumn(0, new HtmlItemDelegate(this));
 
 	backup_file_sel = new FileSelectorWidget(this);
-	backup_file_sel->setNameFilters({tr("Objects metadata file (*%1)").arg(GlobalAttributes::ObjMetadataExt), tr("All files (*.*)")});
+	backup_file_sel->setNameFilters({ tr("Objects metadata file (*%1)").arg(GlobalAttributes::ObjMetadataExt) });
 	backup_file_sel->setWindowTitle(tr("Select backup file"));
 	settings_grid->addWidget(backup_file_sel, 3, 1);
 
-	extract_model_sel = new ModelDbSelectorWidget(this);
+	extract_model_sel = new ModelSelectorWidget(this);
 	settings_grid->addWidget(extract_model_sel, 1, 1);
 
-	apply_model_sel = new ModelDbSelectorWidget(this);
+	apply_model_sel = new ModelSelectorWidget(this);
 	settings_grid->addWidget(apply_model_sel, 2, 1);
 
-	connect(extract_model_sel, &ModelDbSelectorWidget::s_selectionChanged, this, &MetadataHandlingWidget::enableMetadataHandling);
-	connect(apply_model_sel, &ModelDbSelectorWidget::s_selectionChanged, this, &MetadataHandlingWidget::enableMetadataHandling);
+	connect(extract_model_sel, &ModelSelectorWidget::s_selectionChanged, this, &MetadataHandlingWidget::enableMetadataHandling);
+	connect(apply_model_sel, &ModelSelectorWidget::s_selectionChanged, this, &MetadataHandlingWidget::enableMetadataHandling);
 	connect(backup_file_sel, &FileSelectorWidget::s_selectorChanged, this, &MetadataHandlingWidget::enableMetadataHandling);
 	connect(operation_cmb, &QComboBox::activated, this, &MetadataHandlingWidget::enableMetadataHandling);
 	connect(operation_cmb, &QComboBox::activated, this, &MetadataHandlingWidget::configureSelector);
@@ -175,7 +174,6 @@ void MetadataHandlingWidget::handleObjectsMetada()
 		}
 	}
 
-	QTemporaryFile tmp_file;
 	QString metadata_file;
 	DatabaseModel::MetaAttrOptions options = DatabaseModel::MetaNoOpts;
 	DatabaseModel *extract_model = nullptr, *apply_model = nullptr;
@@ -221,13 +219,10 @@ void MetadataHandlingWidget::handleObjectsMetada()
 			else
 			{
 				//Configuring the temporary metadata file
-				tmp_file.setFileTemplate(GlobalAttributes::getTemporaryFilePath(
-																	 QString("%1_metadata_XXXXXX%2")
-																	 .arg(extract_model->getName(), GlobalAttributes::ObjMetadataExt)));
-
-				tmp_file.open();
-				metadata_file=tmp_file.fileName();
-				tmp_file.close();
+				metadata_file = UtilsNs::getTemporaryFilePath(GlobalAttributes::getTemporaryFilePath(
+																												QString("%1_metadata_XXXXXX%2")
+																												.arg(extract_model->getName(),
+																														 GlobalAttributes::ObjMetadataExt)));
 			}
 
 			root_item = GuiUtilsNs::createOutputTreeItem(output_trw,

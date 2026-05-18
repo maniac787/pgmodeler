@@ -33,6 +33,7 @@
 #include <QButtonGroup>
 #include <QToolTip>
 #include <qcursor.h>
+#include "utilsns.h"
 
 std::map<QString, QPalette> AppearanceConfigWidget::theme_palettes;
 std::map<QString, attribs_map> AppearanceConfigWidget::config_params;
@@ -54,6 +55,11 @@ AppearanceConfigWidget::AppearanceConfigWidget(QWidget *parent) : BaseConfigWidg
 {
 	setupUi(this);
 	show_grid = show_delimiters = false;
+
+	custom_scale_spb->setMinimumHeight(theme_cmb->height());
+	ui_font_size_spb->setMinimumHeight(ui_font_cmb->height());
+	code_font_size_spb->setMinimumHeight(code_font_cmb->height());
+	tab_width_spb->setMinimumHeight(code_font_cmb->height());
 
 	/* Initialize system palette only when the lightness of window 
 	 * and button roles are zero (black) which indicates that the 
@@ -175,18 +181,13 @@ AppearanceConfigWidget::AppearanceConfigWidget(QWidget *parent) : BaseConfigWidg
 
 	objects_grid->addWidget(viewp, 2, 0, 1, 0);
 
-	line_numbers_cp = new ColorPickerWidget(1, this);
-	line_numbers_cp->setButtonToolTip(0, tr("Line numbers' font color"));
+	line_num_colors_cp = new ColorPickerWidget(4, this);
+	line_num_colors_cp->setButtonToolTip(0, tr("Line numbers' font color"));
+	line_num_colors_cp->setButtonToolTip(1, tr("Line numbers' background color"));
+	line_num_colors_cp->setButtonToolTip(2, tr("Line numbers' highlight font color"));
+	line_num_colors_cp->setButtonToolTip(3, tr("Highlighted line color"));
 
-	line_numbers_bg_cp = new ColorPickerWidget(1, this);
-	line_numbers_bg_cp->setButtonToolTip(0, tr("Line numbers' background color"));
-
-	line_highlight_cp = new ColorPickerWidget(1, this);
-	line_highlight_cp->setButtonToolTip(0, tr("Highlighted line color"));
-
-	code_wgt_colors_lt->insertWidget(0, line_numbers_cp);
-	code_wgt_colors_lt->insertWidget(0, line_numbers_bg_cp);
-	code_wgt_colors_lt->insertWidget(0, line_highlight_cp);
+	code_wgt_colors_lt->insertWidget(0, line_num_colors_cp);
 
 	font_preview_txt = new NumberedTextEditor(this);
 	font_preview_txt->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -224,6 +225,12 @@ CREATE TABLE public.table_b (\n \
 
 	connect(ico_sz_btn_grp, &QButtonGroup::buttonToggled, this, __slot(this, AppearanceConfigWidget::previewUiSettings));
 
+	connect(ui_font_chk, &QCheckBox::toggled, ui_font_cmb, &QComboBox::setEnabled);
+	connect(ui_font_chk, &QCheckBox::toggled, ui_font_size_spb, &QDoubleSpinBox::setEnabled);
+	connect(ui_font_chk, &QCheckBox::toggled, ui_font_size_lbl, &QDoubleSpinBox::setEnabled);
+	connect(ui_font_cmb, &QFontComboBox::currentFontChanged, this, &AppearanceConfigWidget::previewCustomUiFont);
+	connect(ui_font_size_spb, &QDoubleSpinBox::textChanged, this, &AppearanceConfigWidget::previewCustomUiFont);
+
 	connect(element_cmb, &QComboBox::currentTextChanged, this, &AppearanceConfigWidget::enableConfigElement);
 	connect(elem_font_cmb, &QFontComboBox::currentFontChanged, this, &AppearanceConfigWidget::applyElementFontStyle);
 	connect(elem_font_size_spb, &QDoubleSpinBox::textChanged, this, &AppearanceConfigWidget::applyElementFontStyle);
@@ -233,12 +240,8 @@ CREATE TABLE public.table_b (\n \
 
 	connect(code_font_size_spb, &QDoubleSpinBox::textChanged, this, &AppearanceConfigWidget::previewCodeFontStyle);
 	connect(code_font_cmb, &QFontComboBox::currentFontChanged, this, &AppearanceConfigWidget::previewCodeFontStyle);
-	connect(line_numbers_cp, &ColorPickerWidget::s_colorChanged, this, &AppearanceConfigWidget::previewCodeFontStyle);
-	connect(line_numbers_cp, &ColorPickerWidget::s_colorsChanged, this, &AppearanceConfigWidget::previewCodeFontStyle);
-	connect(line_numbers_bg_cp, &ColorPickerWidget::s_colorChanged, this, &AppearanceConfigWidget::previewCodeFontStyle);
-	connect(line_numbers_bg_cp, &ColorPickerWidget::s_colorsChanged, this, &AppearanceConfigWidget::previewCodeFontStyle);
-	connect(line_highlight_cp, &ColorPickerWidget::s_colorChanged, this, &AppearanceConfigWidget::previewCodeFontStyle);
-	connect(line_highlight_cp, &ColorPickerWidget::s_colorsChanged, this, &AppearanceConfigWidget::previewCodeFontStyle);
+	connect(line_num_colors_cp, &ColorPickerWidget::s_colorChanged, this, &AppearanceConfigWidget::previewCodeFontStyle);
+	connect(line_num_colors_cp, &ColorPickerWidget::s_colorsChanged, this, &AppearanceConfigWidget::previewCodeFontStyle);
 	connect(disp_line_numbers_chk, &QCheckBox::toggled, this, &AppearanceConfigWidget::previewCodeFontStyle);
 	connect(hightlight_lines_chk, &QCheckBox::toggled, this, &AppearanceConfigWidget::previewCodeFontStyle);
 	connect(tab_width_spb, &QSpinBox::textChanged, this, &AppearanceConfigWidget::previewCodeFontStyle);
@@ -624,6 +627,28 @@ void AppearanceConfigWidget::loadConfiguration()
 		theme_cmb->blockSignals(false);
 		ico_sz_btn_grp->blockSignals(false);
 
+		QString ui_fnt_name =
+				config_params[GlobalAttributes::AppearanceConf][Attributes::UiFont];
+
+		ui_font_chk->setChecked(!ui_fnt_name.isEmpty());
+
+		if(!ui_fnt_name.isEmpty())
+		{
+			ui_font_cmb->blockSignals(true);
+			ui_font_cmb->setCurrentFont(ui_fnt_name);
+			ui_font_cmb->blockSignals(false);
+		}
+
+		double ui_fnt_size =
+				config_params[GlobalAttributes::AppearanceConf][Attributes::UiFontSize].toDouble();
+
+		if(ui_fnt_size > 0)
+		{
+			ui_font_size_spb->blockSignals(true);
+			ui_font_size_spb->setValue(ui_fnt_size);
+			ui_font_size_spb->blockSignals(false);
+		}
+
 		custom_scale_chk->setChecked(config_params[GlobalAttributes::AppearanceConf].count(Attributes::CustomScale));
 		custom_scale_spb->setValue(config_params[GlobalAttributes::AppearanceConf][Attributes::CustomScale].toDouble());
 		expansion_factor_spb->setValue(config_params[Attributes::Design][Attributes::ExpansionFactor].toUInt());
@@ -664,9 +689,17 @@ void AppearanceConfigWidget::applyDesignCodeStyle()
 	code_font_size_spb->setValue(config_params[Attributes::Code][Attributes::FontSize].toDouble());
 	disp_line_numbers_chk->setChecked(config_params[Attributes::Code][Attributes::DisplayLineNumbers] == Attributes::True);
 	hightlight_lines_chk->setChecked(config_params[Attributes::Code][Attributes::HighlightLines] == Attributes::True);
-	line_numbers_cp->setColor(0, config_params[Attributes::Code][Attributes::LineNumbersColor]);
-	line_numbers_bg_cp->setColor(0, config_params[Attributes::Code][Attributes::LineNumbersBgColor]);
-	line_highlight_cp->setColor(0, config_params[Attributes::Code][Attributes::LineHighlightColor]);
+
+	line_num_colors_cp->setColor(0, config_params[Attributes::Code][Attributes::LineNumbersColor]);
+	line_num_colors_cp->setColor(1, config_params[Attributes::Code][Attributes::LineNumbersBgColor]);
+	line_num_colors_cp->setColor(2, config_params[Attributes::Code][Attributes::LineNumbersHlColor]);
+	line_num_colors_cp->setColor(3, config_params[Attributes::Code][Attributes::LineHighlightColor]);
+
+	/* Backward compatibility setting. If there's no LineNumbersHlColor
+	 * defined in the settings, we use LineNumbersColor instead because in previous
+	 * versions there was no specific color for highlighted line number color */
+	if(config_params[Attributes::Code][Attributes::LineNumbersHlColor].isEmpty())
+		line_num_colors_cp->setColor(2, config_params[Attributes::Code][Attributes::LineNumbersColor]);
 
 	int tab_width = (config_params[Attributes::Code][Attributes::TabWidth]).toInt();
 	tab_width_chk->setChecked(tab_width > 0);
@@ -749,9 +782,9 @@ void AppearanceConfigWidget::saveConfiguration()
 		config_params.erase(GlobalAttributes::AppearanceConf);
 		attribs[Attributes::UiTheme] = theme_cmb->currentData(Qt::UserRole).toString();
 		attribs[Attributes::IconsSize] = ico_sz_btn_grp->checkedButton()->property(Attributes::IconsSize.toLatin1()).toString();
-
+		attribs[Attributes::UiFont] = ui_font_chk->isChecked() ? ui_font_cmb->currentFont().family() : "";
+		attribs[Attributes::UiFontSize] = ui_font_chk->isChecked() ? QString::number(ui_font_size_spb->value(), 'g', 2) : "";
 		attribs[Attributes::CustomScale] = custom_scale_chk->isChecked() ? QString::number(custom_scale_spb->value(), 'g', 2) : "";
-
 		config_params[Attributes::UiTheme] = attribs;
 		attribs.clear();
 
@@ -764,7 +797,6 @@ void AppearanceConfigWidget::saveConfiguration()
 		attribs[Attributes::CanvasColor] = canvas_color_cp->getColor(0).name();
 		attribs[Attributes::DelimitersColor] = delimiters_color_cp->getColor(0).name();
 		attribs[Attributes::ExpansionFactor] = QString::number(expansion_factor_spb->value());
-
 		config_params[Attributes::Design] = attribs;
 		attribs.clear();
 
@@ -772,11 +804,11 @@ void AppearanceConfigWidget::saveConfiguration()
 		attribs[Attributes::FontSize] = QString::number(code_font_size_spb->value());
 		attribs[Attributes::DisplayLineNumbers] = (disp_line_numbers_chk->isChecked() ? Attributes::True : "");
 		attribs[Attributes::HighlightLines] = (hightlight_lines_chk->isChecked() ? Attributes::True : "");
-		attribs[Attributes::LineNumbersColor] = line_numbers_cp->getColor(0).name();
-		attribs[Attributes::LineNumbersBgColor] = line_numbers_bg_cp->getColor(0).name();
-		attribs[Attributes::LineHighlightColor] = line_highlight_cp->getColor(0).name();
+		attribs[Attributes::LineNumbersColor] = line_num_colors_cp->getColor(0).name();
+		attribs[Attributes::LineNumbersBgColor] = line_num_colors_cp->getColor(1).name();
+		attribs[Attributes::LineNumbersHlColor] = line_num_colors_cp->getColor(2).name();
+		attribs[Attributes::LineHighlightColor] = line_num_colors_cp->getColor(3).name();
 		attribs[Attributes::TabWidth] = QString::number(tab_width_chk->isChecked() ? tab_width_spb->value() : 0);
-
 		config_params[Attributes::Code] = attribs;
 		attribs.clear();
 
@@ -927,6 +959,28 @@ void AppearanceConfigWidget::enableConfigElement()
 	elem_font_size_spb->blockSignals(false);
 }
 
+void AppearanceConfigWidget::previewCustomUiFont()
+{
+	QFont custom_fnt = ui_font_cmb->currentFont(),
+			wgt_fnt;
+
+	custom_fnt.setPointSizeF(ui_font_size_spb->value());
+	qApp->setFont(custom_fnt);
+
+	for(auto &wgt : qApp->allWidgets())
+	{
+		wgt_fnt = wgt->font();
+
+		if(wgt->property(UtilsNs::OrigFontProp).isNull())
+			wgt->setProperty(UtilsNs::OrigFontProp, wgt_fnt);
+
+		wgt_fnt.setFamily(custom_fnt.family());
+		wgt->setFont(wgt_fnt);
+	}
+
+	setConfigurationChanged(true);
+}
+
 void AppearanceConfigWidget::applyElementColor(unsigned color_idx, QColor color)
 {
 	if(conf_items[element_cmb->currentIndex()].obj_conf)
@@ -1000,6 +1054,23 @@ void AppearanceConfigWidget::restoreDefaults()
 	}
 }
 
+void AppearanceConfigWidget::restoreUiFontStyle()
+{
+	// Restore the original font of widgets
+	QFont wgt_fnt;
+
+	qApp->setFont(qApp->property(UtilsNs::OrigFontProp).value<QFont>());
+
+	for(auto &wgt : qApp->allWidgets())
+	{
+		if(wgt->property(UtilsNs::OrigFontProp).isNull())
+			continue;
+
+		wgt_fnt = wgt->property(UtilsNs::OrigFontProp).value<QFont>();
+		wgt->setFont(wgt_fnt);
+	}
+}
+
 void AppearanceConfigWidget::previewCodeFontStyle()
 {
 	QFont fnt;
@@ -1010,10 +1081,12 @@ void AppearanceConfigWidget::previewCodeFontStyle()
 	SyntaxHighlighter::setDefaultFont(fnt);
 	NumberedTextEditor::setDefaultFont(fnt);
 	NumberedTextEditor::setLineNumbersVisible(disp_line_numbers_chk->isChecked());
-	NumberedTextEditor::setLineHighlightColor(line_highlight_cp->getColor(0));
 	NumberedTextEditor::setHighlightLines(hightlight_lines_chk->isChecked());
 	NumberedTextEditor::setTabDistance(tab_width_chk->isChecked() ? tab_width_spb->value() : 0);
-	LineNumbersWidget::setColors(line_numbers_cp->getColor(0), line_numbers_bg_cp->getColor(0));
+	NumberedTextEditor::setLineHighlightColor(line_num_colors_cp->getColor(3));
+	LineNumbersWidget::setColors(line_num_colors_cp->getColor(0),
+															 line_num_colors_cp->getColor(1),
+															 line_num_colors_cp->getColor(2));
 
 	font_preview_txt->setReadOnly(false);
 	font_preview_txt->resizeWidgets();
@@ -1054,13 +1127,6 @@ void AppearanceConfigWidget::applyUiTheme()
 
 	pal = theme_palettes[ui_theme];
 	qApp->setPalette(pal);
-
-	/* if(CustomUiStyle::isDarkPalette(qApp->palette()))
-	{
-		// Forcing QMenu class to use a lighter base color
-		pal.setColor(QPalette::Base, pal.color(QPalette::Base));
-		qApp->setPalette(pal, "QMenu");
-	} */
 
 	applySyntaxHighlightTheme();
 	applyUiStyleSheet();
@@ -1145,9 +1211,7 @@ void AppearanceConfigWidget::applyUiStyleSheet()
 	QFile ui_style(GlobalAttributes::getTmplConfigurationFilePath("",
 					GlobalAttributes::UiStyleConf + GlobalAttributes::ConfigurationExt));
 
-	ui_style.open(QFile::ReadOnly);
-
-	if(!ui_style.isOpen())
+	if(!ui_style.open(QFile::ReadOnly))
 	{
 		Messagebox::error(Exception::getErrorMessage(ErrorCode::FileDirectoryNotAccessed).arg(ui_style.fileName()),
 						ErrorCode::FileDirectoryNotAccessed, PGM_FUNC, PGM_FILE, PGM_LINE);
@@ -1188,9 +1252,8 @@ void AppearanceConfigWidget::applyUiStyleSheet()
 		if(!ico_style_conf.isEmpty())
 		{
 			QFile ico_style(ico_style_conf);
-			ico_style.open(QFile::ReadOnly);
 
-			if(!ico_style.isOpen())
+			if(!ico_style.open(QFile::ReadOnly))
 			{
 				Messagebox::error(Exception::getErrorMessage(ErrorCode::FileDirectoryNotAccessed).arg(ico_style_conf),
 								ErrorCode::FileDirectoryNotAccessed, PGM_FUNC, PGM_FILE, PGM_LINE);

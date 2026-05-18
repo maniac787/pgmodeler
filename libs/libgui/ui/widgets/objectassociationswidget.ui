@@ -14,7 +14,7 @@
    <string>Object's associations</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../../../../priv-plugins/res/logoicons.qrc">
+   <iconset resource="../../../../priv-core/res/logoicons.qrc">
     <normaloff>:/icons/icons/pgmodeler_logo.png</normaloff>:/icons/icons/pgmodeler_logo.png</iconset>
   </property>
   <layout class="QGridLayout" name="associations_grid">
@@ -517,8 +517,20 @@
   </layout>
  </widget>
  <resources>
+  <include location="../../../../priv-core/res/logoicons.qrc"/>
   <include location="../../res/resources.qrc"/>
-  <include location="../../../../priv-plugins/res/logoicons.qrc"/>
+  <include location="../../../../priv-core/res/logoicons.qrc"/>
+  <include location="../../../../priv-core/res/logoicons.qrc"/>
+  <include location="../../../../priv-core/res/logoicons.qrc"/>
+  <include location="../../../../priv-core/res/logoicons.qrc"/>
+  <include location="../../../../priv-core/res/logoicons.qrc"/>
+  <include location="../../../../priv-core/res/logoicons.qrc"/>
+  <include location="../../../../priv-core/res/logoicons.qrc"/>
+  <include location="../../../../priv-core/res/logoicons.qrc"/>
+  <include location="../../../../priv-core/res/logoicons.qrc"/>
+  <include location="../../../../priv-core/res/logoicons.qrc"/>
+  <include location="../../../../priv-core/res/logoicons.qrc"/>
+  <include location="../../../../priv-core/res/logoicons.qrc"/>
  </resources>
  <connections/>
 </ui>

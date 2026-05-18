@@ -2,7 +2,6 @@ set(CMAKE_AUTOUIC OFF)
 set(CMAKE_AUTOMOC ON)
 
 pgm_add_library(connector
-    src/catalog.cpp src/catalog.h
     src/connection.cpp src/connection.h
     src/connectorglobal.h
     src/resultset.cpp src/resultset.h)

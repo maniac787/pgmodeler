@@ -45,8 +45,11 @@ ChangelogWidget::ChangelogWidget(QWidget *parent) : QWidget(parent)
 	connect(hide_tb, &QToolButton::clicked, this, &ChangelogWidget::s_visibilityChanged);
 	connect(clear_btn, &QPushButton::clicked, this, &ChangelogWidget::clearChangelog);
 	connect(persisted_chk, &QCheckBox::toggled, this, [this](bool checked){
+		bool is_persisted = model->getDatabaseModel()->isPersistedChangelog();
 		model->getDatabaseModel()->setPersistedChangelog(checked);
-		model->setModified(true);
+
+		if(is_persisted != checked)
+			model->setModified(true);
 	});
 }
 
@@ -104,7 +107,7 @@ void ChangelogWidget::clearChangelog()
 	msgbox.show("",
 							tr("<strong>ATTENTION:</strong> All the changelog records made until today will be lost and the filtering by \
 date of modification in partial diff will be unavailable! Do you want to proceed?"),
-								 Messagebox::Alert, Messagebox::YesNoButtons);
+								 Messagebox::Alert, Messagebox::YesNoButtons, false);
 
 	if(msgbox.isAccepted())
 	{

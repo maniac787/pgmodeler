@@ -33,14 +33,22 @@
 #include <QCryptographicHash>
 
 namespace UtilsNs {
+	static constexpr char OrigFontProp[] { "original-font" };
+
 	inline const QString EntityAmp("&amp;"),
 	EntityLt("&lt;"),
 	EntityGt("&gt;"),
 	EntityQuot("&quot;"),
 	EntityApos("&apos;"),
 
-	//! \brief Default char for data/value separator for special usage
-	DataSeparator("•"),
+	/*! \brief Default char for data/value separator for special usage.
+	 * Uses middle dot (·, U+00B7) instead of bullet (•, U+2022) to ensure compatibility
+	 * with non-UTF8 database encodings such as LATIN1/ISO-8859-1. The middle dot exists
+	 * in LATIN1 (0xB7) while bullet does not, preventing encoding conversion errors when
+	 * connecting to databases with different character encodings.
+	 * \warning This change may break compatibility with models created in previous versions
+	 * that used bullet (•) as the data separator. */
+	DataSeparator("·"),
 
 	//! \brief Indicates the wildcard filtering mode in the object listing
 	FilterWildcard("wildcard"),
@@ -61,8 +69,9 @@ namespace UtilsNs {
 	FilterSeparator = ':';
 
 	/*! \brief Writes the provided buffer to the file specified by its filename
+	 * When mk_path is true, the function tries to create the base path until the filename
 	 * Raises an exception in case of the file couldn,t be open */
-	__libutils void saveFile(const QString &filename, const QByteArray &buffer);
+	__libutils void saveFile(const QString &filename, const QByteArray &buffer, bool mk_path = false);
 
 	/*! \brief Read the contents of the file specified by its filename returning its contents.
 	 * Raises an exception in case of the file couldn't be open.
@@ -70,6 +79,8 @@ namespace UtilsNs {
 	 * data read from the file. If max_len is <= 0 then the function returns the entire content
 	 * of the file. */
 	__libutils QByteArray loadFile(const QString &filename, qint64 max_len = 0);
+
+	__libutils QString getTemporaryFilePath(const QString &abs_filepath_tmpl);
 
 	//! \brief Converts any chars (operators) < > " to the respective XML entities.
 	__libutils QString convertToXmlEntities(const QString value);
@@ -80,9 +91,11 @@ namespace UtilsNs {
 	__libutils QString getStringHash(const QByteArray &string,
 																					QCryptographicHash::Algorithm algorithm = QCryptographicHash::Md5);
 
-
 	//! \brief Replaces the sequence of chars [`'] by html tags <strong></strong> and [()] by <em></em>
 	__libutils QString formatMessage(const QString &msg);
+
+	//! \brief This function dumps a stack trace based on the OS signal receveid
+	__libutils QString generateStackTrace(int signal);
 }
 
 #endif

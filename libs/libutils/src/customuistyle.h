@@ -250,7 +250,9 @@ class __libutils CustomUiStyle : public QProxyStyle {
 		enum StyleHint {
 			NoHint,
 			DefaultFrmHint, // Default frame
-			AltDefaultFrmHint, // Alternate default frame (colors similar to QGroup)
+			GroupBoxFrmHint, // Alternate default frame (colors similar to QGroup)
+			MenuBoxFrmHint, // Similar to GroupBoxFrmHint but with no round cornes
+			TabBarFrmHint, // Alternate default frame (colors similar to QTabBar)
 			InfoFrmHint, // Blueish border (informational)
 			ConfirmFrmHint, // Green border (confirmation)
 			AlertFrmHint, // Yellow border (alert)
@@ -266,6 +268,10 @@ class __libutils CustomUiStyle : public QProxyStyle {
 
 		QPixmap createGrayMaskedPixmap(const QPixmap &original) const;
 
+		/*! \brief Adjusted the color for both dark UI and light UI
+		 *  A negative value either in dark_ui_factor and light_ui_factor
+		 *  generates a darker color (calling QColor::darker), on the other hand,
+		 *  a positive value generates a lighter color (calling QColor::lighter) */
 		static QColor getAdjustedColor(const QColor &color, int dark_ui_factor, int light_ui_factor);
 
 		void drawComplexControl(ComplexControl control, const QStyleOptionComplex *option,

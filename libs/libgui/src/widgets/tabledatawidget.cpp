@@ -22,7 +22,6 @@
 #include "tabledatawidget.h"
 #include "customuistyle.h"
 #include "messagebox.h"
-#include "tools/sqlexecutionwidget.h"
 #include "guiutilsns.h"
 #include "csvparser.h"
 #include "utils/plaintextitemdelegate.h"
@@ -97,7 +96,7 @@ TableDataWidget::TableDataWidget(QWidget *parent): BaseObjectWidget(parent, Obje
 	});
 
 	connect(copy_tb, &QToolButton::clicked, this, [this](){
-		SQLExecutionWidget::copySelection(data_tbw, false, true);
+		GuiUtilsNs::copySelection(data_tbw, false, true);
 		paste_tb->setEnabled(qApp->clipboard()->ownsClipboard());
 	});
 

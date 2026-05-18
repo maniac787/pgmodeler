@@ -72,7 +72,6 @@ ConfigurationWidget::ConfigurationWidget(QWidget *parent) : QWidget(parent)
 		btn->setFont(fnt);
 		btn->setProperty(Attributes::ObjectId.toStdString().c_str(), view_idx++);
 		GuiUtilsNs::configureWidgetFont(btn, GuiUtilsNs::MediumFontFactor);
-		//GuiUtilsNs::createDropShadow(btn, 1, 1, 5);
 	}
 
 	connect(btn_group, &QButtonGroup::buttonToggled, this, [this](QAbstractButton *btn){
@@ -83,11 +82,6 @@ ConfigurationWidget::ConfigurationWidget(QWidget *parent) : QWidget(parent)
 ConfigurationWidget::~ConfigurationWidget()
 {
 	connections_conf->destroyConnections();
-}
-
-void ConfigurationWidget::hideEvent(QHideEvent *)
-{
-	general_tb->setChecked(true);
 }
 
 void ConfigurationWidget::showEvent(QShowEvent *)
@@ -104,7 +98,21 @@ void ConfigurationWidget::__discardConfiguration()
 		for(auto &conf_wgt : confs_stw->findChildren<BaseConfigWidget *>())
 		{
 			if(conf_wgt->isConfigurationChanged())
+			{
+				ConnectionsConfigWidget *conn_wgt =
+						qobject_cast<ConnectionsConfigWidget *>(conf_wgt);
+
+				AppearanceConfigWidget *app_wgt =
+						qobject_cast<AppearanceConfigWidget *>(conf_wgt);
+
 				conf_wgt->loadConfiguration();
+
+				if(conn_wgt)
+					conn_wgt->resetForm();
+
+				if(app_wgt)
+					app_wgt->restoreUiFontStyle();
+			}
 		}
 
 		emit s_configurationReverted();
@@ -130,6 +138,9 @@ int ConfigurationWidget::checkChangedConfiguration()
 				applyConfiguration();
 			else if(res == Messagebox::Rejected)
 				__discardConfiguration();
+
+			if(res != Messagebox::Canceled)
+				general_tb->setChecked(true);
 
 			return res;
 		}

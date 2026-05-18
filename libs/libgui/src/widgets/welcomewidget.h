@@ -37,6 +37,14 @@ class __libgui WelcomeWidget: public QWidget, public Ui::WelcomeWidget {
 		bool eventFilter(QObject *object, QEvent *event) override;
 
 	public:
+		static constexpr double BtnFontFactor =
+		#ifdef Q_OS_LINUX
+			1.20
+		#else
+			1.40
+		#endif
+		;
+
 		WelcomeWidget(QWidget * parent = nullptr);
 		
 	public slots:

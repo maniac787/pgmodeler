@@ -52,6 +52,7 @@
 <!ATTLIST configuration alert-open-sqltabs (false|true) "true">
 <!ATTLIST configuration alert-apply-metadata (false|true) "true">
 <!ATTLIST configuration alert-disable-quoting (false|true) "true">
+<!ATTLIST configuration alert-resize-rows-cols (false|true) "true">
 <!ATTLIST configuration use-def-disambiguation (false|true) "true">
 <!ATTLIST configuration hide-objects-sel-info (false|true) "false">
 <!ATTLIST configuration hide-cur-pos-zoom-info (false|true) "false">

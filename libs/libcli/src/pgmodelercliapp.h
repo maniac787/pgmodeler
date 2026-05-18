@@ -36,14 +36,25 @@
 #include "settings/generalconfigwidget.h"
 #include "settings/connectionsconfigwidget.h"
 #include "settings/relationshipconfigwidget.h"
-#include "tools/databaseimporthelper.h"
-#include "tools/modelsdiffhelper.h"
 #include "pgmodelercliplugin.h"
+
+#ifdef PRIV_CODE_SYMBOLS
+   #include "tools/databaseimporthelper.h"
+	#include "tools/modelsdiffhelper.h"
+#endif
 
 class __libcli PgModelerCliApp: public Application {
 	Q_OBJECT
 
 	private:
+		#ifdef PRIV_CODE_SYMBOLS
+			//! \brief Import helper object
+			DatabaseImportHelper *import_hlp;
+
+			//! \brief Diff helper object
+			ModelsDiffHelper *diff_hlp;
+		#endif
+
 		struct MenuItem {
 			QString section, option, value, text;
 
@@ -80,12 +91,6 @@ class __libcli PgModelerCliApp: public Application {
 
 		//! \brief Export helper object
 		ModelExportHelper *export_hlp;
-
-		//! \brief Import helper object
-		DatabaseImportHelper *import_hlp;
-
-		//! \brief Diff helper object
-		ModelsDiffHelper *diff_hlp;
 
 		//! \brief Input database model
 		DatabaseModel *input_model;
@@ -187,8 +192,6 @@ class __libcli PgModelerCliApp: public Application {
 		void fixOpClassesFamiliesReferences(QString &obj_xml);
 
 		void configureConnection(bool extra_conn);
-		void importDatabase(DatabaseModel *model, Connection conn);
-
 		void handleLinuxMimeDatabase(bool uninstall, bool system_wide, bool force);
 		void handleWindowsMimeDatabase(bool uninstall, bool system_wide, bool force);
 
@@ -210,6 +213,10 @@ class __libcli PgModelerCliApp: public Application {
 		void runPluginsPostOperations();
 
 		int exec();
+
+		#ifdef PRIV_CODE_SYMBOLS
+			void importDatabase(DatabaseModel *model, Connection conn);
+		#endif
 
 	public:
 		//! \brief Option names constants
@@ -325,29 +332,32 @@ class __libcli PgModelerCliApp: public Application {
 	 * \param break_pos Position where line should break (counted from line start) */
 		void printMenuItem(const MenuItem &item, int ini_pos = -1, int break_pos = 120);
 
-	/*! \brief Prints multiple menu items with consistent alignment
-	 * \param items List of tuples containing (long_opt, opt_value, description). If only long_opt has content, it's treated as a section title
-	 * \param break_pos Position where line should break (counted from line start) */
-	void printMenuItems(const QList<MenuItem> &items, int break_pos = 120);
+		/*! \brief Prints multiple menu items with consistent alignment
+		 * \param items List of tuples containing (long_opt, opt_value, description). If only long_opt has content, it's treated as a section title
+		 * \param break_pos Position where line should break (counted from line start) */
+		void printMenuItems(const QList<MenuItem> &items, int break_pos = 120);
 
-	//! \brief Prints to the stdout only if the silent mode is not active
-	void printMessage(const QString &txt = "");
-	//! \brief Returns the options parsed when calling the application
-	attribs_map getParsedOptions();
+		//! \brief Prints to the stdout only if the silent mode is not active
+		void printMessage(const QString &txt = "");
+		//! \brief Returns the options parsed when calling the application
+		attribs_map getParsedOptions();
 
-	//! \brief Returns a single parsed option value
-	QString getParsedOptValue(const QString &opt);
+		//! \brief Returns a single parsed option value
+		QString getParsedOptValue(const QString &opt);
 
-	//! \brief Replaces the value of a single parsed option
-	void setParsedOptValue(const QString &opt, const QString &value);
+		//! \brief Replaces the value of a single parsed option
+		void setParsedOptValue(const QString &opt, const QString &value);
 		void fixModel();
 		void exportModel();
-		void importDatabase();
-		void diffModels();
 		void updateMimeType();
 		void createConfigurations();
 		void listConnections();
 		void listPlugins();
+
+		#ifdef PRIV_CODE_SYMBOLS
+			void importDatabase();
+			void diffModels();
+		#endif
 
 	private slots:
 		void handleObjectAddition(BaseObject *);

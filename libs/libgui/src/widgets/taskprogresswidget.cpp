@@ -44,7 +44,10 @@ void TaskProgressWidget::addIcon(unsigned id, const QIcon &ico)
 
 void TaskProgressWidget::setNoProgressState(bool value)
 {
-	progress_pb->setRange(0, 0);
+	if(value)
+		progress_pb->setRange(0, 0);
+	else
+		progress_pb->setRange(0, 100);
 }
 
 void TaskProgressWidget::show()

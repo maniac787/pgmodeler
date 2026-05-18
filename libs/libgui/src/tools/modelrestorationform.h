@@ -52,8 +52,9 @@ class __libgui ModelRestorationForm: public QDialog, public Ui::ModelRestoration
 		//! \brief List of files to be ignored by the restoration form
 		void setIgnoredFiles(const QStringList &list);
 
-		//! \brief Clears the tmp/ dir by removing all temporary files (*.dbm, *.dbk, *.omf, *.sql. *.log)
-		void removeTemporaryFiles();
+		/*! \brief Clears the tmp/ dir by removing all temporary files (*.dbm, *.dbk, *.omf, *.sql. *.log)
+		 *  If rm_dirs is true, also removes all folders created inside tmp/ */
+		void removeTemporaryFiles(bool rm_tmp_dirs);
 
 		//! \brief Clears the tmp/ dir removing all temporary models (*.dbm)
 		void removeTemporaryModels();

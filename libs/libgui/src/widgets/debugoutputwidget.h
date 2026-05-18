@@ -45,7 +45,13 @@ class __libgui DebugOutputWidget : public QWidget {
 		void clear();
 
 	public slots:
-		void logMessage(const QString &msg, const QColor &fg_color = Qt::transparent);
+		/*! \brief Logs a message to the debug output widget with optional text color formatting.
+		 * A foreground color for the message text (Qt::transparent is the default) can be specified.
+		 * The ensure_ln_start, when true, appends an empty line after the message to move the cursor
+		 * to the start of a new line. This resets the horizontal scrollbar position, ensuring that
+		 * the beginning of long log messages is visible without requiring manual scrolling. */
+		void logMessage(const QString &msg, const QColor &fg_color = Qt::transparent, bool ensure_ln_start = false);
+
 		void showActionButtons(bool show);
 
 	private slots:

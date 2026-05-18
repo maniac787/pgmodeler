@@ -64,27 +64,16 @@ set(SOURCES
     src/settings/snippetsconfigwidget.cpp src/settings/snippetsconfigwidget.h
     src/settings/configurationwidget.h src/settings/configurationwidget.cpp
     src/tools/bugreportform.cpp src/tools/bugreportform.h
-    src/tools/databaseexplorerwidget.cpp src/tools/databaseexplorerwidget.h
-    src/tools/databaseimportwidget.cpp src/tools/databaseimportwidget.h
-    src/tools/databaseimporthelper.cpp src/tools/databaseimporthelper.h
-    src/tools/datagridwidget.cpp src/tools/datagridwidget.h
-    src/tools/datahandlingform.cpp src/tools/datahandlingform.h
     src/tools/metadatahandlingwidget.cpp src/tools/metadatahandlingwidget.h
     src/tools/modelexportwidget.cpp src/tools/modelexportwidget.h
     src/tools/modelexporthelper.cpp src/tools/modelexporthelper.h
     src/tools/modelfixwidget.cpp src/tools/modelfixwidget.h
     src/tools/modelrestorationform.cpp src/tools/modelrestorationform.h
-    src/tools/modelsdiffhelper.cpp src/tools/modelsdiffhelper.h
     src/tools/modelvalidationhelper.cpp src/tools/modelvalidationhelper.h
     src/tools/modelvalidationwidget.cpp src/tools/modelvalidationwidget.h
-    src/tools/objectsdiffinfo.cpp src/tools/objectsdiffinfo.h
-    src/tools/sqlexecutionhelper.cpp src/tools/sqlexecutionhelper.h
-    src/tools/sqlexecutionwidget.cpp src/tools/sqlexecutionwidget.h
-    src/tools/sqltoolwidget.cpp src/tools/sqltoolwidget.h
     src/tools/swapobjectsidswidget.cpp src/tools/swapobjectsidswidget.h
     src/tools/validationinfo.cpp src/tools/validationinfo.h
-    src/tools/difftoolwidget.cpp src/tools/difftoolwidget.h
-    src/tools/modeldbselectorwidget.h src/tools/modeldbselectorwidget.cpp
+		src/tools/modelselectorwidget.h src/tools/modelselectorwidget.cpp
     src/tools/fixtoolswidget.h src/tools/fixtoolswidget.cpp
     src/utils/customsortproxymodel.cpp src/utils/customsortproxymodel.h
     src/utils/deletableitemdelegate.cpp src/utils/deletableitemdelegate.h
@@ -93,7 +82,6 @@ set(SOURCES
     src/utils/matchinfo.cpp src/utils/matchinfo.h
     src/utils/objectslistmodel.cpp src/utils/objectslistmodel.h
     src/utils/plaintextitemdelegate.cpp src/utils/plaintextitemdelegate.h
-    src/utils/resultsetmodel.cpp src/utils/resultsetmodel.h
     src/utils/syntaxhighlighter.cpp src/utils/syntaxhighlighter.h
     src/utils/textblockinfo.cpp src/utils/textblockinfo.h
     src/widgets/aboutwidget.cpp src/widgets/aboutwidget.h
@@ -119,7 +107,6 @@ set(SOURCES
     src/widgets/objectrenamewidget.cpp src/widgets/objectrenamewidget.h
     src/widgets/objectsearchwidget.cpp src/widgets/objectsearchwidget.h
     src/widgets/objectselectorwidget.cpp src/widgets/objectselectorwidget.h
-    src/widgets/objectsfilterwidget.cpp src/widgets/objectsfilterwidget.h
     src/widgets/objecttypeslistwidget.cpp src/widgets/objecttypeslistwidget.h
     src/widgets/operationlistwidget.cpp src/widgets/operationlistwidget.h
     src/widgets/sceneinfowidget.cpp src/widgets/sceneinfowidget.h
@@ -187,20 +174,13 @@ set(FORMS
     ui/settings/relationshipconfigwidget.ui
     ui/settings/configurationwidget.ui
     ui/tools/bugreportform.ui
-    ui/tools/datagridwidget.ui
-    ui/tools/datahandlingform.ui
     ui/tools/modelexportwidget.ui
-    ui/tools/sqlexecutionwidget.ui
-    ui/tools/databaseexplorerwidget.ui
     ui/tools/metadatahandlingwidget.ui
     ui/tools/modelfixwidget.ui
-    ui/tools/sqltoolwidget.ui
     ui/tools/modelrestorationform.ui
     ui/tools/swapobjectsidswidget.ui
     ui/tools/modelvalidationwidget.ui
-    ui/tools/databaseimportwidget.ui
-    ui/tools/difftoolwidget.ui
-    ui/tools/modeldbselectorwidget.ui
+		ui/tools/modelselectorwidget.ui
     ui/tools/fixtoolswidget.ui
     ui/widgets/aboutwidget.ui
     ui/widgets/customtablewidget.ui
@@ -210,13 +190,11 @@ set(FORMS
     ui/widgets/objectsearchwidget.ui
     ui/widgets/objecttypeslistwidget.ui
     ui/widgets/searchreplacewidget.ui
-
     ui/widgets/codepreviewwidget.ui
     ui/widgets/fileselectorwidget.ui
     ui/widgets/modeloverviewwidget.ui
     ui/widgets/objectselectorwidget.ui
     ui/widgets/changelogwidget.ui
-    ui/widgets/objectsfilterwidget.ui
     ui/widgets/tabledatawidget.ui
     ui/widgets/colorpickerwidget.ui
     ui/widgets/layersconfigwidget.ui
@@ -230,7 +208,7 @@ set(FORMS
     ui/widgets/modelnavigationwidget.ui
     ui/widgets/sceneinfowidget.ui
     ui/widgets/welcomewidget.ui
-    ui/widgets/objectassociationswidget.ui)
+		ui/widgets/objectassociationswidget.ui)
 
 set(RESOURCES res/resources.qrc)
 

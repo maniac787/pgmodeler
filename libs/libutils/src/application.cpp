@@ -21,7 +21,9 @@
 #include "application.h"
 #include "exception.h"
 #include <QTranslator>
+#include <QFontDatabase>
 #include "customuistyle.h"
+#include "utilsns.h"
 
 void logMessage(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
@@ -51,6 +53,10 @@ Application::Application(int &argc, char **argv) : QApplication(argc,argv)
 	 * via CustomUiStyle so additional UI effects can be applied */
 	if(!arguments().contains(GlobalAttributes::UiStyleOption))
 		setStyle(new CustomUiStyle(GlobalAttributes::DefaultQtStyle));
+
+#ifdef	Q_OS_MAC
+	setAttribute(Qt::AA_DontShowIconsInMenus, false);
+#endif
 }
 
 void Application::loadTranslation(const QString &lang_id, const QString &directory)
@@ -64,6 +70,55 @@ void Application::loadTranslation(const QString &lang_id, const QString &directo
 	 * and in case of success install it in the application */
 	if(!translator->load(lang_id, directory) || !installTranslator(translator))
 		delete(translator);
+}
+
+void Application::loadCustomFonts(const QString &def_font_attr, const QString &def_size_attr)
+{
+	QString def_font_fam = GlobalAttributes::getConfigParamFromFile(def_font_attr, GlobalAttributes::AppearanceConf),
+			def_font_size = GlobalAttributes::getConfigParamFromFile(def_size_attr, GlobalAttributes::AppearanceConf);
+
+	loadCustomFonts(def_font_fam, def_font_size.toDouble());
+}
+
+void Application::loadCustomFonts(const QString &def_font, double def_size)
+{
+	//Install the custom fonts in .qrc file(s)
+	static const QStringList font_names { "exo2", "montserrat", "source-code-pro" };
+	static const QString path { QString(":fonts/fonts/%1%2.ttf") };
+
+	for(auto &f_name : font_names)
+	{
+		QFontDatabase::addApplicationFont(path.arg(f_name, ""));
+		QFontDatabase::addApplicationFont(path.arg(f_name, "-bold"));
+		QFontDatabase::addApplicationFont(path.arg(f_name, "-italic"));
+		QFontDatabase::addApplicationFont(path.arg(f_name, "-bold-italic"));
+	}
+
+	// Checking if the provided default font name exists in the font database
+	QStringList families = QFontDatabase::families();
+	int font_idx = families.indexOf(def_font);
+
+	// If exists we use it as the default font for the whole application
+	if(font_idx >= 0)
+	{
+		// Adjusting the default font size if its invalid
+		if(def_size <= 0)
+			def_size = font().pointSizeF();
+
+		QFont custom_fnt(def_font, def_size);
+
+		// Workaround on Windows to avoid distorted fonts on some resolutions
+		custom_fnt.setHintingPreference(QFont::PreferNoHinting);
+		custom_fnt.setStyleStrategy(QFont::PreferAntialias);
+
+		/* We save the custom font in the original-font property
+		 * of the application instance so it can be retrieved
+		 * when needed, e.g., during on-the-fly UI font preview */
+		setProperty(UtilsNs::OrigFontProp, custom_fnt);
+		setFont(custom_fnt);
+	}
+	else
+		setProperty(UtilsNs::OrigFontProp, font());
 }
 
 void Application::loadTranslations(const QString &lang_id, bool incl_plugins_tr)

@@ -61,13 +61,19 @@ namespace GuiUtilsNs {
 	constexpr char FontAdjustedProp[] { "font-adjusted" };
 
 	constexpr int LtMargin = 5,
-	LtSpacing = 5;
+	LtSpacing = 5,
+
+	/*! \brief This const is used to flag a QTreeWidgetItem a the column
+	 * #100 (setData()) that it is forcibly hidden or not. This
+	 * const is read by the filterObject() function below */
+	ItemHiddenCol = 100;
 
 	static const QMargins LtMargins { LtMargin, LtMargin, LtMargin, LtMargin };
 
 	enum FontFactorId: unsigned {
 		SmallFontFactor,
 		MediumFontFactor,
+		DefaultFontFactor,
 		BigFontFactor,
 		HugeFontFactor
 	};
@@ -347,14 +353,78 @@ namespace GuiUtilsNs {
 	 * user must take care of the destruction of the object */
 	__libgui NumberedTextEditor *createNumberedTextEditor(QWidget *parent, bool act_btns_enabled = false, qreal custom_fnt_size = 0);
 
+	/*! \brief Configures all buddy labels in the provided layout
+	 *
+	 *  NOTE: the function may not work if the layout is somehow a
+	 *  child of a QSplitter. To workaround the problem it's needed
+	 *  to create a single-shot timer to force the widget to have
+	 *  their fonts changed if it is called in a widgets constructor.
+	 *  For example:
+	 *  ...
+	 *  setsUi(this)
+	 *
+	 *  QTimer::singleShot(0, this, [this]() {
+	 *		GuiUtilsNs::configureBuddyWidgets(layout);
+	 *  }); */
 	__libgui void configureBuddyWidget(QLayout *lt);
 
-	//! \brief Configures all buddy labels in the provided widget
+	/*! \brief Configures all buddy labels in the provided widget
+	 *
+	 *  NOTE: the function may not work if the layout is somehow a
+	 *  child of a QSplitter. To workaround the problem it's needed
+	 *  to create a single-shot timer to force the widget to have
+	 *  their fonts changed if it is called in a widgets constructor.
+	 *  For example:
+	 *  ...
+	 *  setsUi(this)
+	 *
+	 *  QTimer::singleShot(0, this, [this]() {
+	 *		GuiUtilsNs::configureBuddyWidgets(widget);
+	 *  }); */
 	__libgui void configureBuddyWidgets(QWidget *widget);
+
+	/*! \brief Configures all buddy labels in the provided list of widgets
+	 *
+	 *  NOTE: the function may not work if the layout is somehow a
+	 *  child of a QSplitter. To workaround the problem it's needed
+	 *  to create a single-shot timer to force the widget to have
+	 *  their fonts changed if it is called in a widgets constructor.
+	 *  For example:
+	 *  ...
+	 *  setsUi(this)
+	 *
+	 *  QTimer::singleShot(0, this, [this]() {
+	 *		GuiUtilsNs::configureBuddyWidgets(wgt_list);
+	 *  }); */
+	__libgui void configureBuddyWidgets(const QWidgetList &wgt_list);
 
 	//! \brief Creates a layout that contains a label and a widget arranged vertically
 	__libgui QLayout *createBuddyWidgetLayout(QLabel *label, QWidget *widget, QWidget *append_widget = nullptr,
 																						 int margin = 0, int spacing = 0);
+
+	/*! \brief Filters an tree widget using a pattern. The 'search_column' indicates in
+	 * which column the pattern is applied. The paramenter 'sel_single_leaf' indicates
+	 * if the single leaf (resulting from filtering) must be selected. */
+	__libgui void filterObjects(QTreeWidget *tree_wgt, const QString &pattern,
+															int search_column, bool sel_single_leaf);
+
+	/*! \brief Copy to clipboard (in csv format) the current selected items on results grid
+	 * Optionally, the column names can be included/excluded in the resulting buffer */
+	__libgui void copySelection(QTableView *results_tbw, bool use_popup = true,
+															bool csv_is_default = false, bool incl_col_names = true);
+
+	/*! \brief Generates a CSV buffer based upon the selection on the results grid
+	 *  Optionally, the column names can be included/excluded in the resulting buffer */
+	__libgui QByteArray generateCSVBuffer(QTableView *results_tbw, bool inc_col_names = true);
+
+	/*! \brief Generates a Plain text buffer based upon the selection on the results grid
+	 * Optionally, the column names can be included/excluded in the resulting buffer.
+	 * In this method the column names are by default excluded */
+	__libgui QByteArray generateTextBuffer(QTableView *results_tbw, bool inc_col_names = false);
+
+	/*! \brief Generates a custom text buffer. User can specify a separator for columns, include column names and if the output
+	 *  buffer is whether in CSV format or not */
+	__libgui QByteArray generateBuffer(QTableView *results_tbw, QChar separator, bool incl_col_names, bool csv_format);
 }
 
 #endif

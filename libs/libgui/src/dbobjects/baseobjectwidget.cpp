@@ -29,6 +29,7 @@
 #include "settings/generalconfigwidget.h"
 #include "utilsns.h"
 #include "dbobjects/pgsqltypewidget.h"
+#include "tabordermanager.h"
 
 BaseObjectWidget::BaseObjectWidget(QWidget *parent, ObjectType obj_type): QWidget(parent)
 {
@@ -108,14 +109,9 @@ void BaseObjectWidget::setRequiredField(QWidget *widget)
 	if(widget)
 	{
 		QLabel *lbl = qobject_cast<QLabel *>(widget);
-		//QLineEdit *edt = qobject_cast<QLineEdit *>(widget);
-		//QTextEdit *txt = qobject_cast<QTextEdit *>(widget);
 		QGroupBox *grp = qobject_cast<QGroupBox *>(widget);
-		//ObjectSelectorWidget *sel = dynamic_cast<ObjectSelectorWidget *>(widget);
-		//FileSelectorWidget *file_sel = dynamic_cast<FileSelectorWidget *>(widget);
 		PgSQLTypeWidget *pgtype = dynamic_cast<PgSQLTypeWidget *>(widget);
 		QString str_aux = " <span style='color: #ff0000;'>*</span> ";
-		//QColor border_color = CustomTableWidget::getTableItemColor(CustomTableWidget::RemovedItemBgColor);
 
 		if(lbl || pgtype || grp)
 		{
@@ -128,17 +124,6 @@ void BaseObjectWidget::setRequiredField(QWidget *widget)
 			if(grp)
 				grp->setTitle("* " + grp->title());
 		}
-		/* else if(edt || txt || sel || file_sel)
-		{
-			if(sel || file_sel)
-			{
-				widget->setStyleSheet(QString("%1 > QLineEdit { border: 2px solid %2; padding-top: 2px; padding-bottom: 2px; border-radius: 4px; }")
-															.arg(widget->metaObject()->className(), border_color.name()));
-			}
-			else
-				widget->setStyleSheet(QString("%1 { border: 2px solid %2; padding-top: 2px; padding-bottom: 2px; border-radius: 4px; }")
-															.arg(widget->metaObject()->className()).arg(border_color.name()));
-		} */
 
 		str_aux = (!widget->toolTip().isEmpty() ? "\n" : "");
 		widget->setToolTip(widget->toolTip() + str_aux + tr("Required field. Leaving this empty will raise errors!"));

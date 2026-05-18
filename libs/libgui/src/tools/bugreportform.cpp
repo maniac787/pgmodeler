@@ -110,9 +110,8 @@ void BugReportForm::generateReport(const QByteArray &buf)
 
 	//Opens the file for writting
 	output.setFileName(filename);
-	output.open(QFile::WriteOnly);
 
-	if(!output.isOpen())
+	if(!output.open(QFile::WriteOnly))
 	{
 		Messagebox::error(Exception::getErrorMessage(ErrorCode::FileDirectoryNotWritten).arg(filename),
 											ErrorCode::FileDirectoryNotWritten, PGM_FUNC, PGM_FILE, PGM_LINE);

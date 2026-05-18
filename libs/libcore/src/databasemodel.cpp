@@ -806,9 +806,9 @@ void DatabaseModel::destroyObjects()
 	BaseObject::setClearDepsInDtor(false);
 	BaseGraphicObject::setUpdatesEnabled(false);
 
-	for(unsigned i=0; i < 5; i++)
+	for(auto &g_obj_type : graph_types)
 	{
-		for(auto &object : *this->getObjectList(graph_types[i]))
+		for(auto &object : *this->getObjectList(g_obj_type))
 		{
 			graph_obj = dynamic_cast<BaseGraphicObject *>(object);
 
@@ -836,10 +836,22 @@ void DatabaseModel::destroyObjects()
 	ritr = objects.rbegin();
 	ritr_end = objects.rend();
 
+	/* Pass 1: clear all deps/refs across every object before any deletion.
+	 * This prevents dangling pointers when Relationship::destroyObjects() later
+	 * frees intermediate columns/constraints that are still referenced by other objects. */
+	while(ritr != ritr_end)
+	{
+		ritr->second->clearAllDepsRefs();
+		ritr++;
+	}
+
+	ritr = objects.rbegin();
+	ritr_end = objects.rend();
+
+	/* Pass 2: now safe to delete — no object can hold live pointers to another. */
 	while(ritr != ritr_end)
 	{
 		object = ritr->second;
-		object->clearAllDepsRefs();
 		ritr++;
 
 		// We ignore the database itself, permission objects (destroyed separetely) and table children objects
@@ -3409,7 +3421,7 @@ void DatabaseModel::loadModel(const QString &filename)
 
 		//Loads the root DTD
 		xmlparser.setDTDFile(dtd_file + GlobalAttributes::RootDTD +
-														 GlobalAttributes::ObjectDTDExt,
+												 GlobalAttributes::ObjectDTDExt,
 												 GlobalAttributes::RootDTD);
 
 		//Loads the file validating it against the root DTD
@@ -9121,11 +9133,11 @@ void DatabaseModel::saveObjectsMetadata(const QString &filename, MetaAttrOptions
 	save_objs_z_value=(MetaObjsZStackValue & options) == MetaObjsZStackValue;
 	save_objs_layers_cfg=(MetaObjsLayersConfig & options) == MetaObjsLayersConfig;
 
-	output.open(QFile::WriteOnly);
-
-	if(!output.isOpen())
+	if(!output.open(QFile::WriteOnly))
+	{
 		throw Exception(Exception::getErrorMessage(ErrorCode::FileDirectoryNotWritten).arg(filename),
 										ErrorCode::FileDirectoryNotWritten,PGM_FUNC,PGM_FILE,PGM_LINE);
+	}
 
 	try
 	{

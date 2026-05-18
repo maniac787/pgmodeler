@@ -16,6 +16,10 @@
 	\s custom-scale="{custom-scale}"
 %end
 
+%if {ui-font} %then
+	\s ui-font="{ui-font}" \s ui-font-size="{ui-font-size}"
+%end
+
 > \n
 
 \n \t <design
@@ -39,6 +43,7 @@
 \s highlight-lines=" %if {highlight-lines} %then true %else false %end "
 \s line-numbers-color="{line-numbers-color}" \n
 {spc} line-numbers-bg-color="{line-numbers-bg-color}"
+\s line-numbers-hl-color="{line-numbers-hl-color}"
 \s line-highlight-color="{line-highlight-color}"
 [/>] \n
 

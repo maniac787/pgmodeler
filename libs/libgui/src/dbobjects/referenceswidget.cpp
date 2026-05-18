@@ -33,7 +33,7 @@ ReferencesWidget::ReferencesWidget(const std::vector<ObjectType> &types, bool co
 {
 	Ui_ReferencesWidget::setupUi(this);
 
-	CustomUiStyle::setStyleHint(CustomUiStyle::AltDefaultFrmHint, options_frm);
+	CustomUiStyle::setStyleHint(CustomUiStyle::GroupBoxFrmHint, options_frm);
 
 	object_sel = new ObjectSelectorWidget(types, this);
 	references_tab = new CustomTableWidget(CustomTableWidget::AllButtons ^

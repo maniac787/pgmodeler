@@ -20,7 +20,6 @@
 */
 
 #include "modelobjectswidget.h"
-#include "tools/databaseimportwidget.h"
 #include "guiutilsns.h"
 #include "settings/generalconfigwidget.h"
 #include "customtablewidget.h"
@@ -32,16 +31,13 @@ ModelObjectsWidget::ModelObjectsWidget(bool simplified_view, QWidget *parent) : 
 	setupUi(this);
 
 	GuiUtilsNs::configureBuddyWidgets(filter_wgt);
-	CustomUiStyle::setStyleHint(CustomUiStyle::AltDefaultFrmHint, content_frm);
+	CustomUiStyle::setStyleHint(CustomUiStyle::GroupBoxFrmHint, content_frm);
+	GuiUtilsNs::configureWidgetFont(title_lbl, GuiUtilsNs::SmallFontFactor, true);
 
 	obj_types_wgt = nullptr;
 	model_wgt=nullptr;
 	db_model=nullptr;
 	setModel(db_model);
-
-	QFont fnt = title_lbl->font();
-	fnt.setPointSizeF(fnt.pointSizeF() * 0.85);
-	title_lbl->setFont(fnt);
 
 	title_wgt->setVisible(!simplified_view);
 	this->simplified_view = simplified_view;
@@ -295,44 +291,44 @@ QVariant ModelObjectsWidget::generateItemData(BaseObject *object)
 
 QTreeWidgetItem *ModelObjectsWidget::createItemForObject(BaseObject *object, QTreeWidgetItem *root, bool update_perms)
 {
-	QTreeWidgetItem *item=nullptr;
+	QTreeWidgetItem *item = nullptr;
 	QFont font;
 	ObjectType obj_type;
-	TableObject *tab_obj=nullptr;
+	TableObject *tab_obj = nullptr;
 	QString obj_name;
 
 	if(!object)
 		throw Exception(ErrorCode::OprNotAllocatedObject ,PGM_FUNC,PGM_FILE,PGM_LINE);
 
-	obj_type=object->getObjectType();
-	tab_obj=dynamic_cast<TableObject *>(object);
-	item=new QTreeWidgetItem(root);
+	obj_type = object->getObjectType();
+	tab_obj = dynamic_cast<TableObject *>(object);
+	item = new QTreeWidgetItem(root);
 
 	if(BaseFunction::isBaseFunction(obj_type))
 	{
 		BaseFunction *func = dynamic_cast<BaseFunction *>(object);
 		func->createSignature(false);
-		item->setText(0,func->getSignature());
+		item->setText(0, func->getSignature());
 		obj_name = func->getSignature();
 		func->createSignature(true);
 	}
-	else if(obj_type==ObjectType::Operator)
+	else if(obj_type == ObjectType::Operator)
 	{
-		Operator *oper=dynamic_cast<Operator *>(object);
+		Operator *oper = dynamic_cast<Operator *>(object);
 		item->setText(0, oper->getSignature(false));
-		obj_name=oper->getSignature(false);
+		obj_name = oper->getSignature(false);
 	}
-	else if(obj_type==ObjectType::OpClass || obj_type == ObjectType::OpFamily)
+	else if(obj_type == ObjectType::OpClass || obj_type == ObjectType::OpFamily)
 	{
-		obj_name=object->getSignature(false);
+		obj_name = object->getSignature(false);
 		obj_name.replace(QRegularExpression("( )+(USING)( )+"), " [");
 		obj_name+=QChar(']');
-		item->setText(0,obj_name);
+		item->setText(0, obj_name);
 	}
 	else
 	{
 		item->setText(0,object->getName());
-		obj_name=object->getName();
+		obj_name = object->getName();
 	}
 
 	item->setToolTip(0, QString("%1 (id: %2)").arg(obj_name).arg(object->getObjectId()));
@@ -342,7 +338,7 @@ QTreeWidgetItem *ModelObjectsWidget::createItemForObject(BaseObject *object, QTr
 	if(update_perms)
 		updatePermissionTree(item, object);
 
-	font=item->font(0);
+	font = item->font(0);
 	font.setStrikeOut(object->isSQLDisabled() && !object->isSystemObject());
 
 	if(tab_obj && tab_obj->isAddedByRelationship())
@@ -356,7 +352,7 @@ QTreeWidgetItem *ModelObjectsWidget::createItemForObject(BaseObject *object, QTr
 		item->setForeground(0, CustomTableWidget::getTableItemColor(CustomTableWidget::ProtItemAltFgColor));
 	}
 
-	item->setFont(0,font);
+	item->setFont(0, font);
 
 	int sub_type = -1;
 
@@ -427,7 +423,10 @@ void ModelObjectsWidget::collapseAll()
 
 void ModelObjectsWidget::filterObjects()
 {
-	DatabaseImportWidget::filterObjects(objectstree_tw, filter_edt->text(), (by_id_chk->isChecked() ? 1 : 0), simplified_view);
+	GuiUtilsNs::filterObjects(objectstree_tw,
+														filter_edt->text(),
+														(by_id_chk->isChecked() ? 2 : 0),
+														simplified_view);
 }
 
 void ModelObjectsWidget::updateObjectsView()

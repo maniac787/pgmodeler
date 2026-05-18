@@ -80,11 +80,7 @@ class __libgui AppearanceConfigWidget: public BaseConfigWidget, public Ui::Appea
 					
 		ColorPickerWidget *elem_color_cp,
 
-		*line_numbers_cp,
-
-		*line_numbers_bg_cp,
-
-		*line_highlight_cp,
+		*line_num_colors_cp,
 
 		*grid_color_cp,
 
@@ -153,6 +149,7 @@ class __libgui AppearanceConfigWidget: public BaseConfigWidget, public Ui::Appea
 
 	private slots:
 		void enableConfigElement();
+		void previewCustomUiFont();
 		void applyElementFontStyle();
 		void applyElementColor(unsigned color_idx, QColor color);
 		void previewCodeFontStyle();
@@ -166,6 +163,7 @@ class __libgui AppearanceConfigWidget: public BaseConfigWidget, public Ui::Appea
 
 	public slots:
 		void restoreDefaults() override;
+		void restoreUiFontStyle();
 };
 
 #endif

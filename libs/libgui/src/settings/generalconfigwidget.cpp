@@ -26,10 +26,14 @@
 #include "operationlist.h"
 #include "mainwindow.h"
 #include "widgets/numberedtexteditor.h"
-#include "tools/sqlexecutionwidget.h"
-#include "tools/difftoolwidget.h"
-#include "tools/databaseimportwidget.h"
 #include "tools/modelexportwidget.h"
+#include <QRadioButton>
+
+#ifdef PRIV_CODE_SYMBOLS
+	#include "tools/sqlexecutionwidget.h"
+	#include "tools/difftoolwidget.h"
+	#include "tools/databaseimportwidget.h"
+#endif
 
 std::map<QString, GeneralConfigWidget::WidgetState> GeneralConfigWidget::widgets_geom;
 std::map<QString, attribs_map> GeneralConfigWidget::config_params;
@@ -187,9 +191,16 @@ GeneralConfigWidget::GeneralConfigWidget(QWidget * parent) : BaseConfigWidget(pa
 
 	connect(source_editor_sel, &FileSelectorWidget::s_selectorChanged, this, &GeneralConfigWidget::setConfigurationChanged);
 
-	connect(clear_sql_history_btn, &QPushButton::clicked, this, [](){
-		SQLExecutionWidget::destroySQLHistory();
-	});
+	#ifdef PRIV_CODE_SYMBOLS
+		connect(clear_sql_history_btn, &QPushButton::clicked, this, [](){
+			SQLExecutionWidget::destroySQLHistory();
+		});
+	#else
+		sql_tool_gb->setVisible(false);
+		sql_tool_gb->setEnabled(false);
+		printing_gb->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+		printing_spc->changeSize(10, 10, QSizePolicy::Expanding, QSizePolicy::Expanding);
+	#endif
 
 	connect(reset_alerts_choices_btn, &QPushButton::clicked, this, &GeneralConfigWidget::resetAlertChoices);
 
@@ -217,7 +228,8 @@ void GeneralConfigWidget::showEvent(QShowEvent *)
 																			 config_params[Attributes::Configuration][Attributes::AlertOpenSqlTabs] != Attributes::True ||
 																			 config_params[Attributes::Configuration][Attributes::UseDefDisambiguation] == Attributes::True ||
 																			 config_params[Attributes::Configuration][Attributes::AlertApplyMetadata] == Attributes::False ||
-																			 config_params[Attributes::Configuration][Attributes::AlertDisableQuoting] != Attributes::True);
+																			 config_params[Attributes::Configuration][Attributes::AlertDisableQuoting] != Attributes::True ||
+																			 config_params[Attributes::Configuration][Attributes::AlertResizeRowsCols] == Attributes::False);
 
 }
 
@@ -228,6 +240,7 @@ void GeneralConfigWidget::resetAlertChoices()
 	config_params[Attributes::Configuration][Attributes::UseDefDisambiguation] = Attributes::False;
 	config_params[Attributes::Configuration][Attributes::AlertApplyMetadata] = Attributes::True;
 	config_params[Attributes::Configuration][Attributes::AlertDisableQuoting] = Attributes::True;
+	config_params[Attributes::Configuration][Attributes::AlertResizeRowsCols] = Attributes::True;
 	reset_alerts_choices_btn->setEnabled(false);
 }
 
@@ -248,7 +261,8 @@ void GeneralConfigWidget::loadConfiguration()
 			 !config_params[Attributes::Configuration].count(Attributes::AlertOpenSqlTabs) ||
 			 !config_params[Attributes::Configuration].count(Attributes::UseDefDisambiguation) ||
 			 !config_params[Attributes::Configuration].count(Attributes::AlertApplyMetadata) ||
-			 !config_params[Attributes::Configuration].count(Attributes::AlertDisableQuoting))
+			 !config_params[Attributes::Configuration].count(Attributes::AlertDisableQuoting) ||
+			 !config_params[Attributes::Configuration].count(Attributes::AlertResizeRowsCols))
 			resetAlertChoices();
 
 		oplist_size_spb->setValue((config_params[Attributes::Configuration][Attributes::OpListSize]).toUInt());
@@ -666,9 +680,12 @@ void GeneralConfigWidget::applyConfiguration()
 	BaseObjectView::setPlaceholderEnabled(use_placeholders_chk->isChecked());
 	BaseObjectView::setShadowHidden(hide_obj_shadows_chk->isChecked());
 
-	SQLExecutionWidget::setSQLHistoryMaxLength(history_max_length_spb->value());
-	DiffToolWidget::setLowVerbosity(low_verbosity_chk->isChecked());
-	DatabaseImportWidget::setLowVerbosity(low_verbosity_chk->isChecked());
+	#ifdef PRIV_CODE_SYMBOLS
+		SQLExecutionWidget::setSQLHistoryMaxLength(history_max_length_spb->value());
+		DiffToolWidget::setLowVerbosity(low_verbosity_chk->isChecked());
+		DatabaseImportWidget::setLowVerbosity(low_verbosity_chk->isChecked());
+	#endif
+
 	ModelExportWidget::setLowVerbosity(low_verbosity_chk->isChecked());
 	Connection::setIgnoreDbVersion(old_pgsql_versions_chk->isChecked());
 

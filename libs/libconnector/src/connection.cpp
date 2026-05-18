@@ -59,6 +59,7 @@ const QString	Connection::SslFullVerify {"verify-full"};
 const QString	Connection::ServerVersion {"server-version"};
 const QString	Connection::ServerProtocol {"server-protocol"};
 const QString	Connection::ServerPid {"server-pid"};
+const QString	Connection::ServerEncoding { "server_encoding" };
 
 Connection::Connection()
 {
@@ -331,11 +332,12 @@ attribs_map Connection::getServerInfo()
 	attribs_map info;
 
 	if(!connection)
-		throw Exception(ErrorCode::OprNotAllocatedConnection,PGM_FUNC,PGM_FILE,PGM_LINE);
+		throw Exception(ErrorCode::OprNotAllocatedConnection, PGM_FUNC, PGM_FILE, PGM_LINE);
 
-	info[ServerPid]=QString::number(PQbackendPID(connection));
-	info[ServerVersion]=getPgSQLVersion();
-	info[ServerProtocol]=QString::number(PQprotocolVersion(connection));
+	info[ServerPid] = QString::number(PQbackendPID(connection));
+	info[ServerVersion] = getPgSQLVersion();
+	info[ServerProtocol] = QString::number(PQprotocolVersion(connection));
+	info[ServerEncoding] = PQparameterStatus(connection, ServerEncoding.toStdString().c_str());
 
 	return info;
 }
@@ -444,11 +446,11 @@ void Connection::executeDMLCommand(const QString &sql, ResultSet &result)
 	notices.clear();
 
 	//Alocates a new result to receive the resultset returned by the sql command
-    sql_res = PQexec(connection, sql.toStdString().c_str());
+	sql_res = PQexec(connection, sql.toStdString().c_str());
 
 	//Prints the SQL to stdout when the flag is active
 	if(print_sql)
-        qDebug().noquote() << "\n---\n" << sql;
+		qDebug().noquote() << "\n---\n" << sql;
 
 	//Raise an error in case the command sql execution is not sucessful
 	if(strlen(PQerrorMessage(connection))>0)
@@ -459,8 +461,8 @@ void Connection::executeDMLCommand(const QString &sql, ResultSet &result)
 						QString(PQresultErrorField(sql_res, PG_DIAG_SQLSTATE)));
 	}
 
-    // Initializes the result set with the PG result instance.
-    result.initResultSet(sql_res);
+	// Initializes the result set with the PG result instance.
+	result.initResultSet(sql_res);
 }
 
 void Connection::executeDDLCommand(const QString &sql)

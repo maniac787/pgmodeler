@@ -44,7 +44,6 @@
 #include "widgets/modeloverviewwidget.h"
 #include "tools/modelvalidationwidget.h"
 #include "widgets/objectsearchwidget.h"
-#include "tools/sqltoolwidget.h"
 #include "widgets/updatenotifierwidget.h"
 #include "widgets/modelnavigationwidget.h"
 #include "widgets/welcomewidget.h"
@@ -53,9 +52,7 @@
 #include "widgets/layersconfigwidget.h"
 #include "widgets/changelogwidget.h"
 #include "settings/configurationwidget.h"
-#include "tools/databaseimportwidget.h"
 #include "tools/modelexportwidget.h"
-#include "tools/difftoolwidget.h"
 #include "tools/fixtoolswidget.h"
 
 class __libgui MainWindow: public QMainWindow, public Ui::MainWindow {
@@ -73,7 +70,7 @@ class __libgui MainWindow: public QMainWindow, public Ui::MainWindow {
 			ConfigureView,
 		};
 
-	private:
+	protected:
 		static int ToolsActionsCount;
 
 		static bool confirm_validation;
@@ -90,7 +87,9 @@ class __libgui MainWindow: public QMainWindow, public Ui::MainWindow {
 		};
 
 		//! \brief Store the actions related to views in the main window (Manage, Design, Welcome, etc)
-		static QList<QAction *> view_actions;
+		static QMap<MainWindow::MWViewsId, QAction *> view_actions;
+
+		MWViewsId curr_view;
 
 		PendingOpId pending_op;
 
@@ -122,20 +121,11 @@ class __libgui MainWindow: public QMainWindow, public Ui::MainWindow {
 		//! \brief Model validation widget
 		ModelValidationWidget *model_valid_wgt;
 
-		//! \brief SQL tool widget widget
-		SQLToolWidget *sql_tool_wgt;
-
 		//! \brief pgModeler configuration widget
 		ConfigurationWidget *configuration_wgt;
 
-		//! \brief Reverse engineering widget
-		DatabaseImportWidget *db_import_wgt;
-
 		//! \brief Model export widget
 		ModelExportWidget *model_export_wgt;
-
-		//! \brief Diff tool widget
-		DiffToolWidget *diff_tool_wgt;
 
 		//! \brief Fix tools widget
 		FixToolsWidget *fix_tools_wgt;
@@ -213,10 +203,10 @@ class __libgui MainWindow: public QMainWindow, public Ui::MainWindow {
 
 		/*! \brief Stores the current checkboxes states of the main dock widgets on the set of configuration params
 				in order to save them on the main configuration file */
-		void storeDockWidgetsSettings();
+		virtual void storeDockWidgetsSettings();
 
 		//! \brief Restore the dock widget configurations from the parameters loaded from main configuration file
-		void restoreDockWidgetsSettings();
+		virtual void restoreDockWidgetsSettings();
 
 		/*! \brief This method determines if the provided layout has togglable buttons and one of them are checked.
 		 * This is an auxiliary method used to determine if widget bars (bottom or right) can be displayed based upon
@@ -229,11 +219,11 @@ class __libgui MainWindow: public QMainWindow, public Ui::MainWindow {
 		 * more due to the labels of the actions added during model loading ) */
 		void resizeGeneralToolbarButtons();
 
-		void connectSignalsToSlots();
-
 		void loadConfigurations();
 
-		void createMainWidgets();
+		virtual void connectSignalsToSlots();
+
+		virtual void createMainWidgets();
 
 		void configureMenusActionsWidgets();
 
@@ -249,10 +239,17 @@ class __libgui MainWindow: public QMainWindow, public Ui::MainWindow {
 		template <class WgtClass>
 		WgtClass *createViewWidget(MWViewsId view_id, const QString &view_name);
 
+		//! \brief Install plugins widgets in the main window dock area
+		void installPluginWidgets();
+
 	public:
+		static const QString TmplWindowTitle;
+
 		MainWindow(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::Widget);
 
 		~MainWindow() override;
+
+		virtual void initMainWindow();
 
 		//! \brief Loads a set of models from string list
 		void loadModels(const QStringList &files);
@@ -272,33 +269,36 @@ class __libgui MainWindow: public QMainWindow, public Ui::MainWindow {
 		void startOtherTimers();
 
 		//! \brief Switches the current view on main window
-		void changeCurrentView(MWViewsId view_id);
+		virtual void changeCurrentView(MWViewsId view_id);
 
 	public slots:
 		/*! \brief Creates a new empty model inside the main window. If the parameter 'filename' is specified,
 		creates the model loading it from a file */
-		void addModel(const QString &filename="");
+		void addModel(const QString &filename = "", int model_idx = -1);
 
 		/*! \brief Creates a new model inside the main window using the specified model widget. The method will raise
 		an error is the widget isn't allocated or already has a parent */
 		void addModel(ModelWidget *model_wgt);
 
-		//! \brief Closes the currently focused model. If the 'model_id' is specified the model at given index is closed
-		void closeModel(int model_id=-1);
+		/*! \brief Closes the currently focused model.
+		 * If the 'model_id' is specified the model at given index is closed.
+		 * If keep_tab is true than the parent tab of the model close is not
+		 * removed from the tab widget, allowing the insertion of a new model widget
+		 * at that index (see reloadModel()).
+		 * The confirm parameter indicates if the user must be asked to save
+		 * a file before closing it .
+		 * This method returns a bool value indicating the model closing */
+		bool closeModel(int model_id = -1, bool keep_tab = false, bool confirm = true);
+
+		/*! \brief Closes/destroys the model in the specified index 'model_id',
+		 *  load a new one and assign it to the parent tab of the closed model */
+		void reloadModel(int model_id, const QString &filename);
 
 		//! \brief Returns the currently loaded model count.
 		int getModelCount();
 
 		//! \brief Returns the model at given index
 		ModelWidget *getModel(int idx);
-
-		/*! \brief This is a convenience method to make able the addition of execution tabs in SQL tool without
-		 *  expose the SQL Tool widget itself (useful for plugin developers) */
-		void addExecTabInSQLTool(const QString &sql_cmd);
-
-		/*! \brief This is a convenience method that returns a true value when there're databases listed in the SQL tool widget without
-		 *  expose the SQL Tool widget itself (useful for plugin developers) */
-		bool hasDbsListedInSQLTool();
 
 		//! \brief Adds an entry to the recent models menu
 		void registerRecentModel(const QString &filename);
@@ -316,7 +316,7 @@ class __libgui MainWindow: public QMainWindow, public Ui::MainWindow {
 		void updateModelTabName();
 
 		//! \brief Updates the connections list of the validator widget
-		void updateConnections(bool force = false);
+		virtual void updateConnections(bool force = false);
 
 		//! \brief Shows a error dialog informing that the model demands a fix after the error ocurred when loading the filename.
 		void showFixMessage(Exception &e, const QString &filename);
@@ -324,7 +324,7 @@ class __libgui MainWindow: public QMainWindow, public Ui::MainWindow {
 		//! \brief Set the postion of a floating widget based upon an action at a tool bar
 		void setFloatingWidgetPos(QWidget *widget, QAction *act, QToolBar *toolbar, bool map_to_window);
 
-	private slots:
+	protected slots:
 		void showMainMenu();
 
 		//! \brief Atualiza as definições da grade com base nas ações: Exibir Grade, Alin. Grade e Exibir limites
@@ -356,9 +356,8 @@ class __libgui MainWindow: public QMainWindow, public Ui::MainWindow {
 		//! \brief Executes the validation before the export process
 		void validateBeforeOperation();
 
-
 		//! \brief Updates the opened models with new configurations
-		void applyConfigurations();
+		virtual void applyConfigurations();
 
 		//! \brief Applies the zoom to the currently focused model
 		void applyZoom();
@@ -413,15 +412,9 @@ class __libgui MainWindow: public QMainWindow, public Ui::MainWindow {
 		void toggleChangelogWidget(bool show);
 		void expandSceneRect();
 
-		#ifdef	DEMO_VERSION
-		void showDemoVersionWarning(bool exit_msg = false);
-		#endif
-
 		bool mimeDataHasModelFiles(const QMimeData *mime_data);
 		void loadModelsFromMimeData(const QMimeData *mime_data);
 		void addNewLayer(const QString &layer_name);
-		void handleImportFinished(bool aborted_by_error);
-		void loadDiffInSQLTool(const QString &conn_id, const QString &database, const QString &filename);
 
 	signals:
 		void s_currentModelChanged(ModelWidget *model_wgt);
@@ -432,5 +425,19 @@ class __libgui MainWindow: public QMainWindow, public Ui::MainWindow {
 		 * is to notify any plugin that may handle the file type to be loaded */
 		void s_modelLoadRequested(const QString &filename);
 };
+
+template<class WgtClass>
+WgtClass *MainWindow::createViewWidget(MWViewsId view_id, const QString &view_name)
+{
+	QWidget *parent_wgt = views_stw->widget(view_id);
+
+	if(!parent_wgt)
+		throw Exception(tr("Page index %1 not created in views widget!").arg(view_id), ErrorCode::Custom, PGM_FUNC, PGM_FILE, PGM_LINE);
+
+	WgtClass *view_wgt = GuiUtilsNs::createWidgetInParent<WgtClass>(0, parent_wgt);
+	view_wgt->setObjectName(view_name);
+
+	return view_wgt;
+}
 
 #endif

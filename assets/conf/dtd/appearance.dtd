@@ -6,6 +6,8 @@
 <!ATTLIST appearance ui-theme CDATA #IMPLIED>
 <!ATTLIST appearance icons-size (big|medium|small) "big">
 <!ATTLIST appearance custom-scale CDATA #IMPLIED>
+<!ATTLIST appearance ui-font CDATA #IMPLIED>
+<!ATTLIST appearance ui-font-size CDATA #IMPLIED>
 
 <!ELEMENT design EMPTY>
 <!ATTLIST design grid-size CDATA #REQUIRED>
@@ -26,6 +28,7 @@
 <!ATTLIST code highlight-lines (false|true) "true">
 <!ATTLIST code line-numbers-color CDATA #IMPLIED>
 <!ATTLIST code line-numbers-bg-color CDATA #IMPLIED>
+<!ATTLIST code line-numbers-hl-color CDATA #IMPLIED>
 <!ATTLIST code line-highlight-color CDATA #IMPLIED>
 
 <!ELEMENT objects (global, font+, object+)>
