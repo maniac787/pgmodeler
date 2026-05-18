@@ -30,6 +30,11 @@ function(print_build_summary)
     message("* BUILD_PLUGINS      = ${BUILD_PLUGINS}")
 	message("* BUILD_PRIV_CODE    = ${BUILD_PRIV_CODE}")
 	message("* BUILD_PRIV_ASSETS  = ${BUILD_PRIV_ASSETS}")
+
+	if(DISABLED_PLUGINS)
+		message("* DISABLED_PLUGINS   = ${DISABLED_PLUGINS}")
+	endif()
+
     message("* BUILD_TESTS        = ${BUILD_TESTS}")
     message("* USE_CLANG_TIDY     = ${USE_CLANG_TIDY}")
     message("* USE_ADDR_SANITIZER = ${USE_ADDR_SANITIZER}")
