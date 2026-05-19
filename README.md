@@ -1,11 +1,5 @@
 <img width="2000" height="1061" alt="pgModeler 2.0 Community Edition" src="https://github.com/user-attachments/assets/e8b64226-c06f-492b-b0ec-2af582ccede8" />
 
-[![Linux build](https://github.com/pgmodeler/pgmodeler/workflows/Linux%20build/badge.svg)](https://github.com/pgmodeler/pgmodeler/actions?query=workflow%3A%22Linux+build%22)
-[![Windows build](https://github.com/pgmodeler/pgmodeler/workflows/Windows%20build/badge.svg)](https://github.com/pgmodeler/pgmodeler/actions?query=workflow%3A%22Windows+build%22)
-[![macOs build](https://github.com/pgmodeler/pgmodeler/workflows/macOs%20build/badge.svg)](https://github.com/pgmodeler/pgmodeler/actions?query=workflow%3A%22macOs+build%22)
-
----
-
 ## :rocket: Why pgModeler?
 
 **pgModeler** is a PostgreSQL-first, multiplatform database modeling platform designed specifically for the **PostgreSQL** ecosystem. Built with a strong focus on correctness, productivity, and PostgreSQL feature parity, pgModeler aims to be the definitive open-source reference for visual database design and schema engineering.
