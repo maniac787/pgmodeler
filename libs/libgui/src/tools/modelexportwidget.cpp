@@ -44,6 +44,7 @@ ModelExportWidget::ModelExportWidget(QWidget *parent) : QWidget(parent)
 	input_model_gb->layout()->addWidget(model_sel_wgt);
 
 	sql_file_sel = new FileSelectorWidget(this);
+	sql_file_sel->setObjectName("sql_file_sel");
 	sql_file_sel->setFileDialogTitle(tr("Export model to SQL file"));
 	sql_file_sel->setAcceptMode(QFileDialog::AcceptSave);
 	sql_file_sel->setAllowFilenameInput(true);
@@ -52,6 +53,7 @@ ModelExportWidget::ModelExportWidget(QWidget *parent) : QWidget(parent)
 	sql_file_lt->addWidget(sql_file_sel);
 
 	img_file_sel = new FileSelectorWidget(this);
+	img_file_sel->setObjectName("img_file_sel");
 	img_file_sel->setFileDialogTitle(tr("Export model to graphics file"));
 	img_file_sel->setAcceptMode(QFileDialog::AcceptSave);
 	img_file_sel->setAllowFilenameInput(true);
@@ -60,6 +62,7 @@ ModelExportWidget::ModelExportWidget(QWidget *parent) : QWidget(parent)
 	img_file_lt->addWidget(img_file_sel);
 
 	dict_file_sel = new FileSelectorWidget(this);
+	dict_file_sel->setObjectName("dict_file_sel");
 	dict_file_sel->setFileDialogTitle(tr("Export model to data dictionary"));
 	dict_file_sel->setAllowFilenameInput(true);
 	dict_file_sel->setFileIsMandatory(false);

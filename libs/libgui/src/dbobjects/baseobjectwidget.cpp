@@ -533,6 +533,7 @@ void BaseObjectWidget::configureTabbedLayout(QTabWidget *tab_widget, bool create
 		sql_preview_pg->setObjectName("sql_preview_tab");
 		tab_widget->addTab(sql_preview_pg, GuiUtilsNs::getIcon("sqlpreview"), tr("SQL preview"));
 		NumberedTextEditor *source_txt = GuiUtilsNs::createWidgetInParent<NumberedTextEditor>(GuiUtilsNs::LtMargin, sql_preview_pg, false);
+		source_txt->setObjectName("source_txt");
 		source_txt->setReadOnly(true);
 
 		try

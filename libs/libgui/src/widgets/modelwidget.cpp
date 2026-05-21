@@ -2517,10 +2517,7 @@ void ModelWidget::showObjectAssociations()
 void ModelWidget::showSourceCode()
 {
 	CodePreviewWidget *code_preview_wgt = new CodePreviewWidget;
-
 	code_preview_wgt->setAttributes(db_model, selected_objects);
-	emit s_codeAboutToShow(code_preview_wgt);
-
 	openEditingForm(code_preview_wgt, Messagebox::CloseButton);
 }
 
