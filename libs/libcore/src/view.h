@@ -137,6 +137,11 @@ class __libcore View: public BaseTable {
 		//! \brief Remove an index from view using its index
 		void removeIndex(unsigned idx);
 
+		/*! \brief Returns the total children objects count in the table
+		 *  This method makes no distinction between relationship-added
+		 *  object and user-created ones */
+		unsigned getObjectCount() override;
+
 		//! \brief Returns the object index searching by its reference
 		int getObjectIndex(BaseObject *obj) override;
 

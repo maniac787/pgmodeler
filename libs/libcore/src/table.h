@@ -112,6 +112,11 @@ class __libcore Table: public PhysicalTable {
 		//! \brief Gets a policy through its index
 		Policy *getPolicy(unsigned idx);
 
+		/*! \brief Returns the total children objects count in the table
+		 *  This method makes no distinction between relationship-added
+		 *  object and user-created ones */
+		unsigned getObjectCount() override;
+
 		//! \brief Gets the index count
 		unsigned getIndexCount();
 

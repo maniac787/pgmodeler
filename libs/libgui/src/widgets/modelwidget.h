@@ -37,6 +37,7 @@
 #include "layerswidget.h"
 
 class PgModelerGuiPlugin;
+class CodePreviewWidget;
 
 class __libgui ModelWidget: public QWidget {
 	Q_OBJECT
@@ -651,6 +652,7 @@ class __libgui ModelWidget: public QWidget {
 		void s_zoomModified(double);
 		void s_maginifierAreaVisible(bool);
 		void s_modelResized();
+		void s_codeAboutToShow(CodePreviewWidget *code_prev_wgt);
 
 		//! \brief Signal emitted whenever the interaction status is changes (see setInteractive)
 		void s_interactiveChanged(bool);

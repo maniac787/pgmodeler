@@ -1364,6 +1364,13 @@ void PhysicalTable::__setGenerateAlterCmds(bool value)
 	updateAlterCmdsStatus();
 }
 
+unsigned int PhysicalTable::getObjectCount()
+{
+	return columns.size() +
+				 constraints.size() +
+				 triggers.size();
+}
+
 bool PhysicalTable::isGenerateAlterCmds()
 {
 	return gen_alter_cmds;

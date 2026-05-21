@@ -35,9 +35,11 @@ CodePreviewWidget::CodePreviewWidget(QWidget *parent): QWidget(parent)
 	object = nullptr;
 
 	sqlcode_txt = GuiUtilsNs::createNumberedTextEditor(sqlcode_wgt, true);
+	sqlcode_txt->setObjectName("sqlcode_txt");
 	sqlcode_txt->setReadOnly(true);
 
 	xmlcode_txt = GuiUtilsNs::createNumberedTextEditor(xmlcode_wgt, true);
+	xmlcode_txt->setObjectName("xmlcode_txt");
 	xmlcode_txt->setReadOnly(true);
 
 	hl_sqlcode = new SyntaxHighlighter(sqlcode_txt);

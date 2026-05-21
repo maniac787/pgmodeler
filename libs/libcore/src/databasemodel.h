@@ -476,6 +476,8 @@ class __libcore DatabaseModel:  public QObject, public BaseObject {
 
 		unsigned getObjectsCount(const std::vector<ObjectType> &obj_types);
 
+		unsigned getObjectCount(bool incl_tab_objs);
+
 		unsigned getMaxObjectCount();
 
 		//! \brief Retuns the specified localization value

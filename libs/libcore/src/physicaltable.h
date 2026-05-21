@@ -127,6 +127,11 @@ class __libcore PhysicalTable: public BaseTable {
 		//! \brief Toggles the generation of columns and constraints in form of ALTER commands
 		void __setGenerateAlterCmds(bool value);
 
+		/*! \brief Returns the total children objects count in the table
+		 *  This method makes no distinction between relationship-added
+		 *  object and user-created ones */
+		unsigned getObjectCount() override;
+
 	public:
 		PhysicalTable();
 		~PhysicalTable() override = default;

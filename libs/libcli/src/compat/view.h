@@ -229,6 +229,11 @@ namespace CompatNs {
 				return "";
 			}
 
+			unsigned getObjectCount() override
+			{
+				return 0;
+			}
+
 			void updateDependencies() override {}
 	};
 }

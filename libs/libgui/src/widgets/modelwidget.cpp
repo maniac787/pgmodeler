@@ -224,10 +224,12 @@ ModelWidget::ModelWidget(QWidget *parent) : QWidget(parent)
 	action_source_code=new QAction(GuiUtilsNs::getIcon("sourcecode"), tr("Source"), this);
 	action_source_code->setShortcut(QKeySequence(tr("Alt+S")));
 	action_source_code->setToolTip(tr("Show object source code"));
+	addAction(action_source_code);
 
 	action_edit=new QAction(GuiUtilsNs::getIcon("edit"), tr("Properties"), this);
 	action_edit->setShortcut(QKeySequence(tr("Space")));
 	action_edit->setToolTip(tr("Edit the object properties"));
+	addAction(action_edit);
 
 	action_protect=new QAction(GuiUtilsNs::getIcon("protect"), tr("Protect"), this);
 	action_unprotect=new QAction(GuiUtilsNs::getIcon("unprotect"), tr("Unprotect"), this);
@@ -297,60 +299,81 @@ ModelWidget::ModelWidget(QWidget *parent) : QWidget(parent)
 	action_new_object->setIcon(GuiUtilsNs::getIcon("newobject"));
 	action_new_object->setText(tr("New"));
 	action_new_object->setToolTip(tr("Add a new object in the model"));
+	addAction(action_new_object);
 
 	action_quick_actions = quick_actions_menu.menuAction();
 	action_quick_actions->setIcon(GuiUtilsNs::getIcon("quickactions"));
 	action_quick_actions->setText(tr("Quick"));
 	action_quick_actions->setToolTip(tr("Quick action for the selected object"));
+	addAction(action_quick_actions);
 
 	action_rename=new QAction(GuiUtilsNs::getIcon("rename"), tr("Rename"), this);
 	action_rename->setShortcut(QKeySequence(tr("F2")));
 	action_rename->setToolTip(tr("Quick rename the object"));
+	addAction(action_rename);
 
 	action_moveto_schema = schemas_menu.menuAction();
 	action_moveto_schema->setIcon(GuiUtilsNs::getIcon("movetoschema"));
 	action_moveto_schema->setText(tr("Move to schema"));
+	addAction(action_moveto_schema);
 
 	action_set_layer = new QAction(GuiUtilsNs::getIcon("layers"), tr("Set layers"), this);
 	action_set_layer->setShortcut(QKeySequence("F3"));
+	addAction(action_set_layer);
 	layers_wgt = new LayersWidget(this);
 
 	action_set_tag = tags_menu.menuAction();
 	action_set_tag->setIcon(GuiUtilsNs::getIcon("tag"));
 	action_set_tag->setText(tr("Set tag"));
+	addAction(action_set_tag);
 
 	action_edit_perms=new QAction(GuiUtilsNs::getIcon("permission"), tr("Edit permissions"), this);
 	action_edit_perms->setShortcut(QKeySequence(tr("Ctrl+E")));
+	addAction(action_edit_perms);
 
 	action_change_owner = owners_menu.menuAction();
 	action_change_owner->setIcon(GuiUtilsNs::getIcon("changeowner"));
 	action_change_owner->setText(tr("Change owner"));
+	addAction(action_change_owner);
 
 	action_sel_sch_children=new QAction(GuiUtilsNs::getIcon("selectmove"), tr("Select children"), this);
 	action_sel_tagged_tabs=new QAction(GuiUtilsNs::getIcon("selectmove"), tr("Select tagged"), this);
 	action_sel_table_rels=new QAction(GuiUtilsNs::getIcon("selectmove"), tr("Select relationships"), this);
+	addAction(action_sel_sch_children);
+	addAction(action_sel_tagged_tabs);
+	addAction(action_sel_table_rels);
 
 	action_select_object=new QAction(GuiUtilsNs::getIcon("moved"), tr("Select"), this);
 	action_parent_rel=new QAction(GuiUtilsNs::getIcon("relationship"), tr("Open relationship"), this);
+	addAction(action_select_object);
+	addAction(action_parent_rel);
 
 	action_append_sql=new QAction(GuiUtilsNs::getIcon("sqlappend"), tr("Custom SQL"), this);
 	action_append_sql->setShortcut(QKeySequence(tr("Alt+Q")));
+	addAction(action_append_sql);
 
 	action_create_seq_col=new QAction(GuiUtilsNs::getIcon("sequence"), tr("Convert to sequence"), this);
 	action_conv_int_serial=new QAction(GuiUtilsNs::getIcon("sequence"), tr("Convert to serial"), this);
+	addAction(action_create_seq_col);
+	addAction(action_conv_int_serial);
 
 	action_remove_rel_points=new QAction(GuiUtilsNs::getIcon("removepoints"), tr("Remove points"), this);
+	addAction(action_remove_rel_points);
 
 	action_enable_sql=new QAction(GuiUtilsNs::getIcon("enablesql"), tr("Enable SQL"), this);
 	action_disable_sql=new QAction(GuiUtilsNs::getIcon("disablesql"), tr("Disable SQL"), this);
+	addAction(action_enable_sql);
+	addAction(action_disable_sql);
 
 	action_duplicate=new QAction(GuiUtilsNs::getIcon("duplicate"), tr("Duplicate"), this);
 	action_duplicate->setShortcut(QKeySequence(tr("Ctrl+D")));
 	action_duplicate->setMenuRole(QAction::NoRole);
+	addAction(action_duplicate);
 
 	action_pagination = pagination_menu.menuAction();
 	action_pagination->setIcon(GuiUtilsNs::getIcon("pagination"));
 	action_pagination->setText(tr("Pagination"));
+	addAction(action_pagination);
 
 	action = pagination_menu.addAction(tr("Enable"));
 	action->setData(true);
@@ -363,10 +386,12 @@ ModelWidget::ModelWidget(QWidget *parent) : QWidget(parent)
 	action_jump_to_table = jump_to_tab_menu.menuAction();
 	action_jump_to_table->setIcon(GuiUtilsNs::getIcon("jumptotable"));
 	action_jump_to_table->setText(tr("Jump to table"));
+	addAction(action_jump_to_table);
 
 	action_collapse_mode = toggle_attrs_menu.menuAction();
 	action_collapse_mode->setIcon(GuiUtilsNs::getIcon("collapse"));
 	action_collapse_mode->setText(tr("Collapse"));
+	addAction(action_collapse_mode);
 
 	action_no_collapse_attribs=new QAction(tr("Not collapsed"), this);
 	action_no_collapse_attribs->setData(BaseTable::NotCollapsed);
@@ -393,23 +418,31 @@ ModelWidget::ModelWidget(QWidget *parent) : QWidget(parent)
 
 	action_fade_in = new QAction(GuiUtilsNs::getIcon("fadein"), tr("Fade in"), this);
 	action_fade_out = new QAction(GuiUtilsNs::getIcon("fadeout"), tr("Fade out"), this);
+	addAction(action_fade_in);
+	addAction(action_fade_out);
 
 	action_fade_rels = fade_rels_menu.menuAction();
 	action_fade_rels->setIcon(GuiUtilsNs::getIcon("relationship"));
 	action_fade_rels->setText(tr("Relationships"));
 	action_fade_rels_in=new QAction(GuiUtilsNs::getIcon("fadein"), tr("Fade in"), this);
 	action_fade_rels_out=new QAction(GuiUtilsNs::getIcon("fadeout"), tr("Fade out"), this);
+	addAction(action_fade_rels_in);
+	addAction(action_fade_rels_out);
 
 	action_fade_peer_tables = fade_peer_tables_menu.menuAction();
 	action_fade_peer_tables->setIcon(GuiUtilsNs::getIcon("table"));
 	action_fade_peer_tables->setText(tr("Peer tables"));
 	action_fade_peer_tables_in = new QAction(GuiUtilsNs::getIcon("fadein"), tr("Fade in"), this);
 	action_fade_peer_tables_out = new QAction(GuiUtilsNs::getIcon("fadeout"), tr("Fade out"), this);
+	addAction(action_fade_peer_tables_in);
+	addAction(action_fade_peer_tables_out);
 
 	action_fade_tabs_rels = fade_both_objs_menu.menuAction();
 	action_fade_tabs_rels->setText(tr("Tables && Relationships"));
 	action_fade_tabs_rels_in = new QAction(GuiUtilsNs::getIcon("fadein"), tr("Fade in"), this);
 	action_fade_tabs_rels_out = new QAction(GuiUtilsNs::getIcon("fadeout"), tr("Fade out"), this);
+	addAction(action_fade_tabs_rels_in);
+	addAction(action_fade_tabs_rels_out);
 
 	fade_rels_menu.addAction(action_fade_rels_in);
 	fade_rels_menu.addAction(action_fade_rels_out);
@@ -422,6 +455,7 @@ ModelWidget::ModelWidget(QWidget *parent) : QWidget(parent)
 
 	action_edit_creation_order=new QAction(GuiUtilsNs::getIcon("swapobjs"), tr("Swap ids"), this);
 	action_edit_creation_order->setToolTip(tr("Edit the objects creation order by swapping their ids"));
+	addAction(action_edit_creation_order);
 	connect(action_edit_creation_order, &QAction::triggered, this, &ModelWidget::swapObjectsIds);
 
 	action_break_rel_line = break_rel_menu.menuAction();
@@ -452,6 +486,7 @@ ModelWidget::ModelWidget(QWidget *parent) : QWidget(parent)
 	for(auto &type : types_vect)
 	{
 		actions_new_objects[type]=new QAction(GuiUtilsNs::getIcon(type), BaseObject::getTypeName(type), this);
+		addAction(actions_new_objects[type]);
 		actions_new_objects[type]->setData(QVariant(enum_t(type)));
 		connect(actions_new_objects[type], &QAction::triggered, this, &ModelWidget::addNewObject);
 	}
@@ -493,6 +528,7 @@ ModelWidget::ModelWidget(QWidget *parent) : QWidget(parent)
 
 		connect(action, &QAction::triggered, this, &ModelWidget::addNewObject);
 		rels_menu->addAction(action);
+		addAction(action);
 	}
 
 	new_obj_overlay_wgt=new NewObjectOverlayWidget(this);
@@ -522,6 +558,7 @@ ModelWidget::ModelWidget(QWidget *parent) : QWidget(parent)
 		}
 
 		action->setData(QVariant(enum_t(obj_type)));
+		addAction(action);
 		connect(action, &QAction::triggered, this, &ModelWidget::selectAllObjects);
 	}
 
@@ -531,9 +568,11 @@ ModelWidget::ModelWidget(QWidget *parent) : QWidget(parent)
 
 	action_send_to_back=new QAction(GuiUtilsNs::getIcon("sendtoback"), tr("Send to back"), this);
 	action_send_to_back->setShortcut(QKeySequence("Shift+Down"));
+	addAction(action_send_to_back);
 
 	action_bring_to_front=new QAction(GuiUtilsNs::getIcon("bringtofront"), tr("Bring to front"), this);
 	action_bring_to_front->setShortcut(QKeySequence("Shift+Up"));
+	addAction(action_bring_to_front);
 
 	stacking_menu.addAction(action_send_to_back);
 	stacking_menu.addAction(action_bring_to_front);
@@ -557,10 +596,12 @@ ModelWidget::ModelWidget(QWidget *parent) : QWidget(parent)
 	{
 		act = fade_in_all_menu.addAction(GuiUtilsNs::getIcon(BaseObject::getSchemaName(act_type)),	act_labels[id]);
 		act->setData(enum_t(act_type));
+		addAction(act);
 		connect(act, &QAction::triggered, this, &ModelWidget::fadeObjectsIn);
 
 		act = fade_out_all_menu.addAction(GuiUtilsNs::getIcon(BaseObject::getSchemaName(act_type)),	act_labels[id]);
 		act->setData(enum_t(act_type));
+		addAction(act);
 		connect(act, &QAction::triggered, this, &ModelWidget::fadeObjectsOut);
 
 		id++;
@@ -568,6 +609,7 @@ ModelWidget::ModelWidget(QWidget *parent) : QWidget(parent)
 
 	act = fade_in_all_menu.addAction(tr("All objects"));
 	act->setData(enum_t(ObjectType::BaseObject));
+	addAction(act);
 	fade_in_all_menu.insertSeparator(act);
 	connect(act, &QAction::triggered, this, &ModelWidget::fadeObjectsIn);
 	fade_in_all_menu.menuAction()->setText("Fade in");
@@ -575,6 +617,7 @@ ModelWidget::ModelWidget(QWidget *parent) : QWidget(parent)
 
 	act = fade_out_all_menu.addAction(tr("All objects"));
 	act->setData(enum_t(ObjectType::BaseObject));
+	addAction(act);
 	fade_out_all_menu.insertSeparator(act);
 	connect(act, &QAction::triggered, this, &ModelWidget::fadeObjectsOut);
 	fade_out_all_menu.menuAction()->setText("Fade out");
@@ -2474,7 +2517,10 @@ void ModelWidget::showObjectAssociations()
 void ModelWidget::showSourceCode()
 {
 	CodePreviewWidget *code_preview_wgt = new CodePreviewWidget;
+
 	code_preview_wgt->setAttributes(db_model, selected_objects);
+	emit s_codeAboutToShow(code_preview_wgt);
+
 	openEditingForm(code_preview_wgt, Messagebox::CloseButton);
 }
 

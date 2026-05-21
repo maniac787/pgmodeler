@@ -95,6 +95,11 @@ class __libcore BaseTable: public BaseGraphicObject {
 		 that objects added by relationship must be counted */
 		virtual unsigned getObjectCount(ObjectType obj_type, bool inc_added_by_rel=true)=0;
 
+		/*! \brief Returns the total children objects count in the table
+		 *  This method makes no distinction between relationship-added
+		 *  object and user-created ones */
+		virtual unsigned getObjectCount() = 0;
+
 		//! \brief Gets the object index using its name and type
 		virtual int getObjectIndex(const QString &name, ObjectType obj_type)=0;
 

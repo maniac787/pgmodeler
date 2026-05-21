@@ -716,6 +716,25 @@ unsigned DatabaseModel::getObjectsCount(const std::vector<ObjectType> &obj_types
 	}
 }
 
+unsigned int DatabaseModel::getObjectCount(bool incl_tab_objs)
+{
+	unsigned obj_cnt = getObjectCount();
+
+	if(incl_tab_objs)
+	{
+		std::vector<BaseObject *> tabs;
+
+		tabs = tables;
+		tabs.insert(tabs.end(), foreign_tables.begin(), foreign_tables.end());
+		tabs.insert(tabs.end(), views.begin(), views.end());
+
+		for(auto &tab : tables)
+			obj_cnt += dynamic_cast<BaseTable *>(tab)->getObjectCount();
+	}
+
+	return obj_cnt;
+}
+
 unsigned DatabaseModel::getMaxObjectCount()
 {
 	std::vector<ObjectType> types = getObjectTypes(false, {ObjectType::Database});

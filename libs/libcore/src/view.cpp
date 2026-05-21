@@ -954,3 +954,10 @@ void View::updateDependencies()
 
 	BaseTable::updateDependencies(deps);
 }
+
+unsigned int View::getObjectCount()
+{
+	return indexes.size() +
+				 rules.size() +
+				 triggers.size();
+}

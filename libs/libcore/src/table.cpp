@@ -277,6 +277,14 @@ Policy *Table::getPolicy(unsigned idx)
 	return dynamic_cast<Policy *>(getObject(idx, ObjectType::Policy));
 }
 
+unsigned int Table::getObjectCount()
+{
+	return PhysicalTable::getObjectCount() +
+				 indexes.size() +
+				 rules.size() +
+				 policies.size();
+}
+
 unsigned Table::getIndexCount()
 {
 	return indexes.size();
