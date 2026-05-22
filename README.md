@@ -1,4 +1,4 @@
-<img width="2000" height="1061" alt="pgModeler 2.0 Community Edition" src="https://github.com/user-attachments/assets/e8b64226-c06f-492b-b0ec-2af582ccede8" />
+<img width="1254" height="663" alt="pgModeler 2.0 Community Edition" src="https://pgmodeler.io/img/pgmodeler_2_gh_ss.png" />
 
 ## :rocket: Why pgModeler?
 
